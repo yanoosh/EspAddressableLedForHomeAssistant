@@ -44,20 +44,22 @@ byte blue = 0;
 byte white = 255;
 byte brightness = 255;
 
+
 /******************************** OTHER GLOBALS *******************************/
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 const char* effectString = "solid";
+String previousEffect = "solid";
 String effect = "solid";
 bool stateOn = true;
 bool transitionDone = true;
 bool transitionAbort = false;
 int transitionTime = 50; // 1-150
-
+int pixel = 1;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
 
 #include "NeoPixel_Effects.h"
 
@@ -71,15 +73,16 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
 
   
-  delay(2000); // Wait for Leds to init and Cap to charge
+  delay(500); // Wait for Leds to init and Cap to charge
+  setup_config();
   
   // End of trinket special code
-  strip.setBrightness(MAXBRIGHTNESS);
+  strip.setBrightness(maxBrightness);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
   
   // Standalone startup sequence - Wipe White
-  for(uint16_t i=0; i<NUM_LEDS; i++) {
+  for(uint16_t i=0; i<ledCount; i++) {
     setPixel(i, 0, 0, 0, 255, false);
     showStrip();
     delay(10);
@@ -96,7 +99,7 @@ void setup() {
 
   //OTA SETUP
   ArduinoOTA.setPort(OTAport);
-  ArduinoOTA.setHostname(SENSORNAME); // Hostname defaults to esp8266-[ChipID]
+  ArduinoOTA.setHostname(deviceName); // Hostname defaults to esp8266-[ChipID]
   ArduinoOTA.setPassword((const char *)OTApassword); // No authentication by default
 
   ArduinoOTA.onStart([]() {
@@ -119,8 +122,6 @@ void setup() {
   ArduinoOTA.begin();
 
   Serial.println("Ready");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
   
   // OK we are connected
   setPixel(0, 0, 255, 0, 255, false); // Green tinge on first Pixel
@@ -134,8 +135,7 @@ void setup() {
 void setup_wifi() {
 
   delay(10);
-  Serial.println();
-  Serial.print("Connecting to ");
+  Serial.print("Connecting to SSID: ");
   Serial.println(WIFI_SSID);
   
   // We start by connecting to a WiFi network
@@ -152,7 +152,7 @@ void setup_wifi() {
 
   Serial.println("");
   Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 }
 
@@ -184,6 +184,9 @@ void setOff() {
     digitalWrite(DATA_PIN_RELAY, HIGH); // Do NOT write to strip while it has no power. (https://forums.adafruit.com/viewtopic.php?f=47&t=100265)
     Serial.println("LED: OFF");
   }
+  
+  // NOTE: Should really set the xxx pin to be an input to ensure that data is not sent and to stop potential current flow.
+  //Writing to pin in INPUT/High-impedance mode enables/disables the internal pullup resistors. But the high impedance ensures that any current flow through the pin will be negligible.
 }
 
 void setOn() {
@@ -209,6 +212,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   message[length] = '\0';
   Serial.println(message);
+
+  previousEffect = effect;
 
   if (!processJson(message)) {
     return;
@@ -288,7 +293,11 @@ bool processJson(char* message) {
   if (root.containsKey("brightness")) {
     brightness = root["brightness"];
   }
-
+  
+  if (root.containsKey("pixel")) {
+    pixel = root["pixel"];
+  }
+  
   if (root.containsKey("effect")) {
     effectString = root["effect"];
     effect = effectString;
@@ -317,8 +326,10 @@ void sendState() {
 
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
-
-  client.publish(MQTT_STATE_TOPIC, buffer, true);
+  
+  char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName)];
+  sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName); // with word space
+  client.publish(combinedArray, buffer, true);
 }
 
 
@@ -328,9 +339,13 @@ void reconnect() {
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
     // Attempt to connect
-    if (client.connect(SENSORNAME, MQTT_USER, MQTT_PASSWORD)) {
+    if (client.connect(deviceName, MQTT_USER, MQTT_PASSWORD)) {
       Serial.println("connected");
-      client.subscribe(MQTT_SET_TOPIC);
+      
+      char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + 4];
+      sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, deviceName); // with word space    
+      client.subscribe(combinedArray);
+      
       setOff();
       sendState();
     } else {
@@ -376,6 +391,11 @@ void loop() {
           Fade((transitionTime));
         }
       }
+      if (effect == "pixel") {
+        setPixel(pixel, red, green, blue, white, false);
+        showStrip();
+        transitionDone = true;
+      }
       if (effect == "twinkle") {
         Twinkle(10, (2*transitionTime), false);
       }
@@ -416,7 +436,21 @@ void loop() {
         BouncingBalls(3);
       }
 
-    
+      // Run once notification effects
+      // Reverts color and effect after run
+      if (effect == "color wipe once") {
+        colorWipeOnce(transitionTime);
+
+        effect = previousEffect;
+        
+        if (red == 0 && green == 0 && blue == 0 && white == 0) {
+          setOff();
+        } else {
+          transitionDone = false; // Run the old effect again
+        }
+        sendState();
+      }
+
     
     
     

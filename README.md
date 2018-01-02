@@ -14,7 +14,7 @@ This project can run standalone. When turned on the white LEDs will light.  This
 - Effects with Animation Speed
 - Over-the-Air (OTA) Upload from the ArduinoIDE!
 
-Most of the effects incorporate the currrently selected color while other effects use pre-defined colors. The input_number and automation in the HA configuration example allow you to easily set a transition speed from HA's user interface without needing to use the Services tool. 
+Most of the effects incorporate the currently selected color while other effects use pre-defined colors. The input_number and automation in the HA configuration example allow you to easily set a transition speed from HA's user interface without needing to use the Services tool. 
 
 The default speed for the effects is hard coded and is set when the light is first turned on. When changing between effects, the previously used transition speed will take over. If the effects don't look great, play around with the slider to adjust the transition speed (AKA the effect's animation speed). 
 
@@ -29,27 +29,42 @@ This code also supports remote uploading to the ESP8266 using Arduino's OTA libr
 
 #### Demo Video
 [![Demo Video](http://i.imgur.com/cpW2JAX.png)](https://www.youtube.com/watch?v=DQZ4x6Z3678 "Demo - RGB Digital LED Strip controlled using ESP, MQTT, and Home Assistant")
-NOTE: This sketch is using a diffrent set of effects.
+NOTE: This sketch is using a different set of effects.
+
 
 #### Tutorial Video
 [![Tutorial Video](http://i.imgur.com/9UMl8Xo.jpg)](https://www.youtube.com/watch?v=9KI36GTgwuQ "The BEST Digital LED Strip Light Tutorial - DIY, WIFI-Controllable via ESP, MQTT, and Home Assistant")
 
+
 #### Parts List
 - [Digital RGB Leds](https://www.adafruit.com/product/2842)
-- [NodeMCU](http://geni.us/4pVoT)
-- [P-Channel MOSFET] ()
-- [330Ohm Resisters] ()
-- [Aluminum Mounting Channel/Diffuser](http://geni.us/JBDhv7)
-- [5V 15amp Power Supply](http://geni.us/8rKC)
-- [Strip Connector](http://geni.us/OL7tHv)
-- [Logic Level Shifter](http://geni.us/4hJAyy)
-- [20 Gauge Wire](http://geni.us/2MBYAXF)
-- [Cable Chase](http://geni.us/lFqD)
-- [Project Box](http://geni.us/kZRgaj)
-- [Header Wires](http://geni.us/GniKAX)
-- [Power Jacks](http://geni.us/7Ywdut)
+- [NodeMCU](https://www.amazon.com/HiLetgo-Version-NodeMCU-Internet-Development/dp/B010O1G1ES/)
+- [P-Channel MOSFET](http://au.element14.com/vishay/sup53p06-20-e3/mosfet-p-to-220/dp/1684102)
+- [330Ohm Resisters](http://au.element14.com/multicomp/mccfr0w4j0331a50/carbon-film-resistor-330-ohm-250mw/dp/1128021)
+- [Aluminum Mounting Channel/Diffuser](https://www.amazon.com/gp/product/B00PJSUZSK)
+- [5V 15amp Power Supply](https://www.amazon.com/gp/product/B01LATMSGS)
+- [Strip Connector](https://www.amazon.com/gp/product/B01E902DY2)
+- [Logic Level Shifter](http://au.element14.com/texas-instruments/sn74ahct125n/logic-bus-buffer-tri-st-qd-14dip/dp/1749628)
+- [20 Gauge Wire](https://www.amazon.com/gp/product/B009VCZ4V8)
+- [Project Box](https://www.amazon.com/BUD-Industries-NBF-32016-Plastic-Economy/dp/B005UPANU2)
+- [Power Jacks](https://www.amazon.com/E-outstanding-Power-Female-5-5mm-Adapter/dp/B011YKCK5M)
 
 
 #### Wiring Diagram
 ![alt text](https://github.com/DotNetDann/ESP8266-MQTT-JSON-SK6812RGBW-HomeAssistant/blob/master/Wiring%20Diagram.png?raw=true "Wiring Diagram")
 
+Here is an example of a completed perfboard [Image 1](https://github.com/DotNetDann/ESP8266-MQTT-JSON-SK6812RGBW-HomeAssistant/blob/master/PerfBoard1.jpg?raw=true)  [Image 2](https://github.com/DotNetDann/ESP8266-MQTT-JSON-SK6812RGBW-HomeAssistant/blob/master/PerfBoard2.jpg?raw=true)
+
+
+#### Sample MQTT commands
+Listen to MQTT commands
+> mosquitto_sub -h 172.17.0.1 -t '#'
+
+Make the full string blue
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':0, 'b':255}, 'effect': 'solid', 'transition': 0, 'brightness': 255}"
+
+Wipe the current effect with a color and return
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':255, 'g':0, 'b':0}, 'effect': 'color wipe once', 'transition': 10}"
+
+Turn a specific pixel green
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':255, 'b':0}, 'effect': 'pixel', 'pixel': 10}"
