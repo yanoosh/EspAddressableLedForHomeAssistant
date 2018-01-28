@@ -85,7 +85,7 @@ void setup() {
   for(uint16_t i=0; i<ledCount; i++) {
     setPixel(i, 0, 0, 0, 255, false);
     showStrip();
-    delay(10);
+    delay(1);
   }
 
   setup_wifi();
@@ -388,7 +388,7 @@ void loop() {
           setAll(red, green, blue, white);
           transitionDone = true;
         } else {
-          Fade((transitionTime));
+          Fade(transitionTime);
         }
       }
       if (effect == "pixel") {
@@ -400,10 +400,10 @@ void loop() {
         Twinkle(10, (2*transitionTime), false);
       }
       if (effect == "cylon bounce") {
-        CylonBounce(4, transitionTime, 50);
+        CylonBounce(4, transitionTime/10, 50);
       }
       if (effect == "fire") {
-        Fire(55,120,(2*transitionTime));
+        Fire(55,120,(2*transitionTime/2));
       }
       if (effect == "fade in out") {
         FadeInOut();
@@ -415,10 +415,10 @@ void loop() {
         theaterChase(transitionTime);
       }
       if (effect == "rainbow cycle") {
-        rainbowCycle(transitionTime);
+        rainbowCycle(transitionTime/5);
       }
       if (effect == "color wipe") {
-        colorWipe(transitionTime);
+        colorWipe(transitionTime/20);
       }
       if (effect == "running lights") {
         RunningLights(transitionTime);
@@ -441,7 +441,9 @@ void loop() {
       if (effect == "color wipe once") {
         colorWipeOnce(transitionTime);
 
-        effect = previousEffect;
+        if (effect != "color wipe once") {
+          effect = previousEffect;
+        }
         
         if (red == 0 && green == 0 && blue == 0 && white == 0) {
           setOff();
@@ -471,8 +473,6 @@ void loop() {
       if (effect == "police all") {                 //POLICE LIGHTS (TWO COLOR SOLID)
       }
       if (effect == "police one") {
-      }
-      if (effect == "rainbow") {
       }
       if (effect == "rainbow with glitter") {               // FastLED's built-in rainbow generator with Glitter
       }

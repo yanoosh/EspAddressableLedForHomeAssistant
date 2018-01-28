@@ -471,16 +471,14 @@ void Fade(int SpeedDelay){
     grnVal = calculateVal(stepG, grnVal, i);
     bluVal = calculateVal(stepB, bluVal, i);
     whiVal = calculateVal(stepW, whiVal, i);
-    setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
 
-    if (SpeedDelay < 50) {
-    //delay(0);
-    } else if (SpeedDelay < 100) {
-    delay(1);
-    } else {
-    delay(2);
+    if (i % 50 == 0) {
+      setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
+      delay(SpeedDelay);
     }
   }
+
+  setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
   transitionDone = true;
 }
 

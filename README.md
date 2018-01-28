@@ -40,7 +40,7 @@ NOTE: This sketch is using a different set of effects.
 - [Digital RGB Leds](https://www.adafruit.com/product/2842)
 - [NodeMCU](https://www.amazon.com/HiLetgo-Version-NodeMCU-Internet-Development/dp/B010O1G1ES/)
 - [P-Channel MOSFET](http://au.element14.com/vishay/sup53p06-20-e3/mosfet-p-to-220/dp/1684102)
-- [330Ohm Resisters](http://au.element14.com/multicomp/mccfr0w4j0331a50/carbon-film-resistor-330-ohm-250mw/dp/1128021)
+- [30Ohm Resisters](http://au.element14.com/multicomp/mccfr0w4j0331a50/carbon-film-resistor-330-ohm-250mw/dp/1128021)
 - [Aluminum Mounting Channel/Diffuser](https://www.amazon.com/gp/product/B00PJSUZSK)
 - [5V 15amp Power Supply](https://www.amazon.com/gp/product/B01LATMSGS)
 - [Strip Connector](https://www.amazon.com/gp/product/B01E902DY2)
