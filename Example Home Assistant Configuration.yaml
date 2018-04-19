@@ -25,6 +25,7 @@ light:
       - snow sparkle
       - sparkle
       - twinkle random
+      - lightning
     brightness: true
     flash: true
     rgb: true

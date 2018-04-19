@@ -1,4 +1,5 @@
 # ESP8266 MQTT JSON SK6812RGBW HomeAssistant
+=====================
 
 This project shows a super easy way to get started using Digital LED strips with [Home Assistant](https://home-assistant.io/), a sick, open-source Home Automation platform that can do just about anything. 
 
@@ -37,7 +38,7 @@ NOTE: This sketch is using a different set of effects.
 
 
 #### Parts List
-- [Digital RGB Leds](https://www.adafruit.com/product/2842)
+- [Digital RGBW Leds (SK6812RGBW)](https://www.adafruit.com/product/2842)
 - [NodeMCU](https://www.amazon.com/HiLetgo-Version-NodeMCU-Internet-Development/dp/B010O1G1ES/)
 - [P-Channel MOSFET](http://au.element14.com/vishay/sup53p06-20-e3/mosfet-p-to-220/dp/1684102)
 - [30Ohm Resisters](http://au.element14.com/multicomp/mccfr0w4j0331a50/carbon-film-resistor-330-ohm-250mw/dp/1128021)
@@ -59,6 +60,9 @@ Here is an example of a completed perfboard [Image 1](https://github.com/DotNetD
 #### Sample MQTT commands
 Listen to MQTT commands
 > mosquitto_sub -h 172.17.0.1 -t '#'
+
+Make the full string white
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'white_value': 0, 'effect': 'solid', 'transition': 0, 'brightness': 255}"
 
 Make the full string blue
 > mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':0, 'b':255}, 'effect': 'solid', 'transition': 0, 'brightness': 255}"

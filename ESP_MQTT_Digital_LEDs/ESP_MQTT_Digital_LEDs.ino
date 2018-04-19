@@ -35,13 +35,13 @@ byte realWhite = 255;
 byte previousRed = 0;
 byte previousGreen = 0;
 byte previousBlue = 0;
-byte previousWhite = 255;
+byte previousWhite = 0;
 
 // Values as set to strip
 byte red = 0;
 byte green = 0;
 byte blue = 0;
-byte white = 255;
+byte white = 0;
 byte brightness = 255;
 
 
@@ -65,13 +65,12 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NE
 
 /********************************** START SETUP*****************************************/
 void setup() {
-  Serial.begin(115200);
-
-  pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
-  digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
   pinMode(LED_BUILTIN, OUTPUT);       // Initialize the LED_BUILTIN pin as an output (So it doesnt float as a LED is on this pin)
   digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
+  pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
+  digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
 
+  Serial.begin(115200);
   
   delay(500); // Wait for Leds to init and Cap to charge
   setup_config();
@@ -85,7 +84,7 @@ void setup() {
   for(uint16_t i=0; i<ledCount; i++) {
     setPixel(i, 0, 0, 0, 255, false);
     showStrip();
-    delay(1);
+    delay(1); // Need delay to be like a yield so it will not restatrt
   }
 
   setup_wifi();
@@ -121,25 +120,25 @@ void setup() {
   });
   ArduinoOTA.begin();
 
-  Serial.println("Ready");
+  Serial.println(F("Ready"));
   
   // OK we are connected
   setPixel(0, 0, 255, 0, 255, false); // Green tinge on first Pixel
   showStrip();
   delay(500); // Wait so we can see the green before clearing
-  digitalWrite(LED_BUILTIN, HIGH);   // Turn the LED off
+  digitalWrite(LED_BUILTIN, HIGH);     // Turn the status LED off
 }
 
 
-/********************************** START SETUP WIFI*****************************************/
+/********************************** START SETUP WIFI *****************************************/
 void setup_wifi() {
-
   delay(10);
-  Serial.print("Connecting to SSID: ");
+  Serial.print(F("Connecting to SSID: "));
   Serial.println(WIFI_SSID);
   
   // We start by connecting to a WiFi network
   WiFi.mode(WIFI_STA);  
+  WiFi.hostname(deviceName);
 
   if (WiFi.status() != WL_CONNECTED) {  // FIX FOR USING 2.3.0 CORE (only .begin if not connected)
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -147,12 +146,12 @@ void setup_wifi() {
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+    Serial.print(F("."));
   }
 
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.print("IP address: ");
+  Serial.println(F(""));
+  Serial.println(F("WiFi connected"));
+  Serial.print(F("IP address: "));
   Serial.println(WiFi.localIP());
 }
 
@@ -177,6 +176,10 @@ void setOff() {
   stateOn = false;
   transitionDone = true; // Ensure we dont run the loop
   transitionAbort = true; // Ensure we about any current effect
+  previousRed = 0;
+  previousGreen = 0;
+  previousBlue = 0;
+  previousWhite = 0;
 
   if (!digitalRead(DATA_PIN_RELAY)) { 
     setAll(0, 0, 0, 0);
@@ -202,10 +205,11 @@ void setOn() {
 
 /********************************** START CALLBACK*****************************************/
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
+  Serial.println(F(""));
+  Serial.print(F("Message arrived ["));
   Serial.print(topic);
-  Serial.print("] ");
-
+  Serial.print(F("] "));
+  
   char message[length + 1];
   for (int i = 0; i < length; i++) {
     message[i] = (char)payload[i];
@@ -235,6 +239,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
     blue = 0;
     white = 0;
   }
+
+
 
   Serial.println(effect);
 
@@ -268,6 +274,10 @@ bool processJson(char* message) {
     }
     else if (strcmp(root["state"], off_cmd) == 0) {
       stateOn = false;
+    }
+    else { 
+      sendState();
+      return false;
     }
   }
 
@@ -333,14 +343,14 @@ void sendState() {
 }
 
 
-/********************************** START RECONNECT*****************************************/
+/********************************** START RECONNECT *****************************************/
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
+    Serial.print(F("Attempting MQTT connection..."));
     // Attempt to connect
     if (client.connect(deviceName, MQTT_USER, MQTT_PASSWORD)) {
-      Serial.println("connected");
+      Serial.println(F("connected"));
       
       char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + 4];
       sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, deviceName); // with word space    
@@ -349,9 +359,9 @@ void reconnect() {
       setOff();
       sendState();
     } else {
-      Serial.print("failed, rc=");
+      Serial.print(F("failed, rc="));
       Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
+      Serial.println(F(" try again in 5 seconds"));
       // Wait 5 seconds before retrying
       delay(5000);
     }
@@ -359,7 +369,7 @@ void reconnect() {
 }
 
 
-/********************************** START MAIN LOOP*****************************************/
+/********************************** START MAIN LOOP *****************************************/
 void loop() {
 
   if (!client.connected()) {
@@ -368,14 +378,14 @@ void loop() {
 
   if (WiFi.status() != WL_CONNECTED) {
     delay(1);
-    Serial.print("WIFI Disconnected. Attempting reconnection.");
+    Serial.print(F("WIFI Disconnected. Attempting reconnection."));
     setup_wifi();
     return;
   }
 
-  client.loop();
+  client.loop(); // Check MQTT
 
-  ArduinoOTA.handle();
+  ArduinoOTA.handle(); // Check OTA Firmware Updates
   
   transitionAbort = false; // Because we came from the loop and not 1/2 way though a transition
   
@@ -435,7 +445,14 @@ void loop() {
       if (effect == "bouncing balls") {
         BouncingBalls(3);
       }
+      if (effect == "lightning") {
+        Lightning(transitionTime);
+      }
 
+
+
+
+      
       // Run once notification effects
       // Reverts color and effect after run
       if (effect == "color wipe once") {
@@ -481,5 +498,9 @@ void loop() {
       setAll(0, 0, 0, 0);
       transitionDone = true;
     }
+  }
+  else
+  {
+	  delay(600); // Save some power? (from 0.9w to 0.4w when off with ESP8266)
   }
 }

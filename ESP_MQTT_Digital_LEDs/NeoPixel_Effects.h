@@ -40,15 +40,15 @@ void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
   if (refreshStrip) {
     showStrip();
     
-    Serial.print("Setting LEDs - ");
-    Serial.print("r: ");
-    Serial.print(r);
-    Serial.print(", g: ");
-    Serial.print(g);
-    Serial.print(", b: ");
-    Serial.print(b);
-    Serial.print(", w: ");
-    Serial.println(w);
+    //Serial.print("Setting LEDs - ");
+    //Serial.print("r: ");
+    //Serial.print(r);
+    //Serial.print(", g: ");
+    //Serial.print(g);
+    //Serial.print(", b: ");
+    //Serial.print(b);
+    //Serial.print(", w: ");
+    //Serial.println(w);
   }
 }
 
@@ -317,6 +317,7 @@ void SnowSparkle(int SparkleDelay, int SpeedDelay) {
 
 //  Sparkle(0);
 void Sparkle(int SpeedDelay) {
+  setAll(0,0,0,0);
   int Pixel = random(ledCount);
   setPixel(Pixel, red, green, blue, white, false);
   showStrip();
@@ -481,6 +482,36 @@ void Fade(int SpeedDelay){
   setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
   transitionDone = true;
 }
+
+void Lightning(int SpeedDelay){
+  setAll(0,0,0,0);
+  int ledstart = random(ledCount);           // Determine starting location of flash
+  int ledlen = random(ledCount - ledstart);  // Determine length of flash (not to go beyond ledCount-1)
+  for (int flashCounter = 0; flashCounter < random(1, 4); flashCounter++) {
+    int dimmer = random(10, brightness);          // return strokes are brighter than the leader
+    int rr = map(red, 0, 255, 0, dimmer);
+    int gg = map(green, 0, 255, 0, dimmer);
+    int bb = map(blue, 0, 255, 0, dimmer);
+    int ww = map(white, 0, 255, 0, dimmer);
+    
+    for (int i = ledstart ; i < (ledstart + ledlen) ; i++) {
+      setPixel(i, rr, gg, bb, ww, false);
+    }
+    showStrip();    // Show a section of LED's
+    delay(random(4, 15));                // each flash only lasts 4-10 milliseconds
+    for (int i = ledstart ; i < (ledstart + ledlen) ; i++) {
+      setPixel(i, 0, 0, 0, 0, false);
+    }    
+    showStrip();
+    //if (flashCounter == 0) delay (130);   // longer delay until next flash after the leader
+    delay(50 + random(100));             // shorter delay between strokes
+  }
+  delay(random(SpeedDelay) * 50);        // delay between strikes
+}
+
+
+
+
 
 
 #endif
