@@ -1,5 +1,4 @@
 # ESP8266 MQTT JSON SK6812RGBW HomeAssistant
-=====================
 
 This project shows a super easy way to get started using Digital LED strips with [Home Assistant](https://home-assistant.io/), a sick, open-source Home Automation platform that can do just about anything. 
 
@@ -71,4 +70,8 @@ Wipe the current effect with a color and return
 > mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':255, 'g':0, 'b':0}, 'effect': 'color wipe once', 'transition': 10}"
 
 Turn a specific pixel green
-> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':255, 'b':0}, 'effect': 'pixel', 'pixel': 10}"
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':255, 'b':0}, 'effect': 'pixel', 'pixel': [10]}"
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':255, 'b':0}, 'effect': 'pixel', 'pixel': [1, 10, 12]}"
+
+Turn on a section of the strip
+> mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':255, 'b':0}, 'effect': 'pixel', 'pixel': [0, 50]}"

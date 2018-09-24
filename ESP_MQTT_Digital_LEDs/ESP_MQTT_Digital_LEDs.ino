@@ -10,9 +10,15 @@
       - PubSubClient
       - ArduinoJSON
 */
+// ------------------------------
+// ---- all config in auth.h ----
+// ------------------------------
+#define VERSION F("v3.3 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
 
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 #include <PubSubClient.h>
 #include <Adafruit_NeoPixel.h>
 #include <ESP8266mDNS.h>
@@ -21,7 +27,7 @@
 #include "auth.h"
 
 /****************************************FOR JSON***************************************/
-const int BUFFER_SIZE = JSON_OBJECT_SIZE(10);
+const int BUFFER_SIZE = JSON_OBJECT_SIZE(60);
 #define MQTT_MAX_PACKET_SIZE 512
 
 /*********************************** LED Defintions ********************************/
@@ -55,13 +61,16 @@ bool stateOn = true;
 bool transitionDone = true;
 bool transitionAbort = false;
 int transitionTime = 50; // 1-150
-int pixel = 1;
+int pixelLen = 1;
+int pixelArray[50];
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+ESP8266WebServer server(80);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
 
 #include "NeoPixel_Effects.h"
+#include "web.h"
 
 /********************************** START SETUP*****************************************/
 void setup() {
@@ -95,6 +104,9 @@ void setup() {
   
   client.setServer(MQTT_SERVER, MQTT_PORT);
   client.setCallback(callback);
+  
+  server.on("/", ServeWebClients);
+  server.begin();
 
   //OTA SETUP
   ArduinoOTA.setPort(OTAport);
@@ -173,6 +185,7 @@ void setup_wifi() {
 
 /********************************** START LED POWER STATE *****************************************/
 void setOff() {
+  setAll(0, 0, 0, 0);
   stateOn = false;
   transitionDone = true; // Ensure we dont run the loop
   transitionAbort = true; // Ensure we about any current effect
@@ -182,7 +195,6 @@ void setOff() {
   previousWhite = 0;
 
   if (!digitalRead(DATA_PIN_RELAY)) { 
-    setAll(0, 0, 0, 0);
     delay(200); // Wait for sequence to complete and stable
     digitalWrite(DATA_PIN_RELAY, HIGH); // Do NOT write to strip while it has no power. (https://forums.adafruit.com/viewtopic.php?f=47&t=100265)
     Serial.println("LED: OFF");
@@ -239,8 +251,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
     blue = 0;
     white = 0;
   }
-
-
 
   Serial.println(effect);
 
@@ -305,7 +315,13 @@ bool processJson(char* message) {
   }
   
   if (root.containsKey("pixel")) {
-    pixel = root["pixel"];
+    pixelLen = root["pixel"].size();
+    if (pixelLen > sizeof(pixelArray)) {
+      pixelLen = sizeof(pixelArray);
+    }
+    for (int i = 0; i < pixelLen; i++) {
+      pixelArray[i]=root["pixel"][i];
+    }
   }
   
   if (root.containsKey("effect")) {
@@ -387,12 +403,18 @@ void loop() {
 
   ArduinoOTA.handle(); // Check OTA Firmware Updates
   
+  server.handleClient(); // Check Web page requests
+
   transitionAbort = false; // Because we came from the loop and not 1/2 way though a transition
   
   if (!transitionDone) {  // Once we have completed the transition, No point to keep going though the process
     if (stateOn) {   // if the light is turned on
 
-      //EFFECTS      
+      //EFFECTS
+      if (effect == "clear") {
+        setAll(0,0,0,0);
+        transitionDone = true;
+      }
       if (effect == "solid") {
         if (transitionTime <= 1) {
           setAll(red, green, blue, white);
@@ -402,9 +424,7 @@ void loop() {
         }
       }
       if (effect == "pixel") {
-        setPixel(pixel, red, green, blue, white, false);
-        showStrip();
-        transitionDone = true;
+        ShowPixels();
       }
       if (effect == "twinkle") {
         Twinkle(10, (2*transitionTime), false);
@@ -472,35 +492,32 @@ void loop() {
 
     
     
-    
-      if (effect == "bpm") {
-      }
-      if (effect == "candy cane") {
-      }
-      if (effect == "confetti" ) {
-      }
-      if (effect == "dots") {
-      }
-      if (effect == "glitter") {
-      }
-      if (effect == "juggle" ) {                           // eight colored dots, weaving in and out of sync with each other
-      }
-      if (effect == "lightning") {
-      }
-      if (effect == "police all") {                 //POLICE LIGHTS (TWO COLOR SOLID)
-      }
-      if (effect == "police one") {
-      }
-      if (effect == "rainbow with glitter") {               // FastLED's built-in rainbow generator with Glitter
-      }
+//      if (effect == "bpm") {
+//      }
+//      if (effect == "candy cane") {
+//      }
+//      if (effect == "confetti" ) {
+//      }
+//      if (effect == "dots") {
+//      }
+//      if (effect == "glitter") {
+//      }
+//      if (effect == "juggle" ) {                           // eight colored dots, weaving in and out of sync with each other
+//      }
+//      if (effect == "lightning") {
+//      }
+//      if (effect == "police all") {                 //POLICE LIGHTS (TWO COLOR SOLID)
+//      }
+//      if (effect == "police one") {
+//      }
+//      if (effect == "rainbow with glitter") {               // FastLED's built-in rainbow generator with Glitter
+//      }
       
     } else {
       setAll(0, 0, 0, 0);
       transitionDone = true;
     }
-  }
-  else
-  {
+  } else {
 	  delay(600); // Save some power? (from 0.9w to 0.4w when off with ESP8266)
   }
 }

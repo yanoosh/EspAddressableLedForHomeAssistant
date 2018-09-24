@@ -463,7 +463,11 @@ void Fade(int SpeedDelay){
   int stepW = calculateStep(whiVal, white);
 
   // If no change then exit
-  if (stepR == 0 && stepG == 0 && stepB == 0 && stepW == 0){ return; }
+  if (stepR == 0 && stepG == 0 && stepB == 0 && stepW == 0){ 
+    setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
+    transitionDone = true;
+    return;
+  }
 
   for (int i=0; i<1020; i++) {  
     if (shouldAbortEffect()) { return; }     
@@ -508,6 +512,39 @@ void Lightning(int SpeedDelay){
   }
   delay(random(SpeedDelay) * 50);        // delay between strikes
 }
+
+void ShowPixels() {
+  // If there are only 2 items in the array then we are setting from and to
+  if (pixelLen == 2) {
+    // Make sure smallest one first, less than max pixel
+    //Serial.println(F("ShowPixels-Range"));
+
+    int startL = pixelArray[0];
+    int endL = pixelArray[1];
+    if (startL > ledCount) { startL = ledCount; }
+    if (endL > ledCount) { endL = ledCount; }
+    if (startL > endL) { startL = 0; }
+    
+    for (int i = startL; i < endL; i++) {
+      setPixel(i, red, green, blue, white, true);
+    }    
+    
+  } else {
+    // For each item in array
+    //Serial.println(F("ShowPixels-Array"));
+    
+    for (int i = 0; i < pixelLen; i++) {
+      int pixel = pixelArray[i];
+      if (pixel > ledCount) { pixel = ledCount; }
+      setPixel(pixel, red, green, blue, white, true);
+    }
+  }
+  
+  showStrip();
+  transitionDone = true;
+}
+
+
 
 
 
