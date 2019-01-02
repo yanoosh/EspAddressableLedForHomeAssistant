@@ -11,6 +11,7 @@
 #define MQTT_PASSWORD ""
 #define MQTT_PORT 1883
 char* MQTT_STATE_TOPIC_PREFIX = "led/"; // e.g. led/<deviceName> and led/<deviceName>/set
+#define MQTT_AVAIL_TOPIC "/availability"
 
 #define OTApassword "ota password" //the password you will need to enter to upload remotely via the ArduinoIDE
 #define OTAport 8266

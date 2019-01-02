@@ -13,9 +13,13 @@
 // ------------------------------
 // ---- all config in auth.h ----
 // ------------------------------
-#define VERSION F("v3.3 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
+#define VERSION F("v3.4 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
 
-#include <ArduinoJson.h>
+// The maximum mqtt message size, including header, is 128 bytes by default.
+// You must update your PubSubClient.h file manually.......
+#define MQTT_MAX_PACKET_SIZE 512
+
+#include <ArduinoJson.h> //Not beta version. Tested with v5.3.14
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
@@ -28,7 +32,9 @@
 
 /****************************************FOR JSON***************************************/
 const int BUFFER_SIZE = JSON_OBJECT_SIZE(60);
-#define MQTT_MAX_PACKET_SIZE 512
+
+char* birthMessage = "online";
+const char* lwtMessage = "offline";
 
 /*********************************** LED Defintions ********************************/
 // Real values as requested from the MQTT server
@@ -355,7 +361,9 @@ void sendState() {
   
   char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName)];
   sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName); // with word space
-  client.publish(combinedArray, buffer, true);
+  if (!client.publish(combinedArray, buffer, true)) {
+    Serial.println(F("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE"));
+  }
 }
 
 
@@ -364,9 +372,16 @@ void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print(F("Attempting MQTT connection..."));
+
+    char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + sizeof(MQTT_AVAIL_TOPIC)];
+    sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName, MQTT_AVAIL_TOPIC); // with word space
+
     // Attempt to connect
-    if (client.connect(deviceName, MQTT_USER, MQTT_PASSWORD)) {
+    if (client.connect(deviceName, MQTT_USER, MQTT_PASSWORD, mqttAvailTopic, 0, true, lwtMessage)) {
       Serial.println(F("connected"));
+
+      // Publish the birth message on connect/reconnect
+      client.publish(mqttAvailTopic, birthMessage, true);      
       
       char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + 4];
       sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, deviceName); // with word space    
