@@ -73,8 +73,10 @@ int pixelArray[50];
 WiFiClient espClient;
 PubSubClient client(espClient);
 ESP8266WebServer server(80);
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
 
+//Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400);
+  
 #include "NeoPixel_Effects.h"
 #include "web.h"
 
@@ -87,7 +89,7 @@ void setup() {
 
   Serial.begin(115200);
   
-  delay(500); // Wait for Leds to init and Cap to charge
+  delay(1000); // Wait for Leds to init and Cap to charge
   setup_config();
   
   // End of trinket special code
@@ -96,7 +98,7 @@ void setup() {
   strip.show(); // Initialize all pixels to 'off'
   
   // Standalone startup sequence - Wipe White
-  for(uint16_t i=0; i<ledCount; i++) {
+  for(uint16_t i=0; i<=ledCount; i++) {
     setPixel(i, 0, 0, 0, 255, false);
     showStrip();
     delay(1); // Need delay to be like a yield so it will not restatrt
@@ -150,7 +152,7 @@ void setup() {
 
 /********************************** START SETUP WIFI *****************************************/
 void setup_wifi() {
-  delay(10);
+  delay(100);
   Serial.print(F("Connecting to SSID: "));
   Serial.println(WIFI_SSID);
   
@@ -213,7 +215,9 @@ void setOff() {
 void setOn() {
   if (digitalRead(DATA_PIN_RELAY)) {
     digitalWrite(DATA_PIN_RELAY, LOW);
-    delay(1000); // Wait for Leds to init and capasitor to charge??
+    delay(50);
+    setAll(0, 0, 0, 0);
+    delay(500); // Wait for Leds to init and capasitor to charge??
     Serial.println("LED: ON");
   }
   
@@ -258,7 +262,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     white = 0;
   }
 
-  Serial.println(effect);
+  //Serial.println(effect);
 
   transitionAbort = true; // Kill the current effect
   transitionDone = false; // Start a new transition

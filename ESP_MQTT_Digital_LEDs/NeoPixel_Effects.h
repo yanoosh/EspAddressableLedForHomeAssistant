@@ -27,13 +27,17 @@ void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
     w = map(w, 0, 255, 0, brightness);
   }
 
-   strip.setPixelColor(pixel, strip.Color(r, g, b, w));
+  if (ledFourChan) {
+    strip.setPixelColor(pixel, strip.Color(r, g, b, w));
+  } else {
+    strip.setPixelColor(pixel, strip.Color(r, g, b));
+  }
 }
 
 void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
   if (!stateOn) { return; }
 
-  for(int i = 0; i < ledCount; i++ ) {
+  for(int i = 0; i <= ledCount; i++ ) {
     setPixel(i, r, g, b, w, false);
   }
 
@@ -75,7 +79,7 @@ void Twinkle(int Count, int SpeedDelay, boolean OnlyOne) {
 // CylonBounce(4, 10, 50);
 void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay){
 
-  for(int i = 0; i < (ledCount-EyeSize-2); i++) {
+  for(int i = 0; i <= (ledCount-EyeSize-2); i++) {
     if (shouldAbortEffect()) { return; } 
     setAll(0,0,0,0,false);
     setPixel(i, red/10, green/10, blue/10, white/10, false);
@@ -127,7 +131,7 @@ void Fire(int Cooling, int Sparking, int SpeedDelay) {
   int cooldown;
   
   // Step 1.  Cool down every cell a little
-  for( int i = 0; i < ledCount; i++) {
+  for( int i = 0; i <= ledCount; i++) {
     cooldown = random(0, ((Cooling * 10) / ledCount) + 2);
     
     if(cooldown>heat[i]) {
@@ -150,7 +154,7 @@ void Fire(int Cooling, int Sparking, int SpeedDelay) {
   }
 
   // Step 4.  Convert heat to LED colors
-  for( int j = 0; j < ledCount; j++) {
+  for( int j = 0; j <= ledCount; j++) {
     setPixelHeatColor(j, heat[j] );
   }
 
@@ -203,14 +207,14 @@ void Strobe(int StrobeCount, int FlashDelay){
 void theaterChase(int SpeedDelay) {
   for (int q=0; q < 3; q++) {
     if (shouldAbortEffect()) { return; } 
-    for (int i=0; i < ledCount; i=i+3) {
+    for (int i=0; i <= ledCount; i=i+3) {
       setPixel(i+q, red, green, blue, white, false);    //turn every third pixel on
     }
     showStrip();
    
     delay(SpeedDelay);
    
-    for (int i=0; i < ledCount; i=i+3) {
+    for (int i=0; i <= ledCount; i=i+3) {
       setPixel(i+q, 0,0,0,0,false);        //turn every third pixel off
     }
   }
@@ -244,7 +248,7 @@ void rainbowCycle(int SpeedDelay) {
 
   for(j=0; j<256*2; j++) { // 2 cycles of all colors on wheel
     if (shouldAbortEffect()) { return; } 
-    for(i=0; i< ledCount; i++) {
+    for(i=0; i <= ledCount; i++) {
       c=Wheel(((i * 256 / ledCount) + j) & 255);
       setPixel(i, *c, *(c+1), *(c+2), 0, true);
     }
@@ -255,7 +259,7 @@ void rainbowCycle(int SpeedDelay) {
 
 //  colorWipe(50);
 void colorWipe(int SpeedDelay) {
-  for(uint16_t i=0; i<ledCount; i++) {
+  for(uint16_t i=0; i<=ledCount; i++) {
     if (shouldAbortEffect()) { return; } 
     setPixel(i, red, green, blue, white, false);
     showStrip();
@@ -281,11 +285,11 @@ void colorWipeOnce(int SpeedDelay) {
 void RunningLights(int WaveDelay) {
   int Position=0;
   
-  for(int i=0; i<ledCount; i++)
+  for(int i=0; i<=ledCount; i++)
   {
     if (shouldAbortEffect()) { return; } 
     Position++; // = 0; //Position + Rate;
-    for(int i=0; i<ledCount; i++) {
+    for(int i=0; i<=ledCount; i++) {
       // sine wave, 3 offset waves make a rainbow!
       //float level = sin(i+Position) * 127 + 128;
       //setPixel(i,level,0,0,false);
@@ -573,7 +577,7 @@ void ShowPixels() {
 //
 ///********************************** START FADE************************************************/
 //void fadeall() {
-//  for (int i = 0; i < ledCount; i++) {
+//  for (int i = 0; i <= ledCount; i++) {
 //    leds[i].nscale8(250);  //for CYCLon
 //  }
 //}
@@ -587,7 +591,7 @@ void ShowPixels() {
 //  static byte heat[ledCount];
 //
 //  // Step 1.  Cool down every cell a little
-//  for ( int i = 0; i < ledCount; i++) {
+//  for ( int i = 0; i <= ledCount; i++) {
 //    heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / ledCount) + 2));
 //  }
 //
@@ -603,7 +607,7 @@ void ShowPixels() {
 //  }
 //
 //  // Step 4.  Map from heat cells to LED colors
-//  for ( int j = 0; j < ledCount; j++) {
+//  for ( int j = 0; j <= ledCount; j++) {
 //    // Scale the heat value from 0-255 down to 0-240
 //    // for best results with color palettes.
 //    byte colorindex = scale8( heat[j], 240);
@@ -731,7 +735,7 @@ void ShowPixels() {
 //    uint8_t BeatsPerMinute = 62;
 //    CRGBPalette16 palette = PartyColors_p;
 //    uint8_t beat = beatsin8( BeatsPerMinute, 64, 255);
-//    for ( int i = 0; i < ledCount; i++) { //9948
+//    for ( int i = 0; i <= ledCount; i++) { //9948
 //      leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
 //    }
 //    if (transitionTime == 0 or transitionTime == NULL) {
@@ -771,7 +775,7 @@ void ShowPixels() {
 //  if (effect == "cyclon rainbow") {                    //Single Dot Down
 //    static uint8_t hue = 0;
 //    // First slide the led in one direction
-//    for (int i = 0; i < ledCount; i++) {
+//    for (int i = 0; i <= ledCount; i++) {
 //      // Set the i'th led to red
 //      leds[i] = CHSV(hue++, 255, 255);
 //      // Show the leds
@@ -903,7 +907,7 @@ void ShowPixels() {
 //    int idexR = idex;
 //    int idexB = antipodal_index(idexR);
 //    int thathue = (thishuepolice + 160) % 255;
-//    for (int i = 0; i < ledCount; i++ ) {
+//    for (int i = 0; i <= ledCount; i++ ) {
 //      if (i == idexR) {
 //        leds[i] = CHSV(thishuepolice, thissat, 255);
 //      }
@@ -967,7 +971,7 @@ void ShowPixels() {
 //      FastLED.show();
 //    }
 //    const CRGBW lightcolor(8, 7, 1, 0);
-//    for ( int i = 0; i < ledCount; i++) {
+//    for ( int i = 0; i <= ledCount; i++) {
 //      if ( !leds[i]) continue; // skip black pixels
 //      if ( leds[i].r & 1) { // is red odd?
 //        leds[i] -= lightcolor; // darken if red is odd
@@ -996,7 +1000,7 @@ void ShowPixels() {
 //
 //    //EFFECT NOISE
 //    if (effect == "noise") {
-//      for (int i = 0; i < ledCount; i++) {                                     // Just onE loop to fill up the LED array as all of the pixels change.
+//      for (int i = 0; i <= ledCount; i++) {                                     // Just onE loop to fill up the LED array as all of the pixels change.
 //        uint8_t index = inoise8(i * scale, dist + i * scale) % 255;            // Get a value from the noise function. I'm using both x and y axis.
 //        leds[i] = ColorFromPalette(currentPalette, index, 255, LINEARBLEND);   // With that value, look up the 8 bit colour palette value and assign it to the current LED.
 //      }
@@ -1010,7 +1014,7 @@ void ShowPixels() {
 //
 //    //EFFECT RIPPLE
 //    if (effect == "ripple") {
-//      for (int i = 0; i < ledCount; i++) leds[i] = CHSV(bgcol++, 255, 15);  // Rotate background colour.
+//      for (int i = 0; i <= ledCount; i++) leds[i] = CHSV(bgcol++, 255, 15);  // Rotate background colour.
 //      switch (step) {
 //        case -1:                                                          // Initialize ripple variables.
 //          center = random(ledCount);
