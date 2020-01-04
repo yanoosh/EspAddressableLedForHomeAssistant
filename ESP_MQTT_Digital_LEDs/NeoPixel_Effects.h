@@ -26,12 +26,12 @@ void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
     b = map(b, 0, 255, 0, brightness);
     w = map(w, 0, 255, 0, brightness);
   }
-
-  if (ledFourChan) {
+  
+  #ifndef SUPPORT_RGBW
     strip.setPixelColor(pixel, strip.Color(r, g, b, w));
-  } else {
+  #else
     strip.setPixelColor(pixel, strip.Color(r, g, b));
-  }
+  #endif
 }
 
 void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {

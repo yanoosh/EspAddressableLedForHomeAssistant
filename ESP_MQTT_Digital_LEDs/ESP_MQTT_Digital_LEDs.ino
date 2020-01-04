@@ -372,9 +372,11 @@ void sendState() {
 
 
 /********************************** START RECONNECT *****************************************/
-void reconnect() {
+void reconnect(unsigned long now) {
   // Loop until we're reconnected
-  while (!client.connected()) {
+  static unsigned long lastTry = -6000;
+  if (now - lastTry > 5000) {
+    lastTry = now;
     Serial.print(F("Attempting MQTT connection..."));
 
     char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + sizeof(MQTT_AVAIL_TOPIC)];
@@ -397,8 +399,6 @@ void reconnect() {
       Serial.print(F("failed, rc="));
       Serial.print(client.state());
       Serial.println(F(" try again in 5 seconds"));
-      // Wait 5 seconds before retrying
-      delay(5000);
     }
   }
 }
@@ -406,9 +406,10 @@ void reconnect() {
 
 /********************************** START MAIN LOOP *****************************************/
 void loop() {
-
+  unsigned long now = millis();
+  
   if (!client.connected()) {
-    reconnect();
+    reconnect(now);
   }
 
   if (WiFi.status() != WL_CONNECTED) {
