@@ -155,6 +155,7 @@ void setup() {
 
 /********************************** START SETUP WIFI *****************************************/
 void setup_wifi() {
+  int retries = 0;
   delay(100);
   Serial.print(F("Connecting to SSID: "));
   Serial.println(WIFI_SSID);
@@ -170,6 +171,9 @@ void setup_wifi() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(F("."));
+    if (retries++ > 60) {
+      ESP.restart();
+    }
   }
 
   Serial.println(F(""));
