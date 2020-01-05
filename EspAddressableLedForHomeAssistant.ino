@@ -66,6 +66,7 @@ const char* effectString = "solid";
 String previousEffect = "solid";
 String effect = "solid";
 bool stateOn = true;
+bool newStateOn = true;
 bool transitionDone = true;
 bool transitionAbort = false;
 int transitionTime = 50; // 1-150
@@ -252,7 +253,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   previousBlue = blue;
   previousWhite = white;
 
-  if (stateOn) {
+  if (stateOn || newStateOn) {
     red = map(realRed, 0, 255, 0, brightness);
     green = map(realGreen, 0, 255, 0, brightness);
     blue = map(realBlue, 0, 255, 0, brightness);
@@ -264,15 +265,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     white = 0;
   }
 
-  //Serial.println(effect);
-
   transitionAbort = true; // Kill the current effect
   transitionDone = false; // Start a new transition
 
-  if (stateOn) {
-    setOn();
-  } else {
-    setOff(); // NOTE: Will change transitionDone
+  if (stateOn != newStateOn) {
+    if (newStateOn) {
+      setOn();
+    } else {
+      setOff(); // NOTE: Will change transitionDone
+    }
   }
 
   sendState();
@@ -292,10 +293,10 @@ bool processJson(char* message) {
 
   if (root.containsKey("state")) {
     if (strcmp(root["state"], on_cmd) == 0) {
-      stateOn = true;
+      newStateOn = true;
     }
     else if (strcmp(root["state"], off_cmd) == 0) {
-      stateOn = false;
+      newStateOn = false;
     }
     else { 
       sendState();

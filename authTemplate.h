@@ -18,7 +18,7 @@ char* MQTT_STATE_TOPIC_PREFIX = "led/"; // e.g. led/<deviceName> and led/<device
 
 #define DATA_PIN_LEDS   15  // D8 on ESP8266
 #define DATA_PIN_RELAY  13  // D7 on ESP8266
-//#define SUPPORT_RGBW
+//#define ENABLE_SUPPORT_WHITE_LED
 
 /******************************** CONFIG SETUP *******************************/
 #define LED_COUNT_MAXIMUM 800 // Memory allocation. This will reduced the refresh rate so make as small as the maximum number of LED's you have in your config below.

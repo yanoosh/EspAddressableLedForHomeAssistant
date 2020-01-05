@@ -27,7 +27,7 @@ void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
     w = map(w, 0, 255, 0, brightness);
   }
   
-  #ifndef SUPPORT_RGBW
+  #ifndef ENABLE_SUPPORT_WHITE_LED
     strip.setPixelColor(pixel, strip.Color(r, g, b, w));
   #else
     strip.setPixelColor(pixel, strip.Color(r, g, b));
