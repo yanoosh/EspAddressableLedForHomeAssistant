@@ -35,27 +35,6 @@ NOTE: This sketch is using a different set of effects.
 #### Tutorial Video
 [![Tutorial Video](http://i.imgur.com/9UMl8Xo.jpg)](https://www.youtube.com/watch?v=9KI36GTgwuQ "The BEST Digital LED Strip Light Tutorial - DIY, WIFI-Controllable via ESP, MQTT, and Home Assistant")
 
-
-#### Parts List
-- [Digital RGBW Leds (SK6812RGBW)](https://www.adafruit.com/product/2842)
-- [NodeMCU](https://www.amazon.com/HiLetgo-Version-NodeMCU-Internet-Development/dp/B010O1G1ES/)
-- [P-Channel MOSFET](http://au.element14.com/vishay/sup53p06-20-e3/mosfet-p-to-220/dp/1684102)
-- [30Ohm Resisters](http://au.element14.com/multicomp/mccfr0w4j0331a50/carbon-film-resistor-330-ohm-250mw/dp/1128021)
-- [Aluminum Mounting Channel/Diffuser](https://www.amazon.com/gp/product/B00PJSUZSK)
-- [5V 15amp Power Supply](https://www.amazon.com/gp/product/B01LATMSGS)
-- [Strip Connector](https://www.amazon.com/gp/product/B01E902DY2)
-- [Logic Level Shifter](http://au.element14.com/texas-instruments/sn74ahct125n/logic-bus-buffer-tri-st-qd-14dip/dp/1749628)
-- [20 Gauge Wire](https://www.amazon.com/gp/product/B009VCZ4V8)
-- [Project Box](https://www.amazon.com/BUD-Industries-NBF-32016-Plastic-Economy/dp/B005UPANU2)
-- [Power Jacks](https://www.amazon.com/E-outstanding-Power-Female-5-5mm-Adapter/dp/B011YKCK5M)
-
-
-#### Wiring Diagram
-![alt text](https://github.com/DotNetDann/ESP8266-MQTT-JSON-SK6812RGBW-HomeAssistant/blob/master/Wiring%20Diagram.png?raw=true "Wiring Diagram")
-
-Here is an example of a completed perfboard [Image 1](https://github.com/DotNetDann/ESP8266-MQTT-JSON-SK6812RGBW-HomeAssistant/blob/master/PerfBoard1.jpg?raw=true)  [Image 2](https://github.com/DotNetDann/ESP8266-MQTT-JSON-SK6812RGBW-HomeAssistant/blob/master/PerfBoard2.jpg?raw=true)
-
-
 #### Sample MQTT commands
 Listen to MQTT commands
 > mosquitto_sub -h 172.17.0.1 -t '#'
@@ -75,3 +54,52 @@ Turn a specific pixel green
 
 Turn on a section of the strip
 > mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':255, 'b':0}, 'effect': 'pixel', 'pixel': [0, 50]}"
+
+## Home Assistant config
+
+````yaml
+light:
+  - platform: mqtt
+    schema: json
+    name: "Led 6733067"
+    state_topic: "led/led-6733067"
+    command_topic: "led/led-6733067/set"
+    effect: true
+    effect_list:
+        - solid
+        - clear
+        - twinkle
+        - cylon bounce
+        - fire
+        - fade in out
+        - strobe
+        - theater chase
+        - rainbow cycle
+        - color wipe
+        - running lights
+        - snow sparkle
+        - sparkle
+        - twinkle random
+        - lightning
+    brightness: true
+    rgb: true
+    optimistic: false
+    qos: 0
+input_number:
+  led_6733067_animation_speed:
+    name: Led 6733067 Speed
+    initial: 150
+    min: 1
+    max: 150
+    step: 10
+automation:
+  - alias: "Led 6733067 animation speed"
+    trigger:
+      - platform: state
+        entity_id: input_number.led_6733067_animation_speed
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: "led/led-6733067/set"
+          payload: '{"transition":{{ trigger.to_state.state | int }}}'
+````
