@@ -64,6 +64,7 @@ light:
     name: "Led 6733067"
     state_topic: "led/led-6733067"
     command_topic: "led/led-6733067/set"
+    availability_topic: "led/led-6733067/availability"
     effect: true
     effect_list:
         - solid
