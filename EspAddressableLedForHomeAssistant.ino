@@ -366,6 +366,7 @@ void sendState() {
   root["brightness"] = brightness;
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
+  root["id"] = ESP.getChipId();
 
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
