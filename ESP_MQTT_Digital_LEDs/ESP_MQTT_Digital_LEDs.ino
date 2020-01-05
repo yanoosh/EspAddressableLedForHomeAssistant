@@ -15,10 +15,6 @@
 // ------------------------------
 #define VERSION F("v3.4 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
 
-// The maximum mqtt message size, including header, is 128 bytes by default.
-// You must update your PubSubClient.h file manually.......
-#define MQTT_MAX_PACKET_SIZE 512
-
 #include <ArduinoJson.h> //Not beta version. Tested with v5.3.14
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
@@ -29,6 +25,12 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include "auth.h"
+
+// The maximum mqtt message size, including header, is 128 bytes by default.
+// You must update your PubSubClient.h file manually.......
+#if MQTT_MAX_PACKET_SIZE < 512  // If the max message size is too small, throw an error at compile time. See PubSubClient.cpp line 359
+  #error "MQTT_MAX_PACKET_SIZE is too small in libraries/PubSubClient/src/PubSubClient.h at const MQTT_MAX_PACKET_SIZE, increase it from 128 to 512"
+#endif
 
 /****************************************FOR JSON***************************************/
 const int BUFFER_SIZE = JSON_OBJECT_SIZE(60);
