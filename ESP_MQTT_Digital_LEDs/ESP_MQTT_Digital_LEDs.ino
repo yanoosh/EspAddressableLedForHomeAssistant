@@ -363,7 +363,7 @@ void sendState() {
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
   
-  char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName)];
+  char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + strlen(deviceName)];
   sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName); // with word space
   if (!client.publish(combinedArray, buffer, true)) {
     Serial.println(F("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE"));
@@ -379,7 +379,7 @@ void reconnect(unsigned long now) {
     lastTry = now;
     Serial.print(F("Attempting MQTT connection..."));
 
-    char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + sizeof(MQTT_AVAIL_TOPIC)];
+    char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + strlen(deviceName) + sizeof(MQTT_AVAIL_TOPIC)];
     sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName, MQTT_AVAIL_TOPIC); // with word space
 
     // Attempt to connect
