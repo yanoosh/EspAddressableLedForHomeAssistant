@@ -79,7 +79,7 @@ ESP8266WebServer server(80);
 //Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400);
   
-#include "NeoPixel_Effects.h"
+#include "neoPixelEffects.h"
 #include "web.h"
 
 /********************************** START SETUP*****************************************/
