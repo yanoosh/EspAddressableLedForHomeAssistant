@@ -496,10 +496,9 @@ void loop() {
       if (effect == "lightning") {
         Lightning(transitionTime);
       }
-
-
-
-
+      if (effect == "meteor rain") {
+        meteorRain(ledCount / 5, maxBrightness / 4, true , transitionTime);
+      }
       
       // Run once notification effects
       // Reverts color and effect after run
@@ -517,8 +516,6 @@ void loop() {
         }
         sendState();
       }
-
-    
     
 //      if (effect == "bpm") {
 //      }

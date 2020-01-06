@@ -4,7 +4,6 @@
 ///**************************** START EFFECTS *****************************************/
 // Effects from: https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/
 
-
 bool shouldAbortEffect() {
   yield(); // Watchdog timer
   client.loop(); // Update from MQTT
@@ -127,7 +126,7 @@ void setPixelHeatColor (int Pixel, byte temperature) {
 }
 // Fire(55,120,15);
 void Fire(int Cooling, int Sparking, int SpeedDelay) {
-  byte heat[ledCount];
+  static byte heat[LED_COUNT_MAXIMUM];
   int cooldown;
   
   // Step 1.  Cool down every cell a little
@@ -546,6 +545,49 @@ void ShowPixels() {
   
   showStrip();
   transitionDone = true;
+}
+// Meteor rain
+// meteorRain(10, 64, true, 30);
+void _meteorRainFadeToBlack(int ledNo, byte fadeValue) {
+  uint32_t oldColor;
+  uint8_t r, g, b;
+  int value;
+ 
+  oldColor = strip.getPixelColor(ledNo);
+  r = (oldColor & 0x00ff0000UL) >> 16;
+  g = (oldColor & 0x0000ff00UL) >> 8;
+  b = (oldColor & 0x000000ffUL);
+
+  r=(r<=10)? 0 : (int) r-(r*fadeValue/256);
+  g=(g<=10)? 0 : (int) g-(g*fadeValue/256);
+  b=(b<=10)? 0 : (int) b-(b*fadeValue/256);
+ 
+  strip.setPixelColor(ledNo, r,g,b);
+}
+
+void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay) {  
+//  setAll(0, 0, 0, 0);
+ 
+  for(int i = 0; i < ledCount+ledCount; i++) {
+    if (shouldAbortEffect()) { return; }
+   
+    // fade brightness all LEDs one step
+    for(int j=0; j<ledCount; j++) {
+      if( (!meteorRandomDecay) || (random(10)>5) ) {
+        _meteorRainFadeToBlack(j, meteorTrailDecay );        
+      }
+    }
+   
+    // draw meteor
+    for(int j = 0; j < meteorSize; j++) {
+      if( ( i-j <ledCount) && (i-j>=0) ) {
+        setPixel(i-j, red, green, blue, 0, true);
+      }
+    }
+   
+    showStrip();
+    delay(SpeedDelay);
+  }
 }
 
 #endif

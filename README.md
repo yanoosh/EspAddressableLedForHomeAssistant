@@ -82,6 +82,7 @@ light:
         - sparkle
         - twinkle random
         - lightning
+        - meteor rain
     brightness: true
     rgb: true
     optimistic: false
