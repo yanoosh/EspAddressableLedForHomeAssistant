@@ -171,7 +171,7 @@ void setup_wifi() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(F("."));
-    if (retries++ > 60) {
+    if (retries++ > 20) {
       ESP.restart();
     }
   }
