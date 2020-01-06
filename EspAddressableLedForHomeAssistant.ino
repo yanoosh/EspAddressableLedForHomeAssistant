@@ -366,8 +366,13 @@ void sendState() {
   root["brightness"] = brightness;
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
-  root["id"] = ESP.getChipId();
-
+  
+  #ifdef DEBUGE_MODE
+    root["id"] = ESP.getChipId();
+    root["memory_heap"] = ESP.getFreeHeap();
+    root["work_time"] = millis();
+  #endif
+  
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
   
@@ -545,4 +550,11 @@ void loop() {
   } else {
 	  delay(600); // Save some power? (from 0.9w to 0.4w when off with ESP8266)
   }
+  #ifdef DEBUGE_MODE
+    static unsigned long lastSendState = 0;
+    if (now - lastSendState > DEBUGE_MODE) {
+      sendState();
+      lastSendState = now;
+    }
+  #endif
 }
