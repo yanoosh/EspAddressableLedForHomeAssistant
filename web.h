@@ -2,15 +2,15 @@ String GetStatusPic() {
   String imgString = F("<svg height='64' width='64'>");
   imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
 
-  if (realWhite > 0) {
+  if (setting.sourceColor.white > 0) {
     imgString += F("white");
   } else {
     imgString += F("rgb(");
-    imgString += realRed;
+    imgString += setting.sourceColor.red;
     imgString += F(",");
-    imgString += realGreen;
+    imgString += setting.sourceColor.green;
     imgString += F(",");
-    imgString += realBlue;
+    imgString += setting.sourceColor.blue;
     imgString += F(")");
   }
   
@@ -57,18 +57,18 @@ void ServeWebClients()
   
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
-  inString += realRed;
+  inString += setting.sourceColor.red;
   inString += F("</label></td><td rowspan='4'>");
   inString += GetStatusPic();
   inString += F("</td></tr>");     
   inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
-  inString += realGreen;
+  inString += setting.sourceColor.green;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Blue:</b></td><td><label id='lbl_blue'>");
-  inString += realBlue;
+  inString += setting.sourceColor.blue;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>White:</b></td><td><label id='lbl_white'>");
-  inString += realWhite;
+  inString += setting.sourceColor.white;
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");

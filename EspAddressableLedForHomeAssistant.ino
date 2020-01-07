@@ -13,6 +13,7 @@
 // ------------------------------
 // ---- all config in auth.h ----
 // ------------------------------
+#define MQTT_MAX_PACKET_SIZE 512
 #define VERSION F("v3.4 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
 
 #include <ArduinoJson.h> //Not beta version. Tested with v5.3.14
@@ -24,6 +25,7 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
+#include "settings.h"
 #include "auth.h"
 
 // The maximum mqtt message size, including header, is 128 bytes by default.
@@ -40,22 +42,9 @@ const char* lwtMessage = "offline";
 
 /*********************************** LED Defintions ********************************/
 // Real values as requested from the MQTT server
-byte realRed = 0;
-byte realGreen = 0;
-byte realBlue = 0;
-byte realWhite = 255;
 
-// Previous requested values
-byte previousRed = 0;
-byte previousGreen = 0;
-byte previousBlue = 0;
-byte previousWhite = 0;
 
 // Values as set to strip
-byte red = 0;
-byte green = 0;
-byte blue = 0;
-byte white = 0;
 byte brightness = 255;
 
 
@@ -200,7 +189,7 @@ void setup_wifi() {
 
 /********************************** START LED POWER STATE *****************************************/
 void setOff() {
-  setAll(0, 0, 0, 0);
+  setAll(&colorBlack);
   stateOn = false;
   transitionDone = true; // Ensure we dont run the loop
   transitionAbort = true; // Ensure we about any current effect
@@ -223,7 +212,7 @@ void setOn() {
   if (digitalRead(DATA_PIN_RELAY)) {
     digitalWrite(DATA_PIN_RELAY, LOW);
     delay(50);
-    setAll(0, 0, 0, 0);
+    setAll(&colorBlack);
     delay(500); // Wait for Leds to init and capasitor to charge??
     Serial.println("LED: ON");
   }
@@ -252,21 +241,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  previousRed = red;
-  previousGreen = green;
-  previousBlue = blue;
-  previousWhite = white;
+  previousRed = setting.filteredColor.red;
+  previousGreen = setting.filteredColor.green;
+  previousBlue = setting.filteredColor.blue;
+  previousWhite = setting.filteredColor.white;
 
   if (stateOn || newStateOn) {
-    red = map(realRed, 0, 255, 0, brightness);
-    green = map(realGreen, 0, 255, 0, brightness);
-    blue = map(realBlue, 0, 255, 0, brightness);
-    white = map(realWhite, 0, 255, 0, brightness);
+    mapColor(&setting.filteredColor, &setting.sourceColor, brightness);
   } else {
-    red = 0;
-    green = 0;
-    blue = 0;
-    white = 0;
+    cpyColor(&setting.filteredColor, &colorBlack);
   }
 
   transitionAbort = true; // Kill the current effect
@@ -313,18 +296,18 @@ bool processJson(char* message) {
   }
   
   if (root.containsKey("color")) {
-    realRed = root["color"]["r"];
-    realGreen = root["color"]["g"];
-    realBlue = root["color"]["b"];
-    realWhite = 0;
+    setting.sourceColor.red = root["color"]["r"];
+    setting.sourceColor.green = root["color"]["g"];
+    setting.sourceColor.blue = root["color"]["b"];
+    setting.sourceColor.white = 0;
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
   if (root.containsKey("white_value")) {
-    realRed = 0;
-    realGreen = 0;
-    realBlue = 0;
-    realWhite = root["white_value"];
+    setting.sourceColor.red = 0;
+    setting.sourceColor.green = 0;
+    setting.sourceColor.blue = 0;
+    setting.sourceColor.white = root["white_value"];
   }
 
   if (root.containsKey("brightness")) {
@@ -358,11 +341,11 @@ void sendState() {
 
   root["state"] = (stateOn) ? on_cmd : off_cmd;
   JsonObject& color = root.createNestedObject("color");
-  color["r"] = realRed;
-  color["g"] = realGreen;
-  color["b"] = realBlue;
+  color["r"] = setting.sourceColor.red;
+  color["g"] = setting.sourceColor.green;
+  color["b"] = setting.sourceColor.blue;
 
-  root["white_value"] = realWhite;
+  root["white_value"] = setting.sourceColor.white;
   root["brightness"] = brightness;
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
@@ -445,12 +428,12 @@ void loop() {
 
       //EFFECTS
       if (effect == "clear") {
-        setAll(0,0,0,0);
+        setAll(&colorBlack);
         transitionDone = true;
       }
       if (effect == "solid") {
         if (transitionTime <= 1) {
-          setAll(red, green, blue, white);
+          setAll(&setting.filteredColor);
           transitionDone = true;
         } else {
           Fade(transitionTime);
@@ -514,7 +497,7 @@ void loop() {
           effect = previousEffect;
         }
         
-        if (red == 0 && green == 0 && blue == 0 && white == 0) {
+        if (setting.filteredColor.red == 0 && setting.filteredColor.green == 0 && setting.filteredColor.blue == 0 && setting.filteredColor.white == 0) {
           setOff();
         } else {
           transitionDone = false; // Run the old effect again
@@ -544,7 +527,7 @@ void loop() {
 //      }
       
     } else {
-      setAll(0, 0, 0, 0);
+      setAll(&colorBlack);
       transitionDone = true;
     }
   } else {
