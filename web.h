@@ -48,7 +48,7 @@ void ServeWebClients()
   
   inString += F("<h3 class='ui-bar ui-bar-a ui-corner-all'>LED Status</h3>");
   inString += F("<table><tr><td><b>State:<br></td><td><label id='lbl_status' ");
-  if (stateOn) {
+  if (setting.turnOn) {
     inString += F("style='color:green;font-size:larger;font-weight:600;'>ON");
   } else {
     inString += F("style='color:red;font-size:larger;font-weight:600;'>OFF");
@@ -73,7 +73,7 @@ void ServeWebClients()
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Brightness:</b></td><td><label id='lbl_britness'>");
-  inString += brightness;
+  inString += setting.brightness;
   inString += F("</label></td></tr>");  
   inString += F("<tr><td><b>TransitionTime:</b></td><td><label id='lbl_tt'>");
   inString += transitionTime;

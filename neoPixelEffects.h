@@ -17,7 +17,7 @@ bool shouldAbortEffect() {
 }
 
 void showStrip() {
-  if (!stateOn) {
+  if (!setting.turnOn) {
     return;
   }
 
@@ -25,15 +25,15 @@ void showStrip() {
 }
 
 void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
-  if (!stateOn) {
+  if (!setting.turnOn) {
     return;
   }
 
   if (applyBrightness) {
-    r = map(r, 0, 255, 0, brightness);
-    g = map(g, 0, 255, 0, brightness);
-    b = map(b, 0, 255, 0, brightness);
-    w = map(w, 0, 255, 0, brightness);
+    r = map(r, 0, 255, 0, setting.brightness);
+    g = map(g, 0, 255, 0, setting.brightness);
+    b = map(b, 0, 255, 0, setting.brightness);
+    w = map(w, 0, 255, 0, setting.brightness);
   }
 
 #ifndef ENABLE_SUPPORT_WHITE_LED
@@ -48,7 +48,7 @@ void setPixel(int pixel, RGBW *color, bool applyBrightness) {
 }
 
 void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
-  if (!stateOn) {
+  if (!setting.turnOn) {
     return;
   }
 
@@ -528,7 +528,7 @@ void Lightning(int SpeedDelay) {
   int ledstart = random(ledCount);           // Determine starting location of flash
   int ledlen = random(ledCount - ledstart);  // Determine length of flash (not to go beyond ledCount-1)
   for (int flashCounter = 0; flashCounter < random(1, 4); flashCounter++) {
-    int dimmer = random(10, brightness);          // return strokes are brighter than the leader
+    int dimmer = random(10, setting.brightness);          // return strokes are brighter than the leader
     RGBW lightningColor = {};
     mapColor(&lightningColor, &setting.filteredColor, dimmer);
     //    int rr = map(red, 0, 255, 0, dimmer);

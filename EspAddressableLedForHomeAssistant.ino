@@ -44,17 +44,12 @@ const char* lwtMessage = "offline";
 // Real values as requested from the MQTT server
 
 
-// Values as set to strip
-byte brightness = 255;
-
-
 /******************************** OTHER GLOBALS *******************************/
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 const char* effectString = "solid";
 String previousEffect = "solid";
 String effect = "solid";
-bool stateOn = true;
 bool newStateOn = true;
 bool transitionDone = true;
 bool transitionAbort = false;
@@ -190,7 +185,7 @@ void setup_wifi() {
 /********************************** START LED POWER STATE *****************************************/
 void setOff() {
   setAll(&colorBlack);
-  stateOn = false;
+  setting.turnOn = false;
   transitionDone = true; // Ensure we dont run the loop
   transitionAbort = true; // Ensure we about any current effect
   previousRed = 0;
@@ -217,7 +212,7 @@ void setOn() {
     Serial.println("LED: ON");
   }
   
-  stateOn = true;  
+  setting.turnOn = true;  
 }
 
 
@@ -246,8 +241,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   previousBlue = setting.filteredColor.blue;
   previousWhite = setting.filteredColor.white;
 
-  if (stateOn || newStateOn) {
-    mapColor(&setting.filteredColor, &setting.sourceColor, brightness);
+  if (setting.turnOn || newStateOn) {
+    mapColor(&setting.filteredColor, &setting.sourceColor, setting.brightness);
   } else {
     cpyColor(&setting.filteredColor, &colorBlack);
   }
@@ -255,7 +250,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   transitionAbort = true; // Kill the current effect
   transitionDone = false; // Start a new transition
 
-  if (stateOn != newStateOn) {
+  if (setting.turnOn != newStateOn) {
     if (newStateOn) {
       setOn();
     } else {
@@ -311,7 +306,7 @@ bool processJson(char* message) {
   }
 
   if (root.containsKey("brightness")) {
-    brightness = root["brightness"];
+    setting.brightness = root["brightness"];
   }
   
   if (root.containsKey("pixel")) {
@@ -339,14 +334,14 @@ void sendState() {
 
   JsonObject& root = jsonBuffer.createObject();
 
-  root["state"] = (stateOn) ? on_cmd : off_cmd;
+  root["state"] = (setting.turnOn) ? on_cmd : off_cmd;
   JsonObject& color = root.createNestedObject("color");
   color["r"] = setting.sourceColor.red;
   color["g"] = setting.sourceColor.green;
   color["b"] = setting.sourceColor.blue;
 
   root["white_value"] = setting.sourceColor.white;
-  root["brightness"] = brightness;
+  root["brightness"] = setting.brightness;
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
   
@@ -424,7 +419,7 @@ void loop() {
   transitionAbort = false; // Because we came from the loop and not 1/2 way though a transition
   
   if (!transitionDone) {  // Once we have completed the transition, No point to keep going though the process
-    if (stateOn) {   // if the light is turned on
+    if (setting.turnOn) {   // if the light is turned on
 
       //EFFECTS
       if (effect == "clear") {

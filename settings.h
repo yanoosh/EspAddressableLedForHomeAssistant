@@ -6,14 +6,15 @@ struct RGBW {
 };
 
 struct Setting {
-  boolean enabled;
+  boolean turnOn;
   RGBW sourceColor;
   RGBW filteredColor;
   byte brightness;
+  byte effect;
 };
 
 struct MemorizedSetting {
-  boolean enabled;
+  boolean turnOn;
   RGBW color;
   byte brightness;
 };
