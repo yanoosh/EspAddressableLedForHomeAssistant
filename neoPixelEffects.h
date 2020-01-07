@@ -67,7 +67,7 @@ void setAll(RGBW *rgbw, bool refreshStrip = true) {
 
 // Twinkle(10, 100, false);
 void Twinkle(int Count, int SpeedDelay, boolean OnlyOne) {
-  setAll(&colorBlack);
+  setAll(&colorBlack, false);
 
   for (int i = 0; i < Count; i++) {
     if (shouldAbortEffect()) {
@@ -217,7 +217,6 @@ void Strobe(int StrobeCount, int FlashDelay) {
     showStrip();
     delay(FlashDelay);
     setAll(&colorBlack);
-    showStrip();
     delay(FlashDelay);
   }
 }
@@ -348,7 +347,7 @@ void SnowSparkle(int SparkleDelay, int SpeedDelay) {
 
 //  Sparkle(0);
 void Sparkle(int SpeedDelay) {
-  setAll(&colorBlack);
+  setAll(&colorBlack, false);
   int Pixel = random(ledCount);
   setPixel(Pixel, &setting.filteredColor, false);
   showStrip();
@@ -358,7 +357,7 @@ void Sparkle(int SpeedDelay) {
 
 //  TwinkleRandom(20, 100, false);
 void TwinkleRandom(int Count, int SpeedDelay, boolean OnlyOne) {
-  setAll(&colorBlack);
+  setAll(&colorBlack, false);
 
   for (int i = 0; i < Count; i++) {
     if (shouldAbortEffect()) {
@@ -423,7 +422,7 @@ void BouncingBalls(int BallCount) {
     }
 
     showStrip();
-    setAll(&colorBlack);
+    setAll(&colorBlack, false);
   }
 }
 
@@ -525,7 +524,7 @@ void Fade(int SpeedDelay) {
 }
 
 void Lightning(int SpeedDelay) {
-  setAll(&colorBlack);
+  setAll(&colorBlack, false);
   int ledstart = random(ledCount);           // Determine starting location of flash
   int ledlen = random(ledCount - ledstart);  // Determine length of flash (not to go beyond ledCount-1)
   for (int flashCounter = 0; flashCounter < random(1, 4); flashCounter++) {
