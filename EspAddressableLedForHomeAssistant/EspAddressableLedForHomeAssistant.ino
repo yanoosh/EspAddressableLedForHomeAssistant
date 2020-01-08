@@ -13,7 +13,6 @@
 // ------------------------------
 // ---- all config in auth.h ----
 // ------------------------------
-#define MQTT_MAX_PACKET_SIZE 512
 #define VERSION F("v3.4 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
 
 #include <ArduinoJson.h> //Not beta version. Tested with v5.3.14
@@ -45,6 +44,7 @@ const char* lwtMessage = "offline";
 
 
 /******************************** OTHER GLOBALS *******************************/
+Setting setting;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 const char* effectString = "solid";
@@ -80,6 +80,7 @@ void setup() {
   setup_config();
   
   // End of trinket special code
+  //TODO why it isnt use as brightness settings?
   strip.setBrightness(maxBrightness);
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
@@ -184,8 +185,8 @@ void setup_wifi() {
 
 /********************************** START LED POWER STATE *****************************************/
 void setOff() {
-  setAll(&colorBlack);
-  setting.turnOn = false;
+  setAll(BLACK);
+  setting.setTurnOn(false);
   transitionDone = true; // Ensure we dont run the loop
   transitionAbort = true; // Ensure we about any current effect
   previousRed = 0;
@@ -207,12 +208,12 @@ void setOn() {
   if (digitalRead(DATA_PIN_RELAY)) {
     digitalWrite(DATA_PIN_RELAY, LOW);
     delay(50);
-    setAll(&colorBlack);
+    setAll(BLACK);
     delay(500); // Wait for Leds to init and capasitor to charge??
     Serial.println("LED: ON");
   }
   
-  setting.turnOn = true;  
+  setting.setTurnOn(true);  
 }
 
 
@@ -236,21 +237,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  previousRed = setting.filteredColor.red;
-  previousGreen = setting.filteredColor.green;
-  previousBlue = setting.filteredColor.blue;
-  previousWhite = setting.filteredColor.white;
+  previousRed = setting.getFilteredColor().red;
+  previousGreen = setting.getFilteredColor().green;
+  previousBlue = setting.getFilteredColor().blue;
+  previousWhite = setting.getFilteredColor().white;
 
-  if (setting.turnOn || newStateOn) {
-    mapColor(&setting.filteredColor, &setting.sourceColor, setting.brightness);
+  //TODO when light is turn on then should only change on/off state not other values.
+  if (setting.getTurnOn() || newStateOn) {
+//    mapColor(&setting.getFilteredColor(), setting.sourceColor, setting.getBrightness());
   } else {
-    cpyColor(&setting.filteredColor, &colorBlack);
+    setting.setFilteredColor(BLACK);
   }
 
   transitionAbort = true; // Kill the current effect
   transitionDone = false; // Start a new transition
 
-  if (setting.turnOn != newStateOn) {
+  if (setting.getTurnOn() != newStateOn) {
     if (newStateOn) {
       setOn();
     } else {
@@ -291,22 +293,16 @@ bool processJson(char* message) {
   }
   
   if (root.containsKey("color")) {
-    setting.sourceColor.red = root["color"]["r"];
-    setting.sourceColor.green = root["color"]["g"];
-    setting.sourceColor.blue = root["color"]["b"];
-    setting.sourceColor.white = 0;
+    setting.setSourceColor({root["color"]["r"], root["color"]["g"], root["color"]["b"], 0});
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
   if (root.containsKey("white_value")) {
-    setting.sourceColor.red = 0;
-    setting.sourceColor.green = 0;
-    setting.sourceColor.blue = 0;
-    setting.sourceColor.white = root["white_value"];
+    setting.setSourceColor({0, 0, 0, root["white_value"]});
   }
 
   if (root.containsKey("brightness")) {
-    setting.brightness = root["brightness"];
+    setting.setBrightness(root["brightness"]);
   }
   
   if (root.containsKey("pixel")) {
@@ -334,14 +330,14 @@ void sendState() {
 
   JsonObject& root = jsonBuffer.createObject();
 
-  root["state"] = (setting.turnOn) ? on_cmd : off_cmd;
+  root["state"] = (setting.getTurnOn()) ? on_cmd : off_cmd;
   JsonObject& color = root.createNestedObject("color");
-  color["r"] = setting.sourceColor.red;
-  color["g"] = setting.sourceColor.green;
-  color["b"] = setting.sourceColor.blue;
+  color["r"] = setting.getSourceColor().red;
+  color["g"] = setting.getSourceColor().green;
+  color["b"] = setting.getSourceColor().blue;
 
-  root["white_value"] = setting.sourceColor.white;
-  root["brightness"] = setting.brightness;
+  root["white_value"] = setting.getSourceColor().white;
+  root["brightness"] = setting.getBrightness();
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
   
@@ -419,16 +415,16 @@ void loop() {
   transitionAbort = false; // Because we came from the loop and not 1/2 way though a transition
   
   if (!transitionDone) {  // Once we have completed the transition, No point to keep going though the process
-    if (setting.turnOn) {   // if the light is turned on
+    if (setting.getTurnOn()) {   // if the light is turned on
 
       //EFFECTS
       if (effect == "clear") {
-        setAll(&colorBlack);
+        setAll(BLACK);
         transitionDone = true;
       }
       if (effect == "solid") {
         if (transitionTime <= 1) {
-          setAll(&setting.filteredColor);
+          setAll(setting.getFilteredColor());
           transitionDone = true;
         } else {
           Fade(transitionTime);
@@ -492,7 +488,7 @@ void loop() {
           effect = previousEffect;
         }
         
-        if (setting.filteredColor.red == 0 && setting.filteredColor.green == 0 && setting.filteredColor.blue == 0 && setting.filteredColor.white == 0) {
+        if (setting.getFilteredColor().red == 0 && setting.getFilteredColor().green == 0 && setting.getFilteredColor().blue == 0 && setting.getFilteredColor().white == 0) {
           setOff();
         } else {
           transitionDone = false; // Run the old effect again
@@ -522,7 +518,7 @@ void loop() {
 //      }
       
     } else {
-      setAll(&colorBlack);
+      setAll(BLACK);
       transitionDone = true;
     }
   } else {

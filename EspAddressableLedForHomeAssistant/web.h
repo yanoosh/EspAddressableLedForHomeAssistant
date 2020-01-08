@@ -2,15 +2,15 @@ String GetStatusPic() {
   String imgString = F("<svg height='64' width='64'>");
   imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
 
-  if (setting.sourceColor.white > 0) {
+  if (setting.getSourceColor().white > 0) {
     imgString += F("white");
   } else {
     imgString += F("rgb(");
-    imgString += setting.sourceColor.red;
+    imgString += setting.getSourceColor().red;
     imgString += F(",");
-    imgString += setting.sourceColor.green;
+    imgString += setting.getSourceColor().green;
     imgString += F(",");
-    imgString += setting.sourceColor.blue;
+    imgString += setting.getSourceColor().blue;
     imgString += F(")");
   }
   
@@ -48,7 +48,7 @@ void ServeWebClients()
   
   inString += F("<h3 class='ui-bar ui-bar-a ui-corner-all'>LED Status</h3>");
   inString += F("<table><tr><td><b>State:<br></td><td><label id='lbl_status' ");
-  if (setting.turnOn) {
+  if (setting.getTurnOn()) {
     inString += F("style='color:green;font-size:larger;font-weight:600;'>ON");
   } else {
     inString += F("style='color:red;font-size:larger;font-weight:600;'>OFF");
@@ -57,23 +57,23 @@ void ServeWebClients()
   
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
-  inString += setting.sourceColor.red;
+  inString += setting.getSourceColor().red;
   inString += F("</label></td><td rowspan='4'>");
   inString += GetStatusPic();
   inString += F("</td></tr>");     
   inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
-  inString += setting.sourceColor.green;
+  inString += setting.getSourceColor().green;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Blue:</b></td><td><label id='lbl_blue'>");
-  inString += setting.sourceColor.blue;
+  inString += setting.getSourceColor().blue;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>White:</b></td><td><label id='lbl_white'>");
-  inString += setting.sourceColor.white;
+  inString += setting.getSourceColor().white;
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Brightness:</b></td><td><label id='lbl_britness'>");
-  inString += setting.brightness;
+  inString += setting.getBrightness();
   inString += F("</label></td></tr>");  
   inString += F("<tr><td><b>TransitionTime:</b></td><td><label id='lbl_tt'>");
   inString += transitionTime;

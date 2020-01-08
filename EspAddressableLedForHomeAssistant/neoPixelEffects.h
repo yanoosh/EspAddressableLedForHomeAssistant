@@ -17,7 +17,7 @@ bool shouldAbortEffect() {
 }
 
 void showStrip() {
-  if (!setting.turnOn) {
+  if (!setting.getTurnOn()) {
     return;
   }
 
@@ -25,30 +25,30 @@ void showStrip() {
 }
 
 void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
-  if (!setting.turnOn) {
+  if (!setting.getTurnOn()) {
     return;
   }
 
   if (applyBrightness) {
-    r = map(r, 0, 255, 0, setting.brightness);
-    g = map(g, 0, 255, 0, setting.brightness);
-    b = map(b, 0, 255, 0, setting.brightness);
-    w = map(w, 0, 255, 0, setting.brightness);
+    r = map(r, 0, 255, 0, setting.getBrightness());
+    g = map(g, 0, 255, 0, setting.getBrightness());
+    b = map(b, 0, 255, 0, setting.getBrightness());
+    w = map(w, 0, 255, 0, setting.getBrightness());
   }
 
-#ifndef ENABLE_SUPPORT_WHITE_LED
-  strip.setPixelColor(pixel, r, g, b, w);
-#else
-  strip.setPixelColor(pixel, r, g, b);
-#endif
+  #ifndef ENABLE_SUPPORT_WHITE_LED
+    strip.setPixelColor(pixel, r, g, b, w);
+  #else
+    strip.setPixelColor(pixel, r, g, b);
+  #endif
 }
 
-void setPixel(int pixel, RGBW *color, bool applyBrightness) {
-  setPixel(pixel, color->red, color->green, color->blue, color->white, applyBrightness);
+void setPixel(int pixel, RGBW color, bool applyBrightness) {
+  setPixel(pixel, color.red, color.green, color.blue, color.white, applyBrightness);
 }
 
 void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
-  if (!setting.turnOn) {
+  if (!setting.getTurnOn()) {
     return;
   }
 
@@ -61,23 +61,23 @@ void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
   }
 }
 
-void setAll(RGBW *rgbw, bool refreshStrip = true) {
-  setAll(rgbw->red, rgbw->green, rgbw->blue, rgbw->white, refreshStrip);
+void setAll(RGBW rgbw, bool refreshStrip = true) {
+  setAll(rgbw.red, rgbw.green, rgbw.blue, rgbw.white, refreshStrip);
 }
 
 // Twinkle(10, 100, false);
 void Twinkle(int Count, int SpeedDelay, boolean OnlyOne) {
-  setAll(&colorBlack, false);
+  setAll(BLACK, false);
 
   for (int i = 0; i < Count; i++) {
     if (shouldAbortEffect()) {
       return;
     }
-    setPixel(random(ledCount), &setting.filteredColor, false);
+    setPixel(random(ledCount), setting.getFilteredColor(), false);
     showStrip();
     delay(SpeedDelay);
     if (OnlyOne) {
-      setAll(&colorBlack);
+      setAll(BLACK);
     }
   }
 
@@ -86,18 +86,18 @@ void Twinkle(int Count, int SpeedDelay, boolean OnlyOne) {
 
 // CylonBounce(4, 10, 50);
 void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay) {
-  RGBW paleColor = {setting.filteredColor.red / 10, setting.filteredColor.green / 10, setting.filteredColor.blue / 10, setting.filteredColor.white / 10};
+  RGBW paleColor = {setting.getFilteredColor().red / 10, setting.getFilteredColor().green / 10, setting.getFilteredColor().blue / 10, setting.getFilteredColor().white / 10};
 
   for (int i = 0; i <= (ledCount - EyeSize - 2); i++) {
     if (shouldAbortEffect()) {
       return;
     }
-    setAll(&colorBlack, false);
-    setPixel(i, &paleColor, false);
+    setAll(BLACK, false);
+    setPixel(i, paleColor, false);
     for (int j = 1; j <= EyeSize; j++) {
-      setPixel(i + j, &setting.filteredColor, false);
+      setPixel(i + j, setting.getFilteredColor(), false);
     }
-    setPixel(i + EyeSize + 1, &paleColor, false);
+    setPixel(i + EyeSize + 1, paleColor, false);
     showStrip();
     delay(SpeedDelay);
   }
@@ -109,11 +109,11 @@ void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay) {
       return;
     }
     setAll(0, 0, 0, 0, false);
-    setPixel(i, &paleColor, false);
+    setPixel(i, paleColor, false);
     for (int j = 1; j <= EyeSize; j++) {
-      setPixel(i + j, &setting.filteredColor, false);
+      setPixel(i + j, setting.getFilteredColor(), false);
     }
-    setPixel(i + EyeSize + 1, &paleColor, false);
+    setPixel(i + EyeSize + 1, paleColor, false);
     showStrip();
     delay(SpeedDelay);
   }
@@ -183,10 +183,10 @@ void FadeInOut() {
     if (shouldAbortEffect()) {
       return;
     }
-    r = (k / 256.0) * setting.filteredColor.red;
-    g = (k / 256.0) * setting.filteredColor.green;
-    b = (k / 256.0) * setting.filteredColor.blue;
-    w = (k / 256.0) * setting.filteredColor.white;
+    r = (k / 256.0) * setting.getFilteredColor().red;
+    g = (k / 256.0) * setting.getFilteredColor().green;
+    b = (k / 256.0) * setting.getFilteredColor().blue;
+    w = (k / 256.0) * setting.getFilteredColor().white;
     setAll(r, g, b, w);
     showStrip();
   }
@@ -195,10 +195,10 @@ void FadeInOut() {
     if (shouldAbortEffect()) {
       return;
     }
-    r = (k / 256.0) * setting.filteredColor.red;
-    g = (k / 256.0) * setting.filteredColor.green;
-    b = (k / 256.0) * setting.filteredColor.blue;
-    w = (k / 256.0) * setting.filteredColor.white;
+    r = (k / 256.0) * setting.getFilteredColor().red;
+    g = (k / 256.0) * setting.getFilteredColor().green;
+    b = (k / 256.0) * setting.getFilteredColor().blue;
+    w = (k / 256.0) * setting.getFilteredColor().white;
     setAll(r, g, b, w);
     showStrip();
   }
@@ -213,10 +213,10 @@ void Strobe(int StrobeCount, int FlashDelay) {
     if (shouldAbortEffect()) {
       return;
     }
-    setAll(&setting.filteredColor);
+    setAll(setting.getFilteredColor());
     showStrip();
     delay(FlashDelay);
-    setAll(&colorBlack);
+    setAll(BLACK);
     delay(FlashDelay);
   }
 }
@@ -228,7 +228,7 @@ void theaterChase(int SpeedDelay) {
       return;
     }
     for (int i = 0; i <= ledCount; i = i + 3) {
-      setPixel(i + q, &setting.filteredColor, false);  //turn every third pixel on
+      setPixel(i + q, setting.getFilteredColor(), false);  //turn every third pixel on
     }
     showStrip();
 
@@ -285,7 +285,7 @@ void colorWipe(int SpeedDelay) {
     if (shouldAbortEffect()) {
       return;
     }
-    setPixel(i, &setting.filteredColor, false);
+    setPixel(i, setting.getFilteredColor(), false);
     showStrip();
     delay(SpeedDelay);
   }
@@ -297,10 +297,8 @@ void colorWipeOnce(int SpeedDelay) {
   colorWipe(SpeedDelay);
 
   // Reset back to previous color
-  setting.filteredColor.red = previousRed;
-  setting.filteredColor.green = previousGreen;
-  setting.filteredColor.blue = previousBlue;
-  setting.filteredColor.white = previousWhite;
+  RGBW color = {previousRed, previousGreen, previousBlue, previousWhite};
+  setting.setFilteredColor(color);
 
   colorWipe(SpeedDelay);
 }
@@ -320,10 +318,10 @@ void RunningLights(int WaveDelay) {
       //float level = sin(i+Position) * 127 + 128;
       //setPixel(i,level,0,0,false);
       //float level = sin(i+Position) * 127 + 128;
-      setPixel(i, ((sin(i + Position) * 127 + 128) / 255)*setting.filteredColor.red,
-               ((sin(i + Position) * 127 + 128) / 255)*setting.filteredColor.green,
-               ((sin(i + Position) * 127 + 128) / 255)*setting.filteredColor.blue,
-               ((sin(i + Position) * 127 + 128) / 255)*setting.filteredColor.white,
+      setPixel(i, ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().red,
+               ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().green,
+               ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().blue,
+               ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().white,
                false);
     }
 
@@ -334,30 +332,30 @@ void RunningLights(int WaveDelay) {
 
 //  SnowSparkle(20, random(100,1000));
 void SnowSparkle(int SparkleDelay, int SpeedDelay) {
-  setAll(&setting.filteredColor);
+  setAll(setting.getFilteredColor());
 
   int Pixel = random(ledCount);
   setPixel(Pixel, 0, 0, 0, 255, false); //@todo why change all to white?
   showStrip();
   delay(SparkleDelay);
-  setPixel(Pixel, &setting.filteredColor, false);
+  setPixel(Pixel, setting.getFilteredColor(), false);
   showStrip();
   delay(SpeedDelay);
 }
 
 //  Sparkle(0);
 void Sparkle(int SpeedDelay) {
-  setAll(&colorBlack, false);
+  setAll(BLACK, false);
   int Pixel = random(ledCount);
-  setPixel(Pixel, &setting.filteredColor, false);
+  setPixel(Pixel, setting.getFilteredColor(), false);
   showStrip();
   delay(SpeedDelay);
-  setPixel(Pixel, &colorBlack, false);
+  setPixel(Pixel, BLACK, false);
 }
 
 //  TwinkleRandom(20, 100, false);
 void TwinkleRandom(int Count, int SpeedDelay, boolean OnlyOne) {
-  setAll(&colorBlack, false);
+  setAll(BLACK, false);
 
   for (int i = 0; i < Count; i++) {
     if (shouldAbortEffect()) {
@@ -367,7 +365,7 @@ void TwinkleRandom(int Count, int SpeedDelay, boolean OnlyOne) {
     showStrip();
     delay(SpeedDelay);
     if (OnlyOne) {
-      setAll(&colorBlack);
+      setAll(BLACK);
     }
   }
 
@@ -418,11 +416,11 @@ void BouncingBalls(int BallCount) {
     }
 
     for (int i = 0 ; i < BallCount ; i++) {
-      setPixel(Position[i], &setting.filteredColor, false);
+      setPixel(Position[i], setting.getFilteredColor(), false);
     }
 
     showStrip();
-    setAll(&colorBlack, false);
+    setAll(BLACK, false);
   }
 }
 
@@ -491,10 +489,10 @@ void Fade(int SpeedDelay) {
   int grnVal = previousGreen;
   int bluVal = previousBlue;
   int whiVal = previousWhite;
-  int stepR = calculateStep(redVal, setting.filteredColor.red);
-  int stepG = calculateStep(grnVal, setting.filteredColor.green);
-  int stepB = calculateStep(bluVal, setting.filteredColor.blue);
-  int stepW = calculateStep(whiVal, setting.filteredColor.white);
+  int stepR = calculateStep(redVal, setting.getFilteredColor().red);
+  int stepG = calculateStep(grnVal, setting.getFilteredColor().green);
+  int stepB = calculateStep(bluVal, setting.getFilteredColor().blue);
+  int stepW = calculateStep(whiVal, setting.getFilteredColor().white);
 
   // If no change then exit
   if (stepR == 0 && stepG == 0 && stepB == 0 && stepW == 0) {
@@ -524,25 +522,25 @@ void Fade(int SpeedDelay) {
 }
 
 void Lightning(int SpeedDelay) {
-  setAll(&colorBlack, false);
+  setAll(BLACK, false);
   int ledstart = random(ledCount);           // Determine starting location of flash
   int ledlen = random(ledCount - ledstart);  // Determine length of flash (not to go beyond ledCount-1)
   for (int flashCounter = 0; flashCounter < random(1, 4); flashCounter++) {
-    int dimmer = random(10, setting.brightness);          // return strokes are brighter than the leader
+    int dimmer = random(10, setting.getBrightness());          // return strokes are brighter than the leader
     RGBW lightningColor = {};
-    mapColor(&lightningColor, &setting.filteredColor, dimmer);
+    lightningColor = mapColor(setting.getFilteredColor(), dimmer);
     //    int rr = map(red, 0, 255, 0, dimmer);
     //    int gg = map(green, 0, 255, 0, dimmer);
     //    int bb = map(blue, 0, 255, 0, dimmer);
     //    int ww = map(white, 0, 255, 0, dimmer);
 
     for (int i = ledstart ; i < (ledstart + ledlen) ; i++) {
-      setPixel(i, &lightningColor, false);
+      setPixel(i, lightningColor, false);
     }
     showStrip();    // Show a section of LED's
     delay(random(4, 15));                // each flash only lasts 4-10 milliseconds
     for (int i = ledstart ; i < (ledstart + ledlen) ; i++) {
-      setPixel(i, &colorBlack, false);
+      setPixel(i, BLACK, false);
     }
     showStrip();
     //if (flashCounter == 0) delay (130);   // longer delay until next flash after the leader
@@ -570,7 +568,7 @@ void ShowPixels() {
     }
 
     for (int i = startL; i < endL; i++) {
-      setPixel(i, &setting.filteredColor, true);
+      setPixel(i, setting.getFilteredColor(), true);
     }
 
   } else {
@@ -582,7 +580,7 @@ void ShowPixels() {
       if (pixel > ledCount) {
         pixel = ledCount;
       }
-      setPixel(pixel, &setting.filteredColor, true);
+      setPixel(pixel, setting.getFilteredColor(), true);
     }
   }
 
@@ -625,7 +623,7 @@ void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDeca
     // draw meteor
     for (int j = 0; j < meteorSize; j++) {
       if ( ( i - j < ledCount) && (i - j >= 0) ) {
-        setPixel(i - j, setting.filteredColor.red, setting.filteredColor.green, setting.filteredColor.blue, 0, true);
+        setPixel(i - j, setting.getFilteredColor().red, setting.getFilteredColor().green, setting.getFilteredColor().blue, 0, true);
       }
     }
 
