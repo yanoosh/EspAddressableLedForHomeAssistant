@@ -32,6 +32,7 @@ class Setting {
 
     void setBrightness(byte brightness) {
       this->brightness = brightness;
+      this->updateFilteredColor();
     }
 
     byte getBrightness() {

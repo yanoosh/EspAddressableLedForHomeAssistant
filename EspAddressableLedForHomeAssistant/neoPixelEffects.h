@@ -11,6 +11,7 @@ byte previousWhite = 0;
 // Effects from: https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/
 
 bool shouldAbortEffect() {
+  yield();
   ESP.wdtFeed();
   client.loop(); // Update from MQTT
   return transitionAbort;
