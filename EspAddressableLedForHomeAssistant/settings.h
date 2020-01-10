@@ -57,9 +57,9 @@ class Setting {
 
   private:
     boolean turnOn;
-    RGBW sourceColor;
+    RGBW sourceColor = {255, 255, 255, 0};
     RGBW filteredColor;
-    byte brightness;
+    byte brightness = 255;
     byte effect;
     byte speed;
 

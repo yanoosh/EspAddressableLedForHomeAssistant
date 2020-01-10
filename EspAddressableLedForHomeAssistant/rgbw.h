@@ -1,3 +1,5 @@
+#ifndef _RGBW_H
+#define _RGBW_H
 struct RGBW {
   byte red;
   byte green;
@@ -15,3 +17,4 @@ RGBW mapColor(RGBW color, byte range) {
 }
 
 RGBW BLACK = {0, 0, 0, 0};
+#endif

@@ -1,5 +1,6 @@
 #ifndef _NEOPIXEL_EFFECTS
 #define _NEOPIXEL_EFFECTS
+#include "effect/RainbowCycle.cpp"
 
 // Previous requested values
 byte previousRed = 0;
@@ -37,11 +38,7 @@ void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
     w = map(w, 0, 255, 0, setting.getBrightness());
   }
 
-  #ifndef ENABLE_SUPPORT_WHITE_LED
-    strip.setPixelColor(pixel, r, g, b, w);
-  #else
-    strip.setPixelColor(pixel, r, g, b);
-  #endif
+  strip.setPixelColor(pixel, r, g, b, w);
 }
 
 void setPixel(int pixel, RGBW color, bool applyBrightness) {
@@ -241,43 +238,12 @@ void theaterChase(int SpeedDelay) {
   }
 }
 
-byte * Wheel(byte WheelPos) {
-  static byte c[3];
-
-  if (WheelPos < 85) {
-    c[0] = WheelPos * 3;
-    c[1] = 255 - WheelPos * 3;
-    c[2] = 0;
-  } else if (WheelPos < 170) {
-    WheelPos -= 85;
-    c[0] = 255 - WheelPos * 3;
-    c[1] = 0;
-    c[2] = WheelPos * 3;
-  } else {
-    WheelPos -= 170;
-    c[0] = 0;
-    c[1] = WheelPos * 3;
-    c[2] = 255 - WheelPos * 3;
-  }
-
-  return c;
-}
 //  rainbowCycle(20);
-void rainbowCycle(int SpeedDelay) {
-  byte *c;
-  uint16_t i, j;
+RainbowCycle rainbowCycle = RainbowCycle(&strip);
 
-  for (j = 0; j < 256 * 2; j++) { // 2 cycles of all colors on wheel
-    if (shouldAbortEffect()) {
-      return;
-    }
-    for (i = 0; i <= ledCount; i++) {
-      c = Wheel(((i * 256 / ledCount) + j) & 255);
-      setPixel(i, *c, *(c + 1), *(c + 2), 0, true);
-    }
-    showStrip();
-    delay(SpeedDelay);
-  }
+void rainbowCycleRunner(int SpeedDelay) {
+  rainbowCycle.loop();
+  delay(SpeedDelay);
 }
 
 //  colorWipe(50);

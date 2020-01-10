@@ -87,7 +87,7 @@ void setup() {
   
   // Standalone startup sequence - Wipe White
   for(uint16_t i=0; i<=ledCount; i++) {
-    setPixel(i, 0, 0, 0, 255, false);
+    setPixel(i, 0, 0, 255, 255, false);
     showStrip();
     delay(1); // Need delay to be like a yield so it will not restatrt
   }
@@ -452,7 +452,7 @@ void loop() {
         theaterChase(transitionTime);
       }
       if (effect == "rainbow cycle") {
-        rainbowCycle(transitionTime/5);
+        rainbowCycleRunner(transitionTime/5);
       }
       if (effect == "color wipe") {
         colorWipe(transitionTime/20);
