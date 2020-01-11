@@ -18,7 +18,7 @@ void showStrip() {
     return;
   }
 
-  strip.show();
+  setting.strip->show();
 }
 
 void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
@@ -33,7 +33,7 @@ void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
     w = map(w, 0, 255, 0, setting.getBrightness());
   }
 
-  strip.setPixelColor(pixel, r, g, b, w);
+  setting.strip->setPixelColor(pixel, r, g, b, w);
 }
 
 void setPixel(int pixel, RGBW color, bool applyBrightness) {
@@ -231,14 +231,6 @@ void theaterChase(int SpeedDelay) {
       setPixel(i + q, 0, 0, 0, 0, false);  //turn every third pixel off
     }
   }
-}
-
-//  rainbowCycle(20);
-RainbowCycle rainbowCycle = RainbowCycle(&strip);
-
-void rainbowCycleRunner(int SpeedDelay) {
-  rainbowCycle.loop();
-  delay(SpeedDelay);
 }
 
 //  colorWipe(50);
@@ -552,7 +544,7 @@ void _meteorRainFadeToBlack(int ledNo, byte fadeValue) {
   uint8_t r, g, b;
   int value;
 
-  oldColor = strip.getPixelColor(ledNo);
+  oldColor = setting.strip->getPixelColor(ledNo);
   r = (oldColor & 0x00ff0000UL) >> 16;
   g = (oldColor & 0x0000ff00UL) >> 8;
   b = (oldColor & 0x000000ffUL);
@@ -561,7 +553,7 @@ void _meteorRainFadeToBlack(int ledNo, byte fadeValue) {
   g = (g <= 10) ? 0 : (int) g - (g * fadeValue / 256);
   b = (b <= 10) ? 0 : (int) b - (b * fadeValue / 256);
 
-  strip.setPixelColor(ledNo, r, g, b);
+  setting.strip->setPixelColor(ledNo, r, g, b);
 }
 
 void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay) {

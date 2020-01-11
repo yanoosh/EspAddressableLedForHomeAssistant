@@ -1,10 +1,15 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
-#include "rgbw.h"
+
+#include <Arduino.h>
 #include <EEPROM.h>
+#include "rgbw.h"
+#include "effect/EffectProcessor.cpp"
 
 class Setting {
   public:
+    Adafruit_NeoPixel *strip;
+
     void setTurnOn(boolean turnOn) {
       this->turnOn = turnOn;
     }
@@ -39,12 +44,18 @@ class Setting {
       return this->brightness;
     }
 
-    void setEffect(byte effect) {
-      this->effect = effect;
+    void setEffect(const char* name, EffectProcessor *effectProcessor) {
+      // todo remove name after refactor all effect to class
+      this->effectName = name;
+      this->effectProcessor = effectProcessor;
     }
 
-    byte getEffect() {
-      return this->effect;
+    const char *getEffectName() {
+      return this->effectName;
+    }
+
+    EffectProcessor *getEffectProcessor() {
+      return this->effectProcessor;
     }
 
     void setSpeed(byte speed) {
@@ -60,7 +71,8 @@ class Setting {
     RGBW sourceColor = {255, 255, 255, 0};
     RGBW filteredColor;
     byte brightness;
-    byte effect;
+    const char *effectName;
+    EffectProcessor *effectProcessor;
     byte speed;
 
     void updateFilteredColor() {
@@ -79,7 +91,8 @@ class MemmorizedSetting {
       current->setTurnOn(memorized.turnOn);
       current->setSourceColor(memorized.color);
       current->setBrightness(memorized.brightness);
-      current->setEffect(memorized.effect);
+      // todo set correct effect usig id
+      // current->setEffect(memorized.effect);
       current->setSpeed(memorized.speed);
     }
 
@@ -88,7 +101,8 @@ class MemmorizedSetting {
       memorized.turnOn = current->getTurnOn();
       memorized.color = current->getSourceColor();
       memorized.brightness = current->getBrightness();
-      memorized.effect = current->getEffect();
+      // todo set correct id
+      memorized.effect = 0;
       memorized.speed = current->getSpeed();
       
       EEPROM.put(0, memorized);

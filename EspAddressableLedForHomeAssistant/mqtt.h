@@ -34,7 +34,7 @@ void sendState() {
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
   
-  #ifdef DEBUGE_MODE
+  #ifdef _DEBUG
     root["id"] = ESP.getChipId();
     root["memory_heap"] = ESP.getFreeHeap();
     root["work_time"] = millis();
@@ -104,6 +104,7 @@ bool processJson(char* message) {
   if (root.containsKey("effect")) {
     effectString = root["effect"];
     effect = effectString;
+    updateEffectByName(effectString);
   }
 
   return true;
@@ -116,7 +117,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   _DP("] ");
   
   char message[length + 1];
-  for (int i = 0; i < length; i++) {
+  for (unsigned int i = 0; i < length; i++) {
     message[i] = (char)payload[i];
   }
   message[length] = '\0';
@@ -196,9 +197,9 @@ void mqttLoop(unsigned long now) {
   }
   mqtt.loop(); // Check MQTT
 
-  #ifdef _DEBUGE_STATE
+  #ifdef _DEBUG_STATE
     static unsigned long lastSendState = 0;
-    if (now - lastSendState > _DEBUGE_STATE) {
+    if (now - lastSendState > _DEBUG_STATE) {
       sendState();
       lastSendState = now;
     }
