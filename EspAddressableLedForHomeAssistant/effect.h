@@ -2,28 +2,31 @@
 #define _EFFECT_INO
 
 #include "effect/Clear.cpp"
+#include "effect/CylonBounce.cpp"
 #include "effect/EffectProcessor.cpp"
+#include "effect/Fire.cpp"
+#include "effect/MeteorRain.cpp"
 #include "effect/RainbowCycle.cpp"
 #include "effect/Solid.cpp"
+#include "effect/Twinkle.cpp"
 
 int8_t effectLength = 19;
 const char *effects[] = {
     "clear",  // 0
     "solid",
-    "pixel",
     "twinkle",
-    "cylon bounce",  // 4
-    "fire",
+    "cylon bounce",
+    "fire",  // 4
     "fade in out",
     "strobe",
     "theater chase",
-    "rainbow cycle",  // 9
-    "color wipe",
+    "rainbow cycle",
+    "color wipe",  // 9
     "running lights",
     "snow sparkle",
     "sparkle",
-    "twinkle random",  // 14
-    "bouncing balls",
+    "twinkle random",
+    "bouncing balls",  // 14
     "lightning",
     "meteor rain",
     "color wipe once"};
@@ -49,8 +52,20 @@ void updateEffect(int8_t id, const char *name) {
       case 1:
         effectProcessor = new Solid(core->getStrip(), core->getColor());
         break;
-      case 9:
+      case 2:
+        effectProcessor = new Twinkle(core->getStrip(), core->getColor());
+        break;
+      case 3:
+        effectProcessor = new CylonBounce(core->getStrip(), core->getColor());
+        break;
+      case 4:
+        effectProcessor = new Fire(core->getStrip());
+        break;
+      case 8:
         effectProcessor = new RainbowCycle(core->getStrip());
+        break;
+      case 16:
+        effectProcessor = new MeteorRain(core->getStrip(), core->getColor());
         break;
       default:
         effectProcessor = NULL;

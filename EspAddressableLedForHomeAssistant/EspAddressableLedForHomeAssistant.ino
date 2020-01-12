@@ -90,12 +90,12 @@ void setup() {
     ;
   }
 #endif
-  //Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
   pinMode(LED_BUILTIN, OUTPUT);       // Initialize the LED_BUILTIN pin as an output (So it doesnt float as a LED is on this pin)
   digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
   pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
   digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
-  core = new Core(new Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400));
+  //Adafruit_NeoPixel strip = Adafruit_NeoPixel(ledCount, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
+  core = new Core(new Adafruit_NeoPixel(ledCount, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400));
   authSetup(core);
   core->setup();
 
@@ -179,18 +179,6 @@ void loop() {
         }
         delay(transitionTime);
       } else {
-        if (effect == "pixel") {
-          ShowPixels();
-        }
-        if (effect == "twinkle") {
-          Twinkle(10, (2 * transitionTime), false);
-        }
-        if (effect == "cylon bounce") {
-          CylonBounce(4, transitionTime / 10, 50);
-        }
-        if (effect == "fire") {
-          Fire(55, 120, (2 * transitionTime / 2));
-        }
         if (effect == "fade in out") {
           FadeInOut();
         }
@@ -220,9 +208,6 @@ void loop() {
         }
         if (effect == "lightning") {
           Lightning(transitionTime);
-        }
-        if (effect == "meteor rain") {
-          meteorRain(ledCount / 5, core->getMaxBrightness() / 4, true, transitionTime);
         }
 
         // Run once notification effects

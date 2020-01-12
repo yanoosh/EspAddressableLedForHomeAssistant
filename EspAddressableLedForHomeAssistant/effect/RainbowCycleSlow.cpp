@@ -6,39 +6,37 @@
 
 class RainbowCycle : public EffectProcessor {
  public:
-  RainbowCycle(Adafruit_NeoPixel *strip) : EffectProcessor(strip){
-    // todo led number from settings.
-    this->ledCount = strip->numPixels();
-  }
+  RainbowCycle(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {}
 
   const char *getName() override {
-    return this->name;
+    return "rainbow cycle";
   }
 
   bool isFinished() override {
     return false;
   }
 
+  // todo made by mistake - check ranges
   void loop() override {
-    byte c[3];
-    unsigned int i;
-    if (this->position > 256 * 2) {
-      this->position = 0;
-    }
+    uint8_t c[3];
+    uint16_t i, count;
+    count = this->strip->numPixels();
 
-    for (i = 0; i <= this->ledCount; i++) {
-      this->wheel(((i * 256 / this->ledCount) + this->position) & 255, c);
+    for (i = 0; i < count; i++) {
+      this->wheel(((i * 256 / count) + this->step) & 255, c);
       this->strip->setPixelColor(i, *c, *(c + 1), *(c + 2));
     }
     this->strip->show();
 
-    this->position++;
+    this->step++;
+    if (this->step > this->maxStep) {
+      this->step = 0;
+    }
   }
 
  private:
-  const char *name = "rainbow cycle";
-  unsigned int ledCount;
-  unsigned int position = 0;
+  uint16_t step = 0;
+  const uint16_t maxStep = 256 * 2;
 
   void wheel(byte wheelPos, byte *c) {
     if (wheelPos < 85) {

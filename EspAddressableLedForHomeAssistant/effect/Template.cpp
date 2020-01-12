@@ -5,11 +5,15 @@
 
 class Template : public EffectProcessor {
  public:
-  const char *getName(){
+  Template(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {}
+
+  const char *getName() override {
     return "";
   }
-  void loop(){}
-  bool isFinished(){
+
+  void loop() override {}
+
+  bool isFinished() override {
     return true;
   }
 };

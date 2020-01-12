@@ -6,14 +6,14 @@
 class Clear : public EffectProcessor {
  public:
   Clear(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {}
-  const char *getName() {
+  const char *getName() override {
     return "clear";
   }
-  void loop() {
+  void loop() override {
     this->strip->clear();
     this->strip->show();
   }
-  bool isFinished() {
+  bool isFinished() override {
     return true;
   }
 };

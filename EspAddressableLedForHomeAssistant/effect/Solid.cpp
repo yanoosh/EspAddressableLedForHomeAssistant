@@ -9,14 +9,14 @@ class Solid : public EffectProcessor {
   Solid(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
     this->color = strip->Color(color.red, color.green, color.blue);
   }
-  const char *getName() {
+  const char *getName() override {
     return "solid";
   }
-  void loop() {
+  void loop() override {
     this->strip->fill(this->color);
     this->strip->show();
   }
-  bool isFinished() {
+  bool isFinished() override {
     return true;
   }
 
