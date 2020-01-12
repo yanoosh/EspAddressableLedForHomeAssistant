@@ -7,15 +7,15 @@ String GetStatusPic() {
   String imgString = F("<svg height='64' width='64'>");
   imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
 
-  if (setting.getColor().white > 0) {
+  if (core->getColor().white > 0) {
     imgString += F("white");
   } else {
     imgString += F("rgb(");
-    imgString += setting.getColor().red;
+    imgString += core->getColor().red;
     imgString += F(",");
-    imgString += setting.getColor().green;
+    imgString += core->getColor().green;
     imgString += F(",");
-    imgString += setting.getColor().blue;
+    imgString += core->getColor().blue;
     imgString += F(")");
   }
 
@@ -51,7 +51,7 @@ void ServeWebClients() {
 
   inString += F("<h3 class='ui-bar ui-bar-a ui-corner-all'>LED Status</h3>");
   inString += F("<table><tr><td><b>State:<br></td><td><label id='lbl_status' ");
-  if (setting.getTurnOn()) {
+  if (core->isTurnOn()) {
     inString += F("style='color:green;font-size:larger;font-weight:600;'>ON");
   } else {
     inString += F("style='color:red;font-size:larger;font-weight:600;'>OFF");
@@ -60,18 +60,18 @@ void ServeWebClients() {
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
-  inString += setting.getColor().red;
+  inString += core->getColor().red;
   inString += F("</label></td><td rowspan='4'>");
   inString += GetStatusPic();
   inString += F("</td></tr>");
   inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
-  inString += setting.getColor().green;
+  inString += core->getColor().green;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Blue:</b></td><td><label id='lbl_blue'>");
-  inString += setting.getColor().blue;
+  inString += core->getColor().blue;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>White:</b></td><td><label id='lbl_white'>");
-  inString += setting.getColor().white;
+  inString += core->getColor().white;
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");

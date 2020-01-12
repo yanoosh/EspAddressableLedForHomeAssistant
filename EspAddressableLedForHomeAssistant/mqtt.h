@@ -23,15 +23,16 @@ void sendState() {
 
   JsonObject& root = jsonBuffer.createObject();
 
-  root["state"] = (setting.getTurnOn()) ? on_cmd : off_cmd;
+  root["state"] = (core->isTurnOn()) ? on_cmd : off_cmd;
   JsonObject& color = root.createNestedObject("color");
-  color["r"] = setting.getColor().red;
-  color["g"] = setting.getColor().green;
-  color["b"] = setting.getColor().blue;
+  color["r"] = core->getColor().red;
+  color["g"] = core->getColor().green;
+  color["b"] = core->getColor().blue;
 
-  root["white_value"] = setting.getColor().white;
+  root["white_value"] = core->getColor().white;
   root["brightness"] = core->getBrightness();
   root["transition"] = transitionTime;
+  // todo change after move all effect to class
   root["effect"] = effect.c_str();
 
 #ifdef _DEBUG
@@ -77,12 +78,12 @@ bool processJson(char* message) {
   }
 
   if (root.containsKey("color")) {
-    setting.setColor({root["color"]["r"], root["color"]["g"], root["color"]["b"], 0});
+    core->setColor({root["color"]["r"], root["color"]["g"], root["color"]["b"], 0});
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
   if (root.containsKey("white_value")) {
-    setting.setColor({0, 0, 0, root["white_value"]});
+    core->setColor({0, 0, 0, root["white_value"]});
   }
 
   if (root.containsKey("brightness")) {
@@ -127,22 +128,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  previousRed = setting.getColor().red;
-  previousGreen = setting.getColor().green;
-  previousBlue = setting.getColor().blue;
-  previousWhite = setting.getColor().white;
+  previousRed = core->getColor().red;
+  previousGreen = core->getColor().green;
+  previousBlue = core->getColor().blue;
+  previousWhite = core->getColor().white;
 
   //TODO when light is turn on then should only change on/off state not other values.
-  if (setting.getTurnOn() || newStateOn) {
-    //    mapColor(&setting.getColor(), setting.sourceColor, core->getBrightness());
+  if (core->isTurnOn() || newStateOn) {
+    //    mapColor(&core->getColor(), core->sourceColor, core->getBrightness());
   } else {
-    setting.setColor(BLACK);
+    core->setColor(BLACK);
   }
 
   transitionAbort = true;  // Kill the current effect
   transitionDone = false;  // Start a new transition
 
-  if (setting.getTurnOn() != newStateOn) {
+  if (core->isTurnOn() != newStateOn) {
     if (newStateOn) {
       setOn();
     } else {

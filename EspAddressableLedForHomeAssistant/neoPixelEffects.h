@@ -14,15 +14,15 @@ bool shouldAbortEffect() {
 }
 
 void showStrip() {
-  if (!setting.getTurnOn()) {
+  if (!core->isTurnOn()) {
     return;
   }
 
-  setting.strip->show();
+  core->getStrip()->show();
 }
 
 void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
-  if (!setting.getTurnOn()) {
+  if (!core->isTurnOn()) {
     return;
   }
 
@@ -33,7 +33,7 @@ void setPixel(int pixel, byte r, byte g, byte b, byte w, bool applyBrightness) {
     w = map(w, 0, 255, 0, core->getBrightness());
   }
 
-  setting.strip->setPixelColor(pixel, r, g, b, w);
+  core->getStrip()->setPixelColor(pixel, r, g, b, w);
 }
 
 void setPixel(int pixel, RGBW color, bool applyBrightness) {
@@ -41,7 +41,7 @@ void setPixel(int pixel, RGBW color, bool applyBrightness) {
 }
 
 void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
-  if (!setting.getTurnOn()) {
+  if (!core->isTurnOn()) {
     return;
   }
 
@@ -66,7 +66,7 @@ void Twinkle(int Count, int SpeedDelay, boolean OnlyOne) {
     if (shouldAbortEffect()) {
       return;
     }
-    setPixel(random(ledCount), setting.getColor(), false);
+    setPixel(random(ledCount), core->getColor(), false);
     showStrip();
     delay(SpeedDelay);
     if (OnlyOne) {
@@ -79,7 +79,7 @@ void Twinkle(int Count, int SpeedDelay, boolean OnlyOne) {
 
 // CylonBounce(4, 10, 50);
 void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay) {
-  RGBW paleColor = {setting.getColor().red / 10, setting.getColor().green / 10, setting.getColor().blue / 10, setting.getColor().white / 10};
+  RGBW paleColor = {core->getColor().red / 10, core->getColor().green / 10, core->getColor().blue / 10, core->getColor().white / 10};
 
   for (int i = 0; i <= (ledCount - EyeSize - 2); i++) {
     if (shouldAbortEffect()) {
@@ -88,7 +88,7 @@ void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay) {
     setAll(BLACK, false);
     setPixel(i, paleColor, false);
     for (int j = 1; j <= EyeSize; j++) {
-      setPixel(i + j, setting.getColor(), false);
+      setPixel(i + j, core->getColor(), false);
     }
     setPixel(i + EyeSize + 1, paleColor, false);
     showStrip();
@@ -104,7 +104,7 @@ void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay) {
     setAll(0, 0, 0, 0, false);
     setPixel(i, paleColor, false);
     for (int j = 1; j <= EyeSize; j++) {
-      setPixel(i + j, setting.getColor(), false);
+      setPixel(i + j, core->getColor(), false);
     }
     setPixel(i + EyeSize + 1, paleColor, false);
     showStrip();
@@ -176,10 +176,10 @@ void FadeInOut() {
     if (shouldAbortEffect()) {
       return;
     }
-    r = (k / 256.0) * setting.getColor().red;
-    g = (k / 256.0) * setting.getColor().green;
-    b = (k / 256.0) * setting.getColor().blue;
-    w = (k / 256.0) * setting.getColor().white;
+    r = (k / 256.0) * core->getColor().red;
+    g = (k / 256.0) * core->getColor().green;
+    b = (k / 256.0) * core->getColor().blue;
+    w = (k / 256.0) * core->getColor().white;
     setAll(r, g, b, w);
     showStrip();
   }
@@ -188,10 +188,10 @@ void FadeInOut() {
     if (shouldAbortEffect()) {
       return;
     }
-    r = (k / 256.0) * setting.getColor().red;
-    g = (k / 256.0) * setting.getColor().green;
-    b = (k / 256.0) * setting.getColor().blue;
-    w = (k / 256.0) * setting.getColor().white;
+    r = (k / 256.0) * core->getColor().red;
+    g = (k / 256.0) * core->getColor().green;
+    b = (k / 256.0) * core->getColor().blue;
+    w = (k / 256.0) * core->getColor().white;
     setAll(r, g, b, w);
     showStrip();
   }
@@ -206,7 +206,7 @@ void Strobe(int StrobeCount, int FlashDelay) {
     if (shouldAbortEffect()) {
       return;
     }
-    setAll(setting.getColor());
+    setAll(core->getColor());
     showStrip();
     delay(FlashDelay);
     setAll(BLACK);
@@ -221,7 +221,7 @@ void theaterChase(int SpeedDelay) {
       return;
     }
     for (int i = 0; i <= ledCount; i = i + 3) {
-      setPixel(i + q, setting.getColor(), false);  //turn every third pixel on
+      setPixel(i + q, core->getColor(), false);  //turn every third pixel on
     }
     showStrip();
 
@@ -239,7 +239,7 @@ void colorWipe(int SpeedDelay) {
     if (shouldAbortEffect()) {
       return;
     }
-    setPixel(i, setting.getColor(), false);
+    setPixel(i, core->getColor(), false);
     showStrip();
     delay(SpeedDelay);
   }
@@ -252,7 +252,7 @@ void colorWipeOnce(int SpeedDelay) {
 
   // Reset back to previous color
   RGBW color = {previousRed, previousGreen, previousBlue, previousWhite};
-  setting.setColor(color);
+  core->setColor(color);
 
   colorWipe(SpeedDelay);
 }
@@ -271,10 +271,10 @@ void RunningLights(int WaveDelay) {
       //float level = sin(i+Position) * 127 + 128;
       //setPixel(i,level,0,0,false);
       //float level = sin(i+Position) * 127 + 128;
-      setPixel(i, ((sin(i + Position) * 127 + 128) / 255) * setting.getColor().red,
-               ((sin(i + Position) * 127 + 128) / 255) * setting.getColor().green,
-               ((sin(i + Position) * 127 + 128) / 255) * setting.getColor().blue,
-               ((sin(i + Position) * 127 + 128) / 255) * setting.getColor().white,
+      setPixel(i, ((sin(i + Position) * 127 + 128) / 255) * core->getColor().red,
+               ((sin(i + Position) * 127 + 128) / 255) * core->getColor().green,
+               ((sin(i + Position) * 127 + 128) / 255) * core->getColor().blue,
+               ((sin(i + Position) * 127 + 128) / 255) * core->getColor().white,
                false);
     }
 
@@ -285,13 +285,13 @@ void RunningLights(int WaveDelay) {
 
 //  SnowSparkle(20, random(100,1000));
 void SnowSparkle(int SparkleDelay, int SpeedDelay) {
-  setAll(setting.getColor());
+  setAll(core->getColor());
 
   int Pixel = random(ledCount);
   setPixel(Pixel, 0, 0, 0, 255, false);  //@todo why change all to white?
   showStrip();
   delay(SparkleDelay);
-  setPixel(Pixel, setting.getColor(), false);
+  setPixel(Pixel, core->getColor(), false);
   showStrip();
   delay(SpeedDelay);
 }
@@ -300,7 +300,7 @@ void SnowSparkle(int SparkleDelay, int SpeedDelay) {
 void Sparkle(int SpeedDelay) {
   setAll(BLACK, false);
   int Pixel = random(ledCount);
-  setPixel(Pixel, setting.getColor(), false);
+  setPixel(Pixel, core->getColor(), false);
   showStrip();
   delay(SpeedDelay);
   setPixel(Pixel, BLACK, false);
@@ -368,7 +368,7 @@ void BouncingBalls(int BallCount) {
     }
 
     for (int i = 0; i < BallCount; i++) {
-      setPixel(Position[i], setting.getColor(), false);
+      setPixel(Position[i], core->getColor(), false);
     }
 
     showStrip();
@@ -438,10 +438,10 @@ void Fade(int SpeedDelay) {
   int grnVal = previousGreen;
   int bluVal = previousBlue;
   int whiVal = previousWhite;
-  int stepR = calculateStep(redVal, setting.getColor().red);
-  int stepG = calculateStep(grnVal, setting.getColor().green);
-  int stepB = calculateStep(bluVal, setting.getColor().blue);
-  int stepW = calculateStep(whiVal, setting.getColor().white);
+  int stepR = calculateStep(redVal, core->getColor().red);
+  int stepG = calculateStep(grnVal, core->getColor().green);
+  int stepB = calculateStep(bluVal, core->getColor().blue);
+  int stepW = calculateStep(whiVal, core->getColor().white);
 
   // If no change then exit
   if (stepR == 0 && stepG == 0 && stepB == 0 && stepW == 0) {
@@ -477,7 +477,7 @@ void Lightning(int SpeedDelay) {
   for (int flashCounter = 0; flashCounter < random(1, 4); flashCounter++) {
     int dimmer = random(10, core->getBrightness());  // return strokes are brighter than the leader
     RGBW lightningColor = {};
-    lightningColor = mapColor(setting.getColor(), dimmer);
+    lightningColor = mapColor(core->getColor(), dimmer);
     //    int rr = map(red, 0, 255, 0, dimmer);
     //    int gg = map(green, 0, 255, 0, dimmer);
     //    int bb = map(blue, 0, 255, 0, dimmer);
@@ -514,7 +514,7 @@ void ShowPixels() {
     }
 
     for (int i = startL; i < endL; i++) {
-      setPixel(i, setting.getColor(), true);
+      setPixel(i, core->getColor(), true);
     }
 
   } else {
@@ -523,7 +523,7 @@ void ShowPixels() {
       if (pixel > ledCount) {
         pixel = ledCount;
       }
-      setPixel(pixel, setting.getColor(), true);
+      setPixel(pixel, core->getColor(), true);
     }
   }
 
@@ -537,7 +537,7 @@ void _meteorRainFadeToBlack(int ledNo, byte fadeValue) {
   uint8_t r, g, b;
   int value;
 
-  oldColor = setting.strip->getPixelColor(ledNo);
+  oldColor = core->getStrip()->getPixelColor(ledNo);
   r = (oldColor & 0x00ff0000UL) >> 16;
   g = (oldColor & 0x0000ff00UL) >> 8;
   b = (oldColor & 0x000000ffUL);
@@ -546,7 +546,7 @@ void _meteorRainFadeToBlack(int ledNo, byte fadeValue) {
   g = (g <= 10) ? 0 : (int)g - (g * fadeValue / 256);
   b = (b <= 10) ? 0 : (int)b - (b * fadeValue / 256);
 
-  setting.strip->setPixelColor(ledNo, r, g, b);
+  core->getStrip()->setPixelColor(ledNo, r, g, b);
 }
 
 void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay) {
@@ -565,7 +565,7 @@ void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDeca
     // draw meteor
     for (int j = 0; j < meteorSize; j++) {
       if ((i - j < ledCount) && (i - j >= 0)) {
-        setPixel(i - j, setting.getColor().red, setting.getColor().green, setting.getColor().blue, 0, true);
+        setPixel(i - j, core->getColor().red, core->getColor().green, core->getColor().blue, 0, true);
       }
     }
 

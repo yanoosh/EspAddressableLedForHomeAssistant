@@ -3,59 +3,7 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#include "effect/EffectProcessor.cpp"
 #include "rgbw.h"
-
-class Setting {
- public:
-  Adafruit_NeoPixel *strip;
-
-  void setTurnOn(boolean turnOn) {
-    this->turnOn = turnOn;
-  }
-
-  boolean getTurnOn() {
-    return this->turnOn;
-  }
-
-  void setColor(RGBW color) {
-    this->color = color;
-  }
-
-  RGBW getColor() {
-    return color;
-  }
-
-  void setEffect(const char *name, EffectProcessor *effectProcessor) {
-    // todo remove name after refactor all effect to class
-    this->effectName = name;
-    this->effectProcessor = effectProcessor;
-  }
-
-  const char *getEffectName() {
-    return this->effectName;
-  }
-
-  EffectProcessor *getEffectProcessor() {
-    return this->effectProcessor;
-  }
-
-  void setSpeed(byte speed) {
-    this->speed = speed;
-  }
-
-  byte getSpeed() {
-    return this->speed;
-  }
-
- private:
-  boolean turnOn;
-  RGBW color = {255, 255, 255, 0};
-  RGBW filteredColor;
-  const char *effectName;
-  EffectProcessor *effectProcessor;
-  byte speed;
-};
 
 // class MemmorizedSetting {
 //  public:
@@ -95,5 +43,5 @@ class Setting {
 //     byte speed;
 //   };
 // };
-//setting.filteredColor.
+//core->filteredColor.
 #endif

@@ -1,8 +1,10 @@
 #ifndef _EFFECT_INO
 #define _EFFECT_INO
 
+#include "effect/Clear.cpp"
 #include "effect/EffectProcessor.cpp"
 #include "effect/RainbowCycle.cpp"
+#include "effect/Solid.cpp"
 
 int8_t effectLength = 19;
 const char *effects[] = {
@@ -37,21 +39,27 @@ int8_t getEffectId(const char *name) {
 
 void updateEffect(int8_t id, const char *name) {
   EffectProcessor *effectProcessor;
-  delete setting.getEffectProcessor();
+  delete core->getEffectProcessor();
 
   if (id > -1) {
     switch (id) {
+      case 0:
+        effectProcessor = new Clear(core->getStrip());
+        break;
+      case 1:
+        effectProcessor = new Solid(core->getStrip(), core->getColor());
+        break;
       case 9:
-        effectProcessor = new RainbowCycle(setting.strip);
+        effectProcessor = new RainbowCycle(core->getStrip());
         break;
       default:
         effectProcessor = NULL;
     }
-    setting.setEffect(name, effectProcessor);
+    core->setEffect(name, effectProcessor);
     return;
   }
 
-  setting.setEffect(name, NULL);
+  core->setEffect(name, NULL);
 }
 
 void updateEffectByName(const char *effect) {

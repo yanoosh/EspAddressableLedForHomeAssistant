@@ -15,10 +15,33 @@ class Core {
     this->strip->begin();
     this->strip->show();
   }
+  
+  void setTurnOn(bool turnOn) {
+    this->turnOn = turnOn;
+    this->syncLoopAndState();
+  }
+
+  bool isTurnOn() {
+    return this->turnOn;
+  }
+
+  Adafruit_NeoPixel *getStrip() {
+    return this->strip;
+  }
+
+  void setColor(RGBW color) {
+    this->color = color;
+    this->syncLoopAndState();
+  }
+
+  RGBW getColor() {
+    return color;
+  }
 
   void setBrightness(uint8_t brightness) {
     this->brightness = max((uint8_t)0, min(brightness, this->maxBrightness));
     this->strip->setBrightness(this->brightness);
+    this->syncLoopAndState();
   }
 
   uint8_t getBrightness() {
@@ -34,16 +57,51 @@ class Core {
     return this->brightness;
   }
 
+  void setSpeed(byte speed) {
+    this->speed = speed;
+  }
+
+  byte getSpeed() {
+    return this->speed;
+  }
+
+  void setEffect(const char *name, EffectProcessor *effectProcessor) {
+    // todo remove name after refactor all effect to class
+    this->effectName = name;
+    this->effectProcessor = effectProcessor;
+    this->syncLoopAndState();
+  }
+
+  const char *getEffectName() {
+    return this->effectName;
+  }
+
+  EffectProcessor *getEffectProcessor() {
+    return this->effectProcessor;
+  }
+
+  void disableLoop() {
+    this->loopEnabled = false;
+  }
+
+  bool isLoopEnabled() {
+    return this->loopEnabled;
+  }
+
  private:
   Adafruit_NeoPixel *strip;
-  boolean turnOn;
-  RGBW sourceColor = {255, 255, 255, 0};
-  RGBW filteredColor;
+  bool turnOn;
+  RGBW color = {255, 255, 255, 0};
   uint8_t brightness = 255;
   uint8_t maxBrightness = 255;
   const char *effectName;
   EffectProcessor *effectProcessor;
   uint8_t speed;
+  bool loopEnabled = true;
+
+  void syncLoopAndState() {
+    this->loopEnabled = this->turnOn;
+  }
 };
 
 #endif

@@ -33,7 +33,6 @@
 #include <PubSubClient.h>
 #include <WiFiUdp.h>
 #include "Core.h"
-#include "settings.h"
 
 // The maximum mqtt message size, including header, is 128 bytes by default.
 // You must update your PubSubClient.h file manually.......
@@ -51,7 +50,6 @@ const char* lwtMessage = "offline";
 // Real values as requested from the MQTT server
 
 /******************************** OTHER GLOBALS *******************************/
-Setting setting;
 Core* core;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
@@ -64,6 +62,7 @@ bool transitionAbort = false;
 int transitionTime = 150;  // 1-150
 int pixelLen = 1;
 int pixelArray[50];
+RGBW BLACK = {0, 0, 0, 0};
 
 // Previous requested values
 byte previousRed = 0;
@@ -81,7 +80,6 @@ void setOff();
 #include "mqtt.h"
 #include "neoPixelEffects.h"
 #include "ota.h"
-#include "settings.h"
 #include "web.h"
 
 /********************************** START SETUP*****************************************/
@@ -97,8 +95,7 @@ void setup() {
   digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
   pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
   digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
-  setting.strip = new Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400);
-  core = new Core(setting.strip);
+  core = new Core(new Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400));
   authSetup(core);
   core->setup();
 
@@ -127,12 +124,13 @@ void setup() {
   showStrip();
   delay(500);                       // Wait so we can see the green before clearing
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
+  updateEffectByName(effect.c_str());
 }
 
 /********************************** START LED POWER STATE *****************************************/
 void setOff() {
   setAll(BLACK);
-  setting.setTurnOn(false);
+  core->setTurnOn(false);
   transitionDone = true;   // Ensure we dont run the loop
   transitionAbort = true;  // Ensure we about any current effect
   previousRed = 0;
@@ -159,7 +157,7 @@ void setOn() {
     _DPLN("LED: ON");
   }
 
-  setting.setTurnOn(true);
+  core->setTurnOn(true);
 }
 
 void loop() {
@@ -170,27 +168,17 @@ void loop() {
   otaLoop();
   webLoop();
 
-  transitionAbort = false;      // Because we came from the loop and not 1/2 way though a transition
-  if (!transitionDone) {        // Once we have completed the transition, No point to keep going though the process
-    if (setting.getTurnOn()) {  // if the light is turned on
-
+  transitionAbort = false;    // Because we came from the loop and not 1/2 way though a transition
+  if (!transitionDone && core->isLoopEnabled()) {      // Once we have completed the transition, No point to keep going though the process
+    if (core->isTurnOn()) {  // if the light is turned on
       //EFFECTS
-      if (setting.getEffectProcessor() != NULL) {
-        setting.getEffectProcessor()->loop();
+      if (core->getEffectProcessor() != NULL) {
+        core->getEffectProcessor()->loop();
+        if (core->getEffectProcessor()->isFinished()) {
+          core->disableLoop();
+        }
         delay(transitionTime);
       } else {
-        if (effect == "clear") {
-          setAll(BLACK);
-          transitionDone = true;
-        }
-        if (effect == "solid") {
-          if (transitionTime <= 1) {
-            setAll(setting.getColor());
-            transitionDone = true;
-          } else {
-            Fade(transitionTime);
-          }
-        }
         if (effect == "pixel") {
           ShowPixels();
         }
@@ -246,7 +234,7 @@ void loop() {
             effect = previousEffect;
           }
 
-          if (setting.getColor().red == 0 && setting.getColor().green == 0 && setting.getColor().blue == 0 && setting.getColor().white == 0) {
+          if (core->getColor().red == 0 && core->getColor().green == 0 && core->getColor().blue == 0 && core->getColor().white == 0) {
             setOff();
           } else {
             transitionDone = false;  // Run the old effect again

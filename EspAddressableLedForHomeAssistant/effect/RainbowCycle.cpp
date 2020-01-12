@@ -6,8 +6,7 @@
 
 class RainbowCycle : public EffectProcessor {
  public:
-  RainbowCycle(Adafruit_NeoPixel *strip) {
-    this->strip = strip;
+  RainbowCycle(Adafruit_NeoPixel *strip) : EffectProcessor(strip){
     // todo led number from settings.
     this->ledCount = 50;
   }
@@ -16,7 +15,8 @@ class RainbowCycle : public EffectProcessor {
     return this->name;
   }
 
-  void begin() override {
+  bool isFinished() override {
+    return false;
   }
 
   void loop() override {
@@ -35,11 +35,7 @@ class RainbowCycle : public EffectProcessor {
     this->position++;
   }
 
-  void end() override {
-  }
-
  private:
-  Adafruit_NeoPixel *strip;
   const char *name = "rainbow cycle";
   unsigned int ledCount;
   unsigned int position = 0;
