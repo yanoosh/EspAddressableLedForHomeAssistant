@@ -1,5 +1,6 @@
 #ifndef _RGBW_H
 #define _RGBW_H
+
 struct RGBW {
   byte red;
   byte green;

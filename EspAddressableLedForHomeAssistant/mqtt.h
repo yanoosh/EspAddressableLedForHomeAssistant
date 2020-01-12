@@ -25,12 +25,12 @@ void sendState() {
 
   root["state"] = (setting.getTurnOn()) ? on_cmd : off_cmd;
   JsonObject& color = root.createNestedObject("color");
-  color["r"] = setting.getSourceColor().red;
-  color["g"] = setting.getSourceColor().green;
-  color["b"] = setting.getSourceColor().blue;
+  color["r"] = setting.getColor().red;
+  color["g"] = setting.getColor().green;
+  color["b"] = setting.getColor().blue;
 
-  root["white_value"] = setting.getSourceColor().white;
-  root["brightness"] = setting.getBrightness();
+  root["white_value"] = setting.getColor().white;
+  root["brightness"] = core->getBrightness();
   root["transition"] = transitionTime;
   root["effect"] = effect.c_str();
 
@@ -77,16 +77,16 @@ bool processJson(char* message) {
   }
 
   if (root.containsKey("color")) {
-    setting.setSourceColor({root["color"]["r"], root["color"]["g"], root["color"]["b"], 0});
+    setting.setColor({root["color"]["r"], root["color"]["g"], root["color"]["b"], 0});
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
   if (root.containsKey("white_value")) {
-    setting.setSourceColor({0, 0, 0, root["white_value"]});
+    setting.setColor({0, 0, 0, root["white_value"]});
   }
 
   if (root.containsKey("brightness")) {
-    setting.setBrightness(root["brightness"]);
+    core->setBrightness(root["brightness"]);
   }
 
   if (root.containsKey("pixel")) {
@@ -127,16 +127,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
     return;
   }
 
-  previousRed = setting.getFilteredColor().red;
-  previousGreen = setting.getFilteredColor().green;
-  previousBlue = setting.getFilteredColor().blue;
-  previousWhite = setting.getFilteredColor().white;
+  previousRed = setting.getColor().red;
+  previousGreen = setting.getColor().green;
+  previousBlue = setting.getColor().blue;
+  previousWhite = setting.getColor().white;
 
   //TODO when light is turn on then should only change on/off state not other values.
   if (setting.getTurnOn() || newStateOn) {
-    //    mapColor(&setting.getFilteredColor(), setting.sourceColor, setting.getBrightness());
+    //    mapColor(&setting.getColor(), setting.sourceColor, core->getBrightness());
   } else {
-    setting.setFilteredColor(BLACK);
+    setting.setColor(BLACK);
   }
 
   transitionAbort = true;  // Kill the current effect

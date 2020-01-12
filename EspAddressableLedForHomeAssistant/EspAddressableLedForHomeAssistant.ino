@@ -32,7 +32,7 @@
 #include <ESP8266mDNS.h>
 #include <PubSubClient.h>
 #include <WiFiUdp.h>
-#include "auth.h"
+#include "Core.h"
 #include "settings.h"
 
 // The maximum mqtt message size, including header, is 128 bytes by default.
@@ -52,6 +52,7 @@ const char* lwtMessage = "offline";
 
 /******************************** OTHER GLOBALS *******************************/
 Setting setting;
+Core* core;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 const char* effectString = "solid";
@@ -73,8 +74,10 @@ byte previousWhite = 0;
 void setOn();
 void setOff();
 
-#include "effect.h"
+#include "auth.h"
 #include "wifi.h"
+
+#include "effect.h"
 #include "mqtt.h"
 #include "neoPixelEffects.h"
 #include "ota.h"
@@ -83,30 +86,24 @@ void setOff();
 
 /********************************** START SETUP*****************************************/
 void setup() {
-  //Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
-  setting.strip = new Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400);
-  pinMode(LED_BUILTIN, OUTPUT);       // Initialize the LED_BUILTIN pin as an output (So it doesnt float as a LED is on this pin)
-  digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
-  pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
-  digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
-
 #ifdef _DEBUG
   Serial.begin(115200);
   while (!Serial) {
     ;
   }
 #endif
-
-  delay(1000);  // Wait for Leds to init and Cap to charge
-  setup_config();
-
-  // End of trinket special code
-  //TODO why it isnt use as brightness settings?
-  setting.strip->setBrightness(maxBrightness);
-  setting.strip->begin();
-  setting.strip->show();  // Initialize all pixels to 'off'
+  //Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
+  pinMode(LED_BUILTIN, OUTPUT);       // Initialize the LED_BUILTIN pin as an output (So it doesnt float as a LED is on this pin)
+  digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
+  pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
+  digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
+  setting.strip = new Adafruit_NeoPixel(LED_COUNT_MAXIMUM, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400);
+  core = new Core(setting.strip);
+  authSetup(core);
+  core->setup();
 
   // Standalone startup sequence - Wipe White
+  //todo investigate loop
   for (uint16_t i = 0; i <= ledCount; i++) {
     setPixel(i, 0, 0, 0, 255, false);
     showStrip();
@@ -188,7 +185,7 @@ void loop() {
         }
         if (effect == "solid") {
           if (transitionTime <= 1) {
-            setAll(setting.getFilteredColor());
+            setAll(setting.getColor());
             transitionDone = true;
           } else {
             Fade(transitionTime);
@@ -237,7 +234,7 @@ void loop() {
           Lightning(transitionTime);
         }
         if (effect == "meteor rain") {
-          meteorRain(ledCount / 5, maxBrightness / 4, true, transitionTime);
+          meteorRain(ledCount / 5, core->getMaxBrightness() / 4, true, transitionTime);
         }
 
         // Run once notification effects
@@ -249,7 +246,7 @@ void loop() {
             effect = previousEffect;
           }
 
-          if (setting.getFilteredColor().red == 0 && setting.getFilteredColor().green == 0 && setting.getFilteredColor().blue == 0 && setting.getFilteredColor().white == 0) {
+          if (setting.getColor().red == 0 && setting.getColor().green == 0 && setting.getColor().blue == 0 && setting.getColor().white == 0) {
             setOff();
           } else {
             transitionDone = false;  // Run the old effect again

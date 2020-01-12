@@ -7,15 +7,15 @@ String GetStatusPic() {
   String imgString = F("<svg height='64' width='64'>");
   imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
 
-  if (setting.getSourceColor().white > 0) {
+  if (setting.getColor().white > 0) {
     imgString += F("white");
   } else {
     imgString += F("rgb(");
-    imgString += setting.getSourceColor().red;
+    imgString += setting.getColor().red;
     imgString += F(",");
-    imgString += setting.getSourceColor().green;
+    imgString += setting.getColor().green;
     imgString += F(",");
-    imgString += setting.getSourceColor().blue;
+    imgString += setting.getColor().blue;
     imgString += F(")");
   }
 
@@ -60,23 +60,23 @@ void ServeWebClients() {
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
-  inString += setting.getSourceColor().red;
+  inString += setting.getColor().red;
   inString += F("</label></td><td rowspan='4'>");
   inString += GetStatusPic();
   inString += F("</td></tr>");
   inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
-  inString += setting.getSourceColor().green;
+  inString += setting.getColor().green;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Blue:</b></td><td><label id='lbl_blue'>");
-  inString += setting.getSourceColor().blue;
+  inString += setting.getColor().blue;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>White:</b></td><td><label id='lbl_white'>");
-  inString += setting.getSourceColor().white;
+  inString += setting.getColor().white;
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Brightness:</b></td><td><label id='lbl_britness'>");
-  inString += setting.getBrightness();
+  inString += core->getBrightness();
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>TransitionTime:</b></td><td><label id='lbl_tt'>");
   inString += transitionTime;
@@ -108,7 +108,7 @@ void ServeWebClients() {
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td><b>Max Brightness:</b></td><td><label id='lbl_maxBrightness'>");
-  inString += maxBrightness;
+  inString += core->getMaxBrightness();
   inString += F(" (255 Max)</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
