@@ -6,42 +6,41 @@
 
 int8_t effectLength = 19;
 const char *effects[] = {
-  "clear", // 0
-  "solid",
-  "pixel",
-  "twinkle",
-  "cylon bounce", // 4 
-  "fire",
-  "fade in out",
-  "strobe",
-  "theater chase",
-  "rainbow cycle", // 9
-  "color wipe",
-  "running lights",
-  "snow sparkle",
-  "sparkle",
-  "twinkle random", // 14
-  "bouncing balls",
-  "lightning",
-  "meteor rain",
-  "color wipe once"
-};
+    "clear",  // 0
+    "solid",
+    "pixel",
+    "twinkle",
+    "cylon bounce",  // 4
+    "fire",
+    "fade in out",
+    "strobe",
+    "theater chase",
+    "rainbow cycle",  // 9
+    "color wipe",
+    "running lights",
+    "snow sparkle",
+    "sparkle",
+    "twinkle random",  // 14
+    "bouncing balls",
+    "lightning",
+    "meteor rain",
+    "color wipe once"};
 
-int8_t getEffectId(const char* name) {
+int8_t getEffectId(const char *name) {
   for (byte i = 0; i < effectLength; i++) {
-    if (0 == strcmp(effects[i], name))  {
+    if (0 == strcmp(effects[i], name)) {
       return i;
     }
   }
   return -1;
 }
 
-void updateEffect(int8_t id, const char* name) {
+void updateEffect(int8_t id, const char *name) {
   EffectProcessor *effectProcessor;
   delete setting.getEffectProcessor();
-  
+
   if (id > -1) {
-    switch(id) {
+    switch (id) {
       case 9:
         effectProcessor = new RainbowCycle(setting.strip);
         break;
@@ -51,7 +50,7 @@ void updateEffect(int8_t id, const char* name) {
     setting.setEffect(name, effectProcessor);
     return;
   }
-  
+
   setting.setEffect(name, NULL);
 }
 

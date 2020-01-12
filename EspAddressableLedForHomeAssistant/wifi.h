@@ -7,9 +7,9 @@ void wifiSetup() {
   delay(100);
   _DP("Connecting to SSID: ");
   _DPLN(WIFI_SSID);
-  
+
   // We start by connecting to a WiFi network
-  WiFi.mode(WIFI_STA);  
+  WiFi.mode(WIFI_STA);
   WiFi.hostname(deviceName);
 
   if (WiFi.status() != WL_CONNECTED) {  // FIX FOR USING 2.3.0 CORE (only .begin if not connected)
@@ -33,7 +33,7 @@ void wifiSetup() {
 void wifiLoop() {
   if (WiFi.status() != WL_CONNECTED) {
     delay(1);
-    _DP( "WIFI Disconnected. Attempting reconnection.");
+    _DP("WIFI Disconnected. Attempting reconnection.");
     wifiSetup();
   }
 }

@@ -173,7 +173,7 @@ void loop() {
   otaLoop();
   webLoop();
 
-  transitionAbort = false;  // Because we came from the loop and not 1/2 way though a transition
+  transitionAbort = false;      // Because we came from the loop and not 1/2 way though a transition
   if (!transitionDone) {        // Once we have completed the transition, No point to keep going though the process
     if (setting.getTurnOn()) {  // if the light is turned on
 

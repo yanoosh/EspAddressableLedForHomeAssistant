@@ -4,11 +4,11 @@
 #include <Arduino.h>
 
 class EffectProcessor {
-  public:
-    virtual const char *getName();
-    virtual void begin();
-    virtual void loop();
-    virtual void end();
+ public:
+  virtual const char *getName();
+  virtual void begin();
+  virtual void loop();
+  virtual void end();
 };
 
 #endif

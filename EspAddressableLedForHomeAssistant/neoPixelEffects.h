@@ -9,7 +9,7 @@ bool shouldAbortEffect() {
   yield();
   ESP.wdtFeed();
   // todo move to mqtt file
-  mqtt.loop(); // Update from MQTT
+  mqtt.loop();  // Update from MQTT
   return transitionAbort;
 }
 
@@ -45,7 +45,7 @@ void setAll(byte r, byte g, byte b, byte w, bool refreshStrip = true) {
     return;
   }
 
-  for (int i = 0; i <= ledCount; i++ ) {
+  for (int i = 0; i <= ledCount; i++) {
     setPixel(i, r, g, b, w, false);
   }
 
@@ -114,20 +114,20 @@ void CylonBounce(int EyeSize, int SpeedDelay, int ReturnDelay) {
   delay(ReturnDelay);
 }
 
-void setPixelHeatColor (int Pixel, byte temperature) {
+void setPixelHeatColor(int Pixel, byte temperature) {
   // Scale 'heat' down from 0-255 to 0-191
   byte t192 = round((temperature / 255.0) * 191);
 
   // calculate ramp up from
-  byte heatramp = t192 & 0x3F; // 0..63
-  heatramp <<= 2; // scale up to 0..252
+  byte heatramp = t192 & 0x3F;  // 0..63
+  heatramp <<= 2;               // scale up to 0..252
 
   // figure out which third of the spectrum we're in:
-  if ( t192 > 0x80) {                    // hottest
+  if (t192 > 0x80) {  // hottest
     setPixel(Pixel, 255, 255, heatramp, 0, true);
-  } else if ( t192 > 0x40 ) {            // middle
+  } else if (t192 > 0x40) {  // middle
     setPixel(Pixel, 255, heatramp, 0, 0, true);
-  } else {                               // coolest
+  } else {  // coolest
     setPixel(Pixel, heatramp, 0, 0, 0, true);
   }
 }
@@ -137,7 +137,7 @@ void Fire(int Cooling, int Sparking, int SpeedDelay) {
   int cooldown;
 
   // Step 1.  Cool down every cell a little
-  for ( int i = 0; i <= ledCount; i++) {
+  for (int i = 0; i <= ledCount; i++) {
     cooldown = random(0, ((Cooling * 10) / ledCount) + 2);
 
     if (cooldown > heat[i]) {
@@ -148,20 +148,20 @@ void Fire(int Cooling, int Sparking, int SpeedDelay) {
   }
 
   // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-  for ( int k = ledCount - 1; k >= 2; k--) {
+  for (int k = ledCount - 1; k >= 2; k--) {
     heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
   }
 
   // Step 3.  Randomly ignite new 'sparks' near the bottom
-  if ( random(255) < Sparking ) {
+  if (random(255) < Sparking) {
     int y = random(7);
     heat[y] = heat[y] + random(160, 255);
     //heat[y] = random(160,255);
   }
 
   // Step 4.  Convert heat to LED colors
-  for ( int j = 0; j <= ledCount; j++) {
-    setPixelHeatColor(j, heat[j] );
+  for (int j = 0; j <= ledCount; j++) {
+    setPixelHeatColor(j, heat[j]);
   }
 
   showStrip();
@@ -261,21 +261,20 @@ void colorWipeOnce(int SpeedDelay) {
 void RunningLights(int WaveDelay) {
   int Position = 0;
 
-  for (int i = 0; i <= ledCount; i++)
-  {
+  for (int i = 0; i <= ledCount; i++) {
     if (shouldAbortEffect()) {
       return;
     }
-    Position++; // = 0; //Position + Rate;
+    Position++;  // = 0; //Position + Rate;
     for (int i = 0; i <= ledCount; i++) {
       // sine wave, 3 offset waves make a rainbow!
       //float level = sin(i+Position) * 127 + 128;
       //setPixel(i,level,0,0,false);
       //float level = sin(i+Position) * 127 + 128;
-      setPixel(i, ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().red,
-               ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().green,
-               ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().blue,
-               ((sin(i + Position) * 127 + 128) / 255)*setting.getFilteredColor().white,
+      setPixel(i, ((sin(i + Position) * 127 + 128) / 255) * setting.getFilteredColor().red,
+               ((sin(i + Position) * 127 + 128) / 255) * setting.getFilteredColor().green,
+               ((sin(i + Position) * 127 + 128) / 255) * setting.getFilteredColor().blue,
+               ((sin(i + Position) * 127 + 128) / 255) * setting.getFilteredColor().white,
                false);
     }
 
@@ -289,7 +288,7 @@ void SnowSparkle(int SparkleDelay, int SpeedDelay) {
   setAll(setting.getFilteredColor());
 
   int Pixel = random(ledCount);
-  setPixel(Pixel, 0, 0, 0, 255, false); //@todo why change all to white?
+  setPixel(Pixel, 0, 0, 0, 255, false);  //@todo why change all to white?
   showStrip();
   delay(SparkleDelay);
   setPixel(Pixel, setting.getFilteredColor(), false);
@@ -326,21 +325,20 @@ void TwinkleRandom(int Count, int SpeedDelay, boolean OnlyOne) {
   delay(SpeedDelay);
 }
 
-
 // BouncingBalls(3);
 void BouncingBalls(int BallCount) {
   float Gravity = -9.81;
   int StartHeight = 1;
 
   float Height[BallCount];
-  float ImpactVelocityStart = sqrt( -2 * Gravity * StartHeight );
+  float ImpactVelocityStart = sqrt(-2 * Gravity * StartHeight);
   float ImpactVelocity[BallCount];
   float TimeSinceLastBounce[BallCount];
-  int   Position[BallCount];
-  long  ClockTimeSinceLastBounce[BallCount];
+  int Position[BallCount];
+  long ClockTimeSinceLastBounce[BallCount];
   float Dampening[BallCount];
 
-  for (int i = 0 ; i < BallCount ; i++) {
+  for (int i = 0; i < BallCount; i++) {
     ClockTimeSinceLastBounce[i] = millis();
     Height[i] = StartHeight;
     Position[i] = 0;
@@ -353,23 +351,23 @@ void BouncingBalls(int BallCount) {
     if (shouldAbortEffect()) {
       return;
     }
-    for (int i = 0 ; i < BallCount ; i++) {
-      TimeSinceLastBounce[i] =  millis() - ClockTimeSinceLastBounce[i];
-      Height[i] = 0.5 * Gravity * pow( TimeSinceLastBounce[i] / 1000 , 2.0 ) + ImpactVelocity[i] * TimeSinceLastBounce[i] / 1000;
+    for (int i = 0; i < BallCount; i++) {
+      TimeSinceLastBounce[i] = millis() - ClockTimeSinceLastBounce[i];
+      Height[i] = 0.5 * Gravity * pow(TimeSinceLastBounce[i] / 1000, 2.0) + ImpactVelocity[i] * TimeSinceLastBounce[i] / 1000;
 
-      if ( Height[i] < 0 ) {
+      if (Height[i] < 0) {
         Height[i] = 0;
         ImpactVelocity[i] = Dampening[i] * ImpactVelocity[i];
         ClockTimeSinceLastBounce[i] = millis();
 
-        if ( ImpactVelocity[i] < 0.01 ) {
+        if (ImpactVelocity[i] < 0.01) {
           ImpactVelocity[i] = ImpactVelocityStart;
         }
       }
-      Position[i] = round( Height[i] * (ledCount - 1) / StartHeight);
+      Position[i] = round(Height[i] * (ledCount - 1) / StartHeight);
     }
 
-    for (int i = 0 ; i < BallCount ; i++) {
+    for (int i = 0; i < BallCount; i++) {
       setPixel(Position[i], setting.getFilteredColor(), false);
     }
 
@@ -377,7 +375,6 @@ void BouncingBalls(int BallCount) {
     setAll(BLACK, false);
   }
 }
-
 
 /**************************** START TRANSITION FADER *****************************************/
 // From https://www.arduino.cc/en/Tutorial/ColorCrossfader
@@ -407,7 +404,7 @@ void BouncingBalls(int BallCount) {
 int calculateStep(int prevValue, int endValue) {
   int step = endValue - prevValue;  // What's the overall gap?
   if (step) {                       // If its non-zero,
-    step = 1020 / step;            //   divide by 1020
+    step = 1020 / step;             //   divide by 1020
   }
 
   return step;
@@ -418,11 +415,10 @@ int calculateStep(int prevValue, int endValue) {
    (R, G, and B are each calculated separately.)
 */
 int calculateVal(int step, int val, int i) {
-  if ((step) && i % step == 0) { // If step is non-zero and its time to change a value,
-    if (step > 0) {              //   increment the value if step is positive...
+  if ((step) && i % step == 0) {  // If step is non-zero and its time to change a value,
+    if (step > 0) {               //   increment the value if step is positive...
       val += 1;
-    }
-    else if (step < 0) {         //   ...or decrement it if step is negative
+    } else if (step < 0) {  //   ...or decrement it if step is negative
       val -= 1;
     }
   }
@@ -430,8 +426,7 @@ int calculateVal(int step, int val, int i) {
   // Defensive driving: make sure val stays in the range 0-255
   if (val > 255) {
     val = 255;
-  }
-  else if (val < 0) {
+  } else if (val < 0) {
     val = 0;
   }
 
@@ -450,7 +445,7 @@ void Fade(int SpeedDelay) {
 
   // If no change then exit
   if (stepR == 0 && stepG == 0 && stepB == 0 && stepW == 0) {
-    setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
+    setAll(redVal, grnVal, bluVal, whiVal);  // Write current values to LED pins
     transitionDone = true;
     return;
   }
@@ -466,12 +461,12 @@ void Fade(int SpeedDelay) {
     whiVal = calculateVal(stepW, whiVal, i);
 
     if (i % 50 == 0) {
-      setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
+      setAll(redVal, grnVal, bluVal, whiVal);  // Write current values to LED pins
       delay(SpeedDelay);
     }
   }
 
-  setAll(redVal, grnVal, bluVal, whiVal); // Write current values to LED pins
+  setAll(redVal, grnVal, bluVal, whiVal);  // Write current values to LED pins
   transitionDone = true;
 }
 
@@ -480,7 +475,7 @@ void Lightning(int SpeedDelay) {
   int ledstart = random(ledCount);           // Determine starting location of flash
   int ledlen = random(ledCount - ledstart);  // Determine length of flash (not to go beyond ledCount-1)
   for (int flashCounter = 0; flashCounter < random(1, 4); flashCounter++) {
-    int dimmer = random(10, setting.getBrightness());          // return strokes are brighter than the leader
+    int dimmer = random(10, setting.getBrightness());  // return strokes are brighter than the leader
     RGBW lightningColor = {};
     lightningColor = mapColor(setting.getFilteredColor(), dimmer);
     //    int rr = map(red, 0, 255, 0, dimmer);
@@ -488,25 +483,24 @@ void Lightning(int SpeedDelay) {
     //    int bb = map(blue, 0, 255, 0, dimmer);
     //    int ww = map(white, 0, 255, 0, dimmer);
 
-    for (int i = ledstart ; i < (ledstart + ledlen) ; i++) {
+    for (int i = ledstart; i < (ledstart + ledlen); i++) {
       setPixel(i, lightningColor, false);
     }
-    showStrip();    // Show a section of LED's
-    delay(random(4, 15));                // each flash only lasts 4-10 milliseconds
-    for (int i = ledstart ; i < (ledstart + ledlen) ; i++) {
+    showStrip();           // Show a section of LED's
+    delay(random(4, 15));  // each flash only lasts 4-10 milliseconds
+    for (int i = ledstart; i < (ledstart + ledlen); i++) {
       setPixel(i, BLACK, false);
     }
     showStrip();
     //if (flashCounter == 0) delay (130);   // longer delay until next flash after the leader
-    delay(50 + random(100));             // shorter delay between strokes
+    delay(50 + random(100));  // shorter delay between strokes
   }
-  delay(random(SpeedDelay) * 50);        // delay between strikes
+  delay(random(SpeedDelay) * 50);  // delay between strikes
 }
 
 void ShowPixels() {
   // If there are only 2 items in the array then we are setting from and to
   if (pixelLen == 2) {
-
     int startL = pixelArray[0];
     int endL = pixelArray[1];
     if (startL > ledCount) {
@@ -524,7 +518,6 @@ void ShowPixels() {
     }
 
   } else {
-
     for (int i = 0; i < pixelLen; i++) {
       int pixel = pixelArray[i];
       if (pixel > ledCount) {
@@ -549,15 +542,14 @@ void _meteorRainFadeToBlack(int ledNo, byte fadeValue) {
   g = (oldColor & 0x0000ff00UL) >> 8;
   b = (oldColor & 0x000000ffUL);
 
-  r = (r <= 10) ? 0 : (int) r - (r * fadeValue / 256);
-  g = (g <= 10) ? 0 : (int) g - (g * fadeValue / 256);
-  b = (b <= 10) ? 0 : (int) b - (b * fadeValue / 256);
+  r = (r <= 10) ? 0 : (int)r - (r * fadeValue / 256);
+  g = (g <= 10) ? 0 : (int)g - (g * fadeValue / 256);
+  b = (b <= 10) ? 0 : (int)b - (b * fadeValue / 256);
 
   setting.strip->setPixelColor(ledNo, r, g, b);
 }
 
 void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay) {
-
   for (int i = 0; i < ledCount + ledCount; i++) {
     if (shouldAbortEffect()) {
       return;
@@ -565,14 +557,14 @@ void meteorRain(byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDeca
 
     // fade brightness all LEDs one step
     for (int j = 0; j < ledCount; j++) {
-      if ( (!meteorRandomDecay) || (random(10) > 5) ) {
-        _meteorRainFadeToBlack(j, meteorTrailDecay );
+      if ((!meteorRandomDecay) || (random(10) > 5)) {
+        _meteorRainFadeToBlack(j, meteorTrailDecay);
       }
     }
 
     // draw meteor
     for (int j = 0; j < meteorSize; j++) {
-      if ( ( i - j < ledCount) && (i - j >= 0) ) {
+      if ((i - j < ledCount) && (i - j >= 0)) {
         setPixel(i - j, setting.getFilteredColor().red, setting.getFilteredColor().green, setting.getFilteredColor().blue, 0, true);
       }
     }

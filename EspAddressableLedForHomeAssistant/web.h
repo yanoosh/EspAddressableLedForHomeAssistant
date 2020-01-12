@@ -18,15 +18,14 @@ String GetStatusPic() {
     imgString += setting.getSourceColor().blue;
     imgString += F(")");
   }
-  
+
   imgString += F("' />");
   imgString += F("  Sorry, your browser does not support inline SVG.");
   imgString += F("</svg>");
   return imgString;
 }
 
-void ServeWebClients() 
-{
+void ServeWebClients() {
   String inString = F("<head><title>");
   inString += deviceName;
   inString += F("</title>");
@@ -47,10 +46,9 @@ void ServeWebClients()
   inString += F("<input type='radio' name='opt_group' id='basic' onclick='toggle_opt()' checked><label for='basic'>Info</label>");
   inString += F("<input type='radio' name='opt_group' id='other' onclick='toggle_opt()'><label for='other'>Settings</label>");
   inString += F("</fieldset>");
-  
-  
+
   inString += F("<div id='div_basic'>");
-  
+
   inString += F("<h3 class='ui-bar ui-bar-a ui-corner-all'>LED Status</h3>");
   inString += F("<table><tr><td><b>State:<br></td><td><label id='lbl_status' ");
   if (setting.getTurnOn()) {
@@ -59,13 +57,13 @@ void ServeWebClients()
     inString += F("style='color:red;font-size:larger;font-weight:600;'>OFF");
   }
   inString += F("</label></td></tr>");
-  
+
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
   inString += setting.getSourceColor().red;
   inString += F("</label></td><td rowspan='4'>");
   inString += GetStatusPic();
-  inString += F("</td></tr>");     
+  inString += F("</td></tr>");
   inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
   inString += setting.getSourceColor().green;
   inString += F("</label></td></tr>");
@@ -79,7 +77,7 @@ void ServeWebClients()
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Brightness:</b></td><td><label id='lbl_britness'>");
   inString += setting.getBrightness();
-  inString += F("</label></td></tr>");  
+  inString += F("</label></td></tr>");
   inString += F("<tr><td><b>TransitionTime:</b></td><td><label id='lbl_tt'>");
   inString += transitionTime;
   inString += F("</label></td></tr>");
@@ -91,13 +89,12 @@ void ServeWebClients()
     inString += F("Done");
   } else {
     inString += F("Running");
-  }  
+  }
   inString += F("</label></td></tr>");
-      
+
   inString += F("</table><br />");
   inString += F("</div>");
 
-  
   inString += F("<div id='div_other' style='display:none;'>");
   inString += F("<table cellpadding='2'>");
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
@@ -105,17 +102,17 @@ void ServeWebClients()
   inString += F("<tr><td><b>Device Name:</b></td><td><label id='lbl_deviceName'>");
   inString += deviceName;
   inString += F("</label></td></tr>");
-  
+
   inString += F("<tr><td><b>LED Count:</b></td><td><label id='lbl_ledCount'>");
   inString += ledCount;
   inString += F("</label></td></tr>");
-  
+
   inString += F("<tr><td><b>Max Brightness:</b></td><td><label id='lbl_maxBrightness'>");
   inString += maxBrightness;
   inString += F(" (255 Max)</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-  
+
   inString += F("<tr><td><b>WIFI SSID:</b></td><td><label id='lbl_rssi'>");
   inString += WIFI_SSID;
   inString += F("</label></td></tr>");
@@ -125,21 +122,21 @@ void ServeWebClients()
   if (rssi > -71) {
     inString += F("Good");
   } else if (rssi > -81) {
-    inString += F("Weak");    
+    inString += F("Weak");
   } else {
-    inString += F("Poor");    
+    inString += F("Poor");
   }
   inString += F(" (");
   inString += rssi;
   inString += F(" dbBm)");
   inString += F("</label></td></tr>");
-  
+
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
 
   inString += F("<tr><td><b>MQTT Server:</b></td><td><label id='lbl_rssi'>");
   inString += MQTT_SERVER;
   inString += F("</label></td></tr>");
-  
+
   inString += F("<tr><td><b>Topic:</b></td><td><label id='lbl_rssi'>");
   inString += MQTT_STATE_TOPIC_PREFIX;
   inString += deviceName;
@@ -149,7 +146,6 @@ void ServeWebClients()
   inString += F("</table>");
   inString += F("</div>");
 
-  
   inString += F("<div data-role='footer' data-theme='c'><h5>");
   inString += VERSION;
   inString += F("</h5></div>");
