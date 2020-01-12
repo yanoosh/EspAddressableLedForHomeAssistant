@@ -28,9 +28,9 @@ char* deviceName = "led";
 byte maxBrightness = 255;
 
 void setup_config() {
-  Serial.println();
-  Serial.print("ESP8266 Chip id: ");
-  Serial.println(ESP.getChipId());
+  _DPLN()
+  _DP("ESP8266 Chip id: ")
+  _DPLN(ESP.getChipId())
  
   if (ESP.getChipId() == 5186042) {
     deviceName = "kitchen";
@@ -38,8 +38,8 @@ void setup_config() {
     maxBrightness = 155;  // 60% - Brightness Percentage (This is used to limit the current from the power supply) - 2.4A with 128 leds on RGB White (60ma)
   }
 
-  Serial.print("Device Name: ");
-  Serial.println(deviceName);
+  _DP("Device Name: ");
+  _DPLN(deviceName);
 }
 
 #endif

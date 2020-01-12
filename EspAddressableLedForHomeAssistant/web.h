@@ -1,3 +1,8 @@
+#ifndef _WEB_INO
+#define _WEB_INO
+
+ESP8266WebServer server(80);
+
 String GetStatusPic() {
   String imgString = F("<svg height='64' width='64'>");
   imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
@@ -163,3 +168,14 @@ void ServeWebClients()
 
   server.send(200, "text/html", inString);
 }
+
+void webSetup() {
+  server.on("/", ServeWebClients);
+  server.begin();
+}
+
+void webLoop() {
+  server.handleClient();
+}
+
+#endif

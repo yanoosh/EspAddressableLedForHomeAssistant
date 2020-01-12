@@ -2,19 +2,14 @@
 #define _NEOPIXEL_EFFECTS
 #include "effect/RainbowCycle.cpp"
 
-// Previous requested values
-byte previousRed = 0;
-byte previousGreen = 0;
-byte previousBlue = 0;
-byte previousWhite = 0;
-
 ///**************************** START EFFECTS *****************************************/
 // Effects from: https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/
 
 bool shouldAbortEffect() {
   yield();
   ESP.wdtFeed();
-  client.loop(); // Update from MQTT
+  // todo move to mqtt file
+  mqtt.loop(); // Update from MQTT
   return transitionAbort;
 }
 
@@ -519,8 +514,6 @@ void Lightning(int SpeedDelay) {
 void ShowPixels() {
   // If there are only 2 items in the array then we are setting from and to
   if (pixelLen == 2) {
-    // Make sure smallest one first, less than max pixel
-    //Serial.println(F("ShowPixels-Range"));
 
     int startL = pixelArray[0];
     int endL = pixelArray[1];
@@ -539,8 +532,6 @@ void ShowPixels() {
     }
 
   } else {
-    // For each item in array
-    //Serial.println(F("ShowPixels-Array"));
 
     for (int i = 0; i < pixelLen; i++) {
       int pixel = pixelArray[i];
