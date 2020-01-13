@@ -99,30 +99,13 @@ void setup() {
   authSetup(core);
   core->setup();
 
-  // Standalone startup sequence - Wipe White
-  //todo investigate loop
-  for (uint16_t i = 0; i <= ledCount; i++) {
-    setPixel(i, 0, 0, 0, 255, false);
-    showStrip();
-    delay(1);  // Need delay to be like a yield so it will not restatrt
-  }
-
   wifiSetup();
-
-  // OK we are on Wifi so we are no standalone.
-  setPixel(0, 255, 0, 0, 255, false);  // Red tinge on first Pixel
-  showStrip();
-
   mqttSetup();
   webSetup();
   otaSetup();
 
   _DPLN("Ready");
-
   // OK we are connected
-  setPixel(0, 0, 255, 0, 255, false);  // Green tinge on first Pixel
-  showStrip();
-  delay(500);                       // Wait so we can see the green before clearing
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
   updateEffectByName(effect.c_str());
 }
@@ -168,9 +151,9 @@ void loop() {
   otaLoop();
   webLoop();
 
-  transitionAbort = false;    // Because we came from the loop and not 1/2 way though a transition
-  if (!transitionDone && core->isLoopEnabled()) {      // Once we have completed the transition, No point to keep going though the process
-    if (core->isTurnOn()) {  // if the light is turned on
+  transitionAbort = false;                         // Because we came from the loop and not 1/2 way though a transition
+  if (!transitionDone && core->isLoopEnabled()) {  // Once we have completed the transition, No point to keep going though the process
+    if (core->isTurnOn()) {                        // if the light is turned on
       //EFFECTS
       if (core->getEffectProcessor() != NULL) {
         core->getEffectProcessor()->loop();

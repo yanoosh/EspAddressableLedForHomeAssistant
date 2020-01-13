@@ -2,20 +2,39 @@
 #define _CORE_H
 
 #include "Adafruit_NeoPixel.h"
+#include "diode.h"
 #include "effect/EffectProcessor.cpp"
 #include "rgbw.h"
 
 class Core {
  public:
+  static const uint32_t RED = 0x00330000;
+  static const uint32_t GREEN = 0x00003300;
+  static const uint32_t BLUE = 0x00000033;
+  static const uint32_t DARK_YELLOW = 0x00333300;
+
   Core(Adafruit_NeoPixel *strip) {
     this->strip = strip;
+    this->diode = new Diode(this->strip);
   }
 
   void setup() {
     this->strip->begin();
     this->strip->show();
+
+    this->strip->fill(DARK_YELLOW, 0);
+    this->strip->setPixelColor(this->strip->numPixels() - 1, GREEN);
+    this->strip->show();
   }
-  
+
+  Adafruit_NeoPixel *getStrip() {
+    return this->strip;
+  }
+
+  Diode *getDiode() {
+    return this->diode;
+  }
+
   void setTurnOn(bool turnOn) {
     this->turnOn = turnOn;
     this->syncLoopAndState();
@@ -23,10 +42,6 @@ class Core {
 
   bool isTurnOn() {
     return this->turnOn;
-  }
-
-  Adafruit_NeoPixel *getStrip() {
-    return this->strip;
   }
 
   void setColor(RGBW color) {
@@ -98,6 +113,7 @@ class Core {
   EffectProcessor *effectProcessor;
   uint8_t speed;
   bool loopEnabled = true;
+  Diode *diode;
 
   void syncLoopAndState() {
     this->loopEnabled = this->turnOn;

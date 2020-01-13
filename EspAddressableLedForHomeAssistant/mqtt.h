@@ -166,7 +166,9 @@ void reconnect(unsigned long now) {
     sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName, MQTT_AVAIL_TOPIC);  // with word space
 
     // Attempt to connect
+    core->getDiode()->progress(Core::BLUE);
     if (mqtt.connect(deviceName, MQTT_USER, MQTT_PASSWORD, mqttAvailTopic, 0, true, lwtMessage)) {
+      core->getDiode()->done();
       _DPLN("connected");
 
       // Publish the birth message on connect/reconnect

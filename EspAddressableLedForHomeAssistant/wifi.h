@@ -18,6 +18,7 @@ void wifiSetup() {
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
+    core->getDiode()->progress(Core::RED);
     _DP(".");
     if (retries++ > 20) {
       ESP.restart();
