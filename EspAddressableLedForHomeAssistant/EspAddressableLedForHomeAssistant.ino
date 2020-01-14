@@ -149,7 +149,7 @@ void loop() {
   wifiLoop();
   mqttLoop(now);
   otaLoop();
-  webLoop();
+  // webLoop();
 
   transitionAbort = false;                         // Because we came from the loop and not 1/2 way though a transition
   if (!transitionDone && core->isLoopEnabled()) {  // Once we have completed the transition, No point to keep going though the process

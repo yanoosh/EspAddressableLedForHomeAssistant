@@ -4,6 +4,7 @@
 #include "effect/Clear.cpp"
 #include "effect/CylonBounce.cpp"
 #include "effect/EffectProcessor.cpp"
+#include "effect/Fade.cpp"
 #include "effect/Fire.cpp"
 #include "effect/MeteorRain.cpp"
 #include "effect/RainbowCycle.cpp"
@@ -60,6 +61,9 @@ void updateEffect(int8_t id, const char *name) {
         break;
       case 4:
         effectProcessor = new Fire(core->getStrip());
+        break;
+      case 5:
+        effectProcessor = new Fade(core->getStrip(), core->getColor(), -1, -1, 20, false);
         break;
       case 8:
         effectProcessor = new RainbowCycle(core->getStrip());

@@ -51,9 +51,9 @@ class CylonBounce : public EffectProcessor {
   uint16_t colorPal;
   uint16_t maxStep;
   uint8_t effectSize;
-  uint16_t step = 0;
+  int16_t step = 0;
   uint8_t sleepStep = 0;
-  uint8_t direction = 1;
+  int8_t direction = 1;
 };
 
 #endif
