@@ -6,6 +6,7 @@
 class Fire : public EffectProcessor {
  public:
   Fire(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
+    this->setName("fire");
     this->heat = new uint8_t[strip->numPixels()];
     this->cooling = 55;
     this->sparking = 120;
@@ -13,10 +14,6 @@ class Fire : public EffectProcessor {
 
   ~Fire() {
     delete[] this->heat;
-  }
-
-  const char *getName() override {
-    return "fire";
   }
 
   void loop() override {

@@ -7,11 +7,8 @@
 class TheaterChase : public EffectProcessor {
  public:
   TheaterChase(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+    this->setName("theater chase");
     this->color = Adafruit_NeoPixel::Color(color.red, color.green, color.blue, color.white);
-  }
-
-  const char *getName() override {
-    return "theater chase";
   }
 
   void loop() override {

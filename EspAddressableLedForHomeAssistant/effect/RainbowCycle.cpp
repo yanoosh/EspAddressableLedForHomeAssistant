@@ -3,16 +3,14 @@
 
 #include <Adafruit_NeoPixel.h>
 #include "EffectProcessor.cpp"
+#include "Common.cpp"
 
 class RainbowCycle : public EffectProcessor {
  public:
   // todo add parametr to define how many color will be shown on one stripe 2 means two full colors on one strip 0.1 just part of rainbow on one strip
   RainbowCycle(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
+    this->setName("rainbow cycle");
     this->ledCount = strip->numPixels();
-  }
-
-  const char *getName() override {
-    return this->name;
   }
 
   bool isFinished() override {
@@ -28,7 +26,7 @@ class RainbowCycle : public EffectProcessor {
     for (i = 0; i <= this->ledCount; i++) {
       this->strip->setPixelColor(
           i,
-          this->wheel(((i * 256 / this->ledCount) + this->position) & 255));
+          Common::colorWheel(((i * 256 / this->ledCount) + this->position) & 255));
     }
     this->strip->show();
 
@@ -36,7 +34,6 @@ class RainbowCycle : public EffectProcessor {
   }
 
  private:
-  const char *name = "rainbow cycle";
   unsigned int ledCount;
   unsigned int position = 0;
 

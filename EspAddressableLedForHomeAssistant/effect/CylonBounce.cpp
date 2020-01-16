@@ -8,14 +8,11 @@
 class CylonBounce : public EffectProcessor {
  public:
   CylonBounce(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+    this->setName("cylon bounce");
     this->color = color;
     this->effectSize = strip->numPixels() / 5;
     this->maxStep = strip->numPixels() - this->effectSize;
     this->multiplier = PI / (this->effectSize + 1);
-  }
-
-  const char *getName() override {
-    return "cylon bounce";
   }
 
   void loop() override {

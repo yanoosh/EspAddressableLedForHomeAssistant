@@ -57,7 +57,7 @@ void updateEffect(int8_t id, const char *name) {
         effectProcessor = new Solid(core->getStrip(), core->getColor());
         break;
       case 2:
-        effectProcessor = new Twinkle(core->getStrip(), core->getColor());
+        effectProcessor = new Twinkle(core->getStrip(), core->getColor(), BLACK, core->getStrip()->numPixels() / 5);
         break;
       case 3:
         effectProcessor = new CylonBounce(core->getStrip(), core->getColor());

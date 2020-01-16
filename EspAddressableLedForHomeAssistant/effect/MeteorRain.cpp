@@ -7,14 +7,11 @@
 class MeteorRain : public EffectProcessor {
  public:
   MeteorRain(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+    this->setName("meteor rain");
     this->color = strip->Color(color.red, color.green, color.blue, color.white);
     this->meteorSize = strip->numPixels() / 5;
     this->meteorTrailDecay = strip->getBrightness() / 4;
     this->maxStep = 2 * strip->numPixels();
-  }
-
-  const char *getName() override {
-    return "meteor rain";
   }
 
   void loop() override {

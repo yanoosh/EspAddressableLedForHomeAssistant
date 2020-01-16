@@ -7,11 +7,8 @@
 class Strobe : public EffectProcessor {
  public:
   Strobe(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+    this->setName("strobe");
     this->color = Adafruit_NeoPixel::Color(color.red, color.green, color.blue, color.white);
-  }
-
-  const char *getName() override {
-    return "strobe";
   }
 
   void loop() override {

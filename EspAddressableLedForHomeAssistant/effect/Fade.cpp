@@ -19,6 +19,7 @@ class Fade : public EffectProcessor {
       int8_t loops,
       uint8_t smoothness,
       bool cut) : EffectProcessor(strip) {
+    this->setName("fade in out");
     this->color = color;
     this->loops = loops;
     this->smoothness = max(smoothness, (uint8_t)1);
@@ -29,10 +30,6 @@ class Fade : public EffectProcessor {
     } else {
       this->step = this->smoothness;
     }
-  }
-
-  const char *getName() override {
-    return "fade in out";
   }
 
   void loop() override {

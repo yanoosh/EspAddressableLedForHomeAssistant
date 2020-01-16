@@ -2,16 +2,14 @@
 #define _COLOR_WIPE_RAINBOW_CPP
 
 #include "EffectProcessor.cpp"
+#include "Common.cpp"
 
 class ColorWipeRainbow : public EffectProcessor {
  public:
   ColorWipeRainbow(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
+    this->setName("color wipe");
     this->drawColor();
     this->length = this->strip->numPixels();
-  }
-
-  const char *getName() override {
-    return "color wipe";
   }
 
   void loop() override {
@@ -42,19 +40,7 @@ class ColorWipeRainbow : public EffectProcessor {
   uint8_t sleep = 0;
 
   void drawColor() {
-    this->color = this->wheel(random(255));
-  }
-
-  uint32_t wheel(byte wheelPos) {
-    if (wheelPos < 85) {
-      return Adafruit_NeoPixel::Color(wheelPos * 3, 255 - wheelPos * 3, 0);
-    } else if (wheelPos < 170) {
-      wheelPos -= 85;
-      return Adafruit_NeoPixel::Color(255 - wheelPos * 3, 0, wheelPos * 3);
-    } else {
-      wheelPos -= 170;
-      return Adafruit_NeoPixel::Color(0, wheelPos * 3, 255 - wheelPos * 3);
-    }
+    this->color = Common::colorWheel(random(255));
   }
 };
 

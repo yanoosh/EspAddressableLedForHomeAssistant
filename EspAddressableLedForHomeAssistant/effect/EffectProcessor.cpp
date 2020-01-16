@@ -9,12 +9,22 @@ class EffectProcessor {
   EffectProcessor(Adafruit_NeoPixel *strip) {
     this->strip = strip;
   }
-  virtual const char *getName();
+
+  const void setName(const char *name) {
+    this->name = name;
+  }
+
+  const char *getName() {
+    return this->name;
+  }
+
   virtual void loop();
+
   virtual bool isFinished();
 
  protected:
   Adafruit_NeoPixel *strip;
+  const char *name;
 };
 
 #endif
