@@ -7,7 +7,7 @@
 class MeteorRain : public EffectProcessor {
  public:
   MeteorRain(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
-    this->color = strip->Color(color.red, color.green, color.blue);
+    this->color = strip->Color(color.red, color.green, color.blue, color.white);
     this->meteorSize = strip->numPixels() / 5;
     this->meteorTrailDecay = strip->getBrightness() / 4;
     this->maxStep = 2 * strip->numPixels();

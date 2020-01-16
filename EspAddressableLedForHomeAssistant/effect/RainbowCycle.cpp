@@ -6,8 +6,8 @@
 
 class RainbowCycle : public EffectProcessor {
  public:
-  RainbowCycle(Adafruit_NeoPixel *strip) : EffectProcessor(strip){
-    // todo led number from settings.
+  // todo add parametr to define how many color will be shown on one stripe 2 means two full colors on one strip 0.1 just part of rainbow on one strip
+  RainbowCycle(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
     this->ledCount = strip->numPixels();
   }
 
@@ -20,15 +20,15 @@ class RainbowCycle : public EffectProcessor {
   }
 
   void loop() override {
-    byte c[3];
     unsigned int i;
     if (this->position > 256 * 2) {
       this->position = 0;
     }
 
     for (i = 0; i <= this->ledCount; i++) {
-      this->wheel(((i * 256 / this->ledCount) + this->position) & 255, c);
-      this->strip->setPixelColor(i, *c, *(c + 1), *(c + 2));
+      this->strip->setPixelColor(
+          i,
+          this->wheel(((i * 256 / this->ledCount) + this->position) & 255));
     }
     this->strip->show();
 
@@ -40,21 +40,15 @@ class RainbowCycle : public EffectProcessor {
   unsigned int ledCount;
   unsigned int position = 0;
 
-  void wheel(byte wheelPos, byte *c) {
+  uint32_t wheel(byte wheelPos) {
     if (wheelPos < 85) {
-      c[0] = wheelPos * 3;
-      c[1] = 255 - wheelPos * 3;
-      c[2] = 0;
+      return Adafruit_NeoPixel::Color(wheelPos * 3, 255 - wheelPos * 3, 0);
     } else if (wheelPos < 170) {
       wheelPos -= 85;
-      c[0] = 255 - wheelPos * 3;
-      c[1] = 0;
-      c[2] = wheelPos * 3;
+      return Adafruit_NeoPixel::Color(255 - wheelPos * 3, 0, wheelPos * 3);
     } else {
       wheelPos -= 170;
-      c[0] = 0;
-      c[1] = wheelPos * 3;
-      c[2] = 255 - wheelPos * 3;
+      return Adafruit_NeoPixel::Color(0, wheelPos * 3, 255 - wheelPos * 3);
     }
   }
 };

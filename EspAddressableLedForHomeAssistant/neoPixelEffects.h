@@ -58,71 +58,6 @@ void setAll(RGBW rgbw, bool refreshStrip = true) {
   setAll(rgbw.red, rgbw.green, rgbw.blue, rgbw.white, refreshStrip);
 }
 
-// FadeInOut();
-void FadeInOut() {
-  float r, g, b, w;
-
-  for (int k = 0; k < 256; k = k + 1) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    r = (k / 256.0) * core->getColor().red;
-    g = (k / 256.0) * core->getColor().green;
-    b = (k / 256.0) * core->getColor().blue;
-    w = (k / 256.0) * core->getColor().white;
-    setAll(r, g, b, w);
-    showStrip();
-  }
-
-  for (int k = 255; k >= 0; k = k - 2) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    r = (k / 256.0) * core->getColor().red;
-    g = (k / 256.0) * core->getColor().green;
-    b = (k / 256.0) * core->getColor().blue;
-    w = (k / 256.0) * core->getColor().white;
-    setAll(r, g, b, w);
-    showStrip();
-  }
-}
-
-// Slower:
-// Strobe(10, 100);
-// Fast:
-// Strobe(10, 50);
-void Strobe(int StrobeCount, int FlashDelay) {
-  for (int j = 0; j < StrobeCount; j++) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    setAll(core->getColor());
-    showStrip();
-    delay(FlashDelay);
-    setAll(BLACK);
-    delay(FlashDelay);
-  }
-}
-
-// theaterChase(50);
-void theaterChase(int SpeedDelay) {
-  for (int q = 0; q < 3; q++) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    for (int i = 0; i <= ledCount; i = i + 3) {
-      setPixel(i + q, core->getColor(), false);  //turn every third pixel on
-    }
-    showStrip();
-
-    delay(SpeedDelay);
-
-    for (int i = 0; i <= ledCount; i = i + 3) {
-      setPixel(i + q, 0, 0, 0, 0, false);  //turn every third pixel off
-    }
-  }
-}
-
 //  colorWipe(50);
 void colorWipe(int SpeedDelay) {
   for (uint16_t i = 0; i <= ledCount; i++) {
@@ -156,15 +91,16 @@ void RunningLights(int WaveDelay) {
       return;
     }
     Position++;  // = 0; //Position + Rate;
+    float size = 2;
     for (int i = 0; i <= ledCount; i++) {
       // sine wave, 3 offset waves make a rainbow!
       //float level = sin(i+Position) * 127 + 128;
       //setPixel(i,level,0,0,false);
       //float level = sin(i+Position) * 127 + 128;
-      setPixel(i, ((sin(i + Position) * 127 + 128) / 255) * core->getColor().red,
-               ((sin(i + Position) * 127 + 128) / 255) * core->getColor().green,
-               ((sin(i + Position) * 127 + 128) / 255) * core->getColor().blue,
-               ((sin(i + Position) * 127 + 128) / 255) * core->getColor().white,
+      setPixel(i, ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().red,
+               ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().green,
+               ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().blue,
+               ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().white,
                false);
     }
 

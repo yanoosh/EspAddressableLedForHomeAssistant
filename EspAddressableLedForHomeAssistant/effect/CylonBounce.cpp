@@ -23,15 +23,10 @@ class CylonBounce : public EffectProcessor {
       this->sleepStep--;
       return;
     }
-    Serial.print(this->step);
-    Serial.println(".");
 
     this->strip->clear();
     for (uint8_t i = 0; i < this->effectSize; i++) {
       float sinMultiplier = sin(this->multiplier * (float)(i + 1.0));
-      Serial.println(this->step + i);
-      Serial.println(this->color.red * sinMultiplier);
-      Serial.println("next");
       this->strip->setPixelColor(
         this->step + i,
         this->color.red * sinMultiplier,

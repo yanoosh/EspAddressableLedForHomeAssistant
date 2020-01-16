@@ -2,6 +2,7 @@
 #define _EFFECT_INO
 
 #include "effect/Clear.cpp"
+#include "effect/ColorWipeRainbow.cpp"
 #include "effect/CylonBounce.cpp"
 #include "effect/EffectProcessor.cpp"
 #include "effect/Fade.cpp"
@@ -9,6 +10,8 @@
 #include "effect/MeteorRain.cpp"
 #include "effect/RainbowCycle.cpp"
 #include "effect/Solid.cpp"
+#include "effect/Strobe.cpp"
+#include "effect/TheaterChase.cpp"
 #include "effect/Twinkle.cpp"
 
 int8_t effectLength = 19;
@@ -63,10 +66,19 @@ void updateEffect(int8_t id, const char *name) {
         effectProcessor = new Fire(core->getStrip());
         break;
       case 5:
-        effectProcessor = new Fade(core->getStrip(), core->getColor(), -1, -1, 20, false);
+        effectProcessor = new Fade(core->getStrip(), core->getColor(), 1, -1, 20, false);
+        break;
+      case 6:
+        effectProcessor = new Strobe(core->getStrip(), core->getColor());
+        break;
+      case 7:
+        effectProcessor = new TheaterChase(core->getStrip(), core->getColor());
         break;
       case 8:
         effectProcessor = new RainbowCycle(core->getStrip());
+        break;
+      case 9:
+        effectProcessor = new ColorWipeRainbow(core->getStrip());
         break;
       case 16:
         effectProcessor = new MeteorRain(core->getStrip(), core->getColor());

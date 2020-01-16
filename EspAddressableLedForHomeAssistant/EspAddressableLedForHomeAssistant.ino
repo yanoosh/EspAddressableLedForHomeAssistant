@@ -162,18 +162,6 @@ void loop() {
         }
         delay(transitionTime);
       } else {
-        if (effect == "fade in out") {
-          FadeInOut();
-        }
-        if (effect == "strobe") {
-          Strobe(10, transitionTime);
-        }
-        if (effect == "theater chase") {
-          theaterChase(transitionTime);
-        }
-        if (effect == "color wipe") {
-          colorWipe(transitionTime / 20);
-        }
         if (effect == "running lights") {
           RunningLights(transitionTime);
         }

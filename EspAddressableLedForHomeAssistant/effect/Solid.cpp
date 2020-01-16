@@ -7,7 +7,7 @@
 class Solid : public EffectProcessor {
  public:
   Solid(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
-    this->color = strip->Color(color.red, color.green, color.blue);
+    this->color = strip->Color(color.red, color.green, color.blue, color.white);
   }
   const char *getName() override {
     return "solid";

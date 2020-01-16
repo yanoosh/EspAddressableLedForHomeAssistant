@@ -7,7 +7,7 @@
 class Twinkle : public EffectProcessor {
  public:
   Twinkle(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
-    this->color = strip->Color(color.red, color.green, color.blue);
+    this->color = strip->Color(color.red, color.green, color.blue, color.white);
     this->affectedPixels = this->strip->numPixels() / 5;
   }
   const char *getName() override {
