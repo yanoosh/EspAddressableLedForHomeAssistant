@@ -57,7 +57,7 @@ void updateEffect(int8_t id, const char *name) {
         effectProcessor = new Solid(core->getStrip(), core->getColor());
         break;
       case 2:
-        effectProcessor = new Twinkle(core->getStrip(), core->getColor(), BLACK, core->getStrip()->numPixels() / 5);
+        effectProcessor = new Twinkle(core->getStrip(), core->getColor(), BLACK, core->getStrip()->numPixels() / 5, Twinkle::COLOR_SINGLE);
         break;
       case 3:
         effectProcessor = new CylonBounce(core->getStrip(), core->getColor());
@@ -79,6 +79,18 @@ void updateEffect(int8_t id, const char *name) {
         break;
       case 9:
         effectProcessor = new ColorWipeRainbow(core->getStrip());
+        break;
+      case 11:
+        effectProcessor = new Twinkle(core->getStrip(), {0, 0, 0, 1}, core->getColor(), 1, Twinkle::COLOR_SINGLE);
+        effectProcessor->setName(effects[11]);
+        break;
+      case 12:
+        effectProcessor = new Twinkle(core->getStrip(), core->getColor(), {0, 0, 0, 0}, 1, Twinkle::COLOR_SINGLE);
+        effectProcessor->setName(effects[12]);
+        break;
+      case 13:
+        effectProcessor = new Twinkle(core->getStrip(), {0, 0, 0, 0}, {0, 0, 0, 0}, core->getStrip()->numPixels(), Twinkle::COLOR_RANDOM_DIOD);
+        effectProcessor->setName(effects[13]);
         break;
       case 16:
         effectProcessor = new MeteorRain(core->getStrip(), core->getColor());

@@ -63,6 +63,7 @@ int transitionTime = 150;  // 1-150
 int pixelLen = 1;
 int pixelArray[50];
 RGBW BLACK = {0, 0, 0, 0};
+RGBW WHITE = {255, 255, 255, 255};
 
 // Previous requested values
 byte previousRed = 0;
@@ -165,61 +166,13 @@ void loop() {
         if (effect == "running lights") {
           RunningLights(transitionTime);
         }
-        if (effect == "snow sparkle") {
-          SnowSparkle(20, random(transitionTime, (10 * transitionTime)));
-        }
-        if (effect == "sparkle") {
-          Sparkle(transitionTime);
-        }
-        if (effect == "twinkle random") {
-          TwinkleRandom(20, (2 * transitionTime), false);
-        }
         if (effect == "bouncing balls") {
           BouncingBalls(3);
         }
         if (effect == "lightning") {
           Lightning(transitionTime);
         }
-
-        // Run once notification effects
-        // Reverts color and effect after run
-        if (effect == "color wipe once") {
-          colorWipeOnce(transitionTime);
-
-          if (effect != "color wipe once") {
-            effect = previousEffect;
-          }
-
-          if (core->getColor().red == 0 && core->getColor().green == 0 && core->getColor().blue == 0 && core->getColor().white == 0) {
-            setOff();
-          } else {
-            transitionDone = false;  // Run the old effect again
-          }
-          sendState();
-        }
       }
-
-      //      if (effect == "bpm") {
-      //      }
-      //      if (effect == "candy cane") {
-      //      }
-      //      if (effect == "confetti" ) {
-      //      }
-      //      if (effect == "dots") {
-      //      }
-      //      if (effect == "glitter") {
-      //      }
-      //      if (effect == "juggle" ) {                           // eight colored dots, weaving in and out of sync with each other
-      //      }
-      //      if (effect == "lightning") {
-      //      }
-      //      if (effect == "police all") {                 //POLICE LIGHTS (TWO COLOR SOLID)
-      //      }
-      //      if (effect == "police one") {
-      //      }
-      //      if (effect == "rainbow with glitter") {               // FastLED's built-in rainbow generator with Glitter
-      //      }
-
     } else {
       setAll(BLACK);
       transitionDone = true;

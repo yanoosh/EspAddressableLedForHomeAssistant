@@ -7,13 +7,19 @@
 
 class Twinkle : public EffectProcessor {
  public:
+  static const uint8_t COLOR_SINGLE = 0;
+  static const uint8_t COLOR_RANDOM_STRIP = 1;
+  static const uint8_t COLOR_RANDOM_DIOD = 2;
+
   Twinkle(
       Adafruit_NeoPixel *strip,
       RGBW color,
       RGBW backgroudColor,
-      uint16_t affectedPixels) : EffectProcessor(strip) {
+      uint16_t affectedPixels,
+      uint8_t colorPattern) : EffectProcessor(strip) {
     this->setName("twinkle");
     this->color = Adafruit_NeoPixel::Color(color.red, color.green, color.blue, color.white);
+    this->colorPattern = colorPattern;
     this->backgroudColor = Adafruit_NeoPixel::Color(backgroudColor.red, backgroudColor.green, backgroudColor.blue, backgroudColor.white);
     this->affectedPixels = affectedPixels;
     this->length = this->strip->numPixels();
@@ -38,6 +44,9 @@ class Twinkle : public EffectProcessor {
     this->step++;
     if (this->step > affectedPixels) {
       this->step = 0;
+      if (this->colorPattern == COLOR_RANDOM_STRIP) {
+        this->color = Common::colorWheel(random(255));
+      }
     }
 
     this->diodPosition++;
@@ -45,6 +54,9 @@ class Twinkle : public EffectProcessor {
       Common::shuffleArray(diodSequence, this->length);
       this->diodPosition = 0;
     }
+      if (this->colorPattern == COLOR_RANDOM_DIOD) {
+        this->color = Common::colorWheel(random(255));
+      }
   }
 
   bool isFinished() override {
@@ -59,6 +71,7 @@ class Twinkle : public EffectProcessor {
   uint16_t length;
   uint16_t *diodSequence;
   uint16_t diodPosition = 0;
+  uint8_t colorPattern = 0;
 
   void prepereDiodSequence() {
     uint16_t length = this->length;

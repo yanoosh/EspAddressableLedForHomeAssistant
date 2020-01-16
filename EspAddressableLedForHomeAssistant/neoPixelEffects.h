@@ -58,30 +58,6 @@ void setAll(RGBW rgbw, bool refreshStrip = true) {
   setAll(rgbw.red, rgbw.green, rgbw.blue, rgbw.white, refreshStrip);
 }
 
-//  colorWipe(50);
-void colorWipe(int SpeedDelay) {
-  for (uint16_t i = 0; i <= ledCount; i++) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    setPixel(i, core->getColor(), false);
-    showStrip();
-    delay(SpeedDelay);
-  }
-  transitionDone = true;
-}
-
-//  colorWipeOnce(50);
-void colorWipeOnce(int SpeedDelay) {
-  colorWipe(SpeedDelay);
-
-  // Reset back to previous color
-  RGBW color = {previousRed, previousGreen, previousBlue, previousWhite};
-  core->setColor(color);
-
-  colorWipe(SpeedDelay);
-}
-
 //  RunningLights(50);
 void RunningLights(int WaveDelay) {
   int Position = 0;
@@ -107,48 +83,6 @@ void RunningLights(int WaveDelay) {
     showStrip();
     delay(WaveDelay);
   }
-}
-
-//  SnowSparkle(20, random(100,1000));
-void SnowSparkle(int SparkleDelay, int SpeedDelay) {
-  setAll(core->getColor());
-
-  int Pixel = random(ledCount);
-  setPixel(Pixel, 0, 0, 0, 255, false);  //@todo why change all to white?
-  showStrip();
-  delay(SparkleDelay);
-  setPixel(Pixel, core->getColor(), false);
-  showStrip();
-  delay(SpeedDelay);
-}
-
-//  Sparkle(0);
-void Sparkle(int SpeedDelay) {
-  setAll(BLACK, false);
-  int Pixel = random(ledCount);
-  setPixel(Pixel, core->getColor(), false);
-  showStrip();
-  delay(SpeedDelay);
-  setPixel(Pixel, BLACK, false);
-}
-
-//  TwinkleRandom(20, 100, false);
-void TwinkleRandom(int Count, int SpeedDelay, boolean OnlyOne) {
-  setAll(BLACK, false);
-
-  for (int i = 0; i < Count; i++) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    setPixel(random(ledCount), random(0, 255), random(0, 255), random(0, 255), 0, true);
-    showStrip();
-    delay(SpeedDelay);
-    if (OnlyOne) {
-      setAll(BLACK);
-    }
-  }
-
-  delay(SpeedDelay);
 }
 
 // BouncingBalls(3);
