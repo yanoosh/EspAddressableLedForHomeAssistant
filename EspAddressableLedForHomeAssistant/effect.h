@@ -7,6 +7,7 @@
 #include "effect/EffectProcessor.cpp"
 #include "effect/Fade.cpp"
 #include "effect/Fire.cpp"
+#include "effect/Lightning.cpp"
 #include "effect/MeteorRain.cpp"
 #include "effect/RainbowCycle.cpp"
 #include "effect/Wave.cpp"
@@ -98,6 +99,9 @@ void updateEffect(int8_t id, const char *name) {
       case 13:
         effectProcessor = new Twinkle(core->getStrip(), core->getStrip()->numPixels(), Twinkle::COLOR_RANDOM_DIOD);
         effectProcessor->setName(effects[id]);
+        break;
+      case 15:  // lightning
+        effectProcessor = new Lightning(core->getStrip());
         break;
       case 16:
         effectProcessor = new MeteorRain(core->getStrip());

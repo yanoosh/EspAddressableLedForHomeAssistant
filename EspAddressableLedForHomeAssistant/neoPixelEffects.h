@@ -103,7 +103,7 @@ void BouncingBalls(int BallCount) {
     for (int i = 0; i < BallCount; i++) {
       setPixel(Position[i], core->getColor(), false);
     }
-
+    delay(10);
     showStrip();
     setAll(BLACK, false);
   }

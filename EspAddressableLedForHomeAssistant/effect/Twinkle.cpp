@@ -6,7 +6,6 @@
 
 class Twinkle : public EffectProcessor {
  public:
-
   Twinkle(
       Adafruit_NeoPixel *strip,
       uint16_t affectedPixels,
@@ -53,9 +52,9 @@ class Twinkle : public EffectProcessor {
       Common::shuffleArray(diodSequence, this->length);
       this->diodPosition = 0;
     }
-      if (this->colorPattern == COLOR_RANDOM_DIOD) {
-        this->color.raw = Common::colorWheel(random(255));
-      }
+    if (this->colorPattern == COLOR_RANDOM_DIOD) {
+      this->color.raw = Common::colorWheel(random(255));
+    }
   }
 
   bool isFinished() override {
@@ -63,7 +62,7 @@ class Twinkle : public EffectProcessor {
   }
 
  private:
-  Color backgroudColor;
+  Color backgroudColor = {.raw = 0};
   uint16_t affectedPixels;
   uint8_t colorPattern = 0;
   uint16_t step = 0;

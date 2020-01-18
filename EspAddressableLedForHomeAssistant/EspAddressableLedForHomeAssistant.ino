@@ -175,6 +175,6 @@ void loop() {
       transitionDone = true;
     }
   } else {
-    delay(600);  // Save some power? (from 0.9w to 0.4w when off with ESP8266)
+    delay(100);  // Save some power? (from 0.9w to 0.4w when off with ESP8266)
   }
 }
