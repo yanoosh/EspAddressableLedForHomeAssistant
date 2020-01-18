@@ -44,8 +44,8 @@ void sendState() {
   char buffer[root.measureLength() + 1];
   root.printTo(buffer, sizeof(buffer));
 
-  char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName)];
-  sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName);  // with word space
+  char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName())];
+  sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space
   if (!mqtt.publish(combinedArray, buffer, true)) {
     _DPLN("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE");
   }
@@ -133,20 +133,20 @@ void reconnect(unsigned long now) {
     lastTry = now;
     _DP("Attempting MQTT connection...");
 
-    char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + sizeof(MQTT_AVAIL_TOPIC)];
-    sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, deviceName, MQTT_AVAIL_TOPIC);  // with word space
+    char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName()) + sizeof(MQTT_AVAIL_TOPIC)];
+    sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName(), MQTT_AVAIL_TOPIC);  // with word space
 
     // Attempt to connect
     core->getDiode()->progress(Core::BLUE);
-    if (mqtt.connect(deviceName, MQTT_USER, MQTT_PASSWORD, mqttAvailTopic, 0, true, lwtMessage)) {
+    if (mqtt.connect(core->getDeviceName(), MQTT_USER, MQTT_PASSWORD, mqttAvailTopic, 0, true, lwtMessage)) {
       core->getDiode()->done();
       _DPLN("connected");
 
       // Publish the birth message on connect/reconnect
       mqtt.publish(mqttAvailTopic, birthMessage, true);
 
-      char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(deviceName) + 4];
-      sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, deviceName);  // with word space
+      char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName()) + 4];
+      sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space
       mqtt.subscribe(combinedArray);
 
       setOff();

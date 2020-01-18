@@ -13,12 +13,10 @@ class Core {
   static const uint32_t BLUE = 0x00000033;
   static const uint32_t DARK_YELLOW = 0x00333300;
 
-  Core(Adafruit_NeoPixel *strip) {
-    this->strip = strip;
-    this->diode = new Diode(this->strip);
-  }
-
   void setup() {
+    this->generateNameWhenEmpty();
+    this->strip = new Adafruit_NeoPixel(this->length, this->stripPin, NEO_RGB + NEO_KHZ400);
+    this->diode = new Diode(this->strip);
     this->strip->begin();
     this->strip->show();
 
@@ -33,6 +31,30 @@ class Core {
 
   Diode *getDiode() {
     return this->diode;
+  }
+
+  void setLength(uint16_t length) {
+    this->length = length;
+  }
+
+  uint16_t getLength() {
+    return this->length;
+  }
+
+  void setStripPin(uint16_t stripPin) {
+    this->stripPin = stripPin;
+  }
+
+  uint16_t getStripPin() {
+    return this->stripPin;
+  }
+
+  void setDeviceName(char *deviceName) {
+    this->deviceName = deviceName;
+  }
+
+  char *getDeviceName() {
+    return this->deviceName;
   }
 
   void setTurnOn(bool turnOn) {
@@ -107,6 +129,9 @@ class Core {
 
  private:
   Adafruit_NeoPixel *strip;
+  uint16_t length = 50;
+  uint8_t stripPin;
+  char *deviceName = "";
   bool turnOn;
   RGBW color = {255, 255, 255, 0};
   uint8_t brightness = 255;
@@ -119,6 +144,15 @@ class Core {
 
   void syncLoopAndState() {
     this->loopEnabled = this->turnOn;
+  }
+
+  void generateNameWhenEmpty() {
+    if (strlen(this->deviceName) == 0) {
+      this->deviceName = new char[12 + 1];
+      sprintf(this->deviceName, "led-%d", ESP.getChipId());
+    }
+    _DP("device name: ")
+    _DPLN(this->deviceName)
   }
 };
 

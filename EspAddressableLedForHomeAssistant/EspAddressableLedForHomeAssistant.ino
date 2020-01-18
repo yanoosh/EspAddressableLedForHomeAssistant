@@ -76,13 +76,14 @@ void setup() {
   while (!Serial) {
     ;
   }
+  delay(2000); // wait for client console
 #endif
   pinMode(LED_BUILTIN, OUTPUT);       // Initialize the LED_BUILTIN pin as an output (So it doesnt float as a LED is on this pin)
   digitalWrite(LED_BUILTIN, LOW);     // Turn the status LED on
   pinMode(DATA_PIN_RELAY, OUTPUT);    // Initialize the P-Channel MOSFET for the LED strip
   digitalWrite(DATA_PIN_RELAY, LOW);  // Turn the LED strip on
   //Adafruit_NeoPixel strip = Adafruit_NeoPixel(ledCount, DATA_PIN_LEDS, NEO_GRBW + NEO_KHZ800);
-  core = new Core(new Adafruit_NeoPixel(ledCount, DATA_PIN_LEDS, NEO_RGB + NEO_KHZ400));
+  core = new Core();
   authSetup(core);
   core->setup();
 

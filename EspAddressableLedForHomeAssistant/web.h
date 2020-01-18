@@ -27,7 +27,7 @@ String GetStatusPic() {
 
 void ServeWebClients() {
   String inString = F("<head><title>");
-  inString += deviceName;
+  inString += core->getDeviceName();
   inString += F("</title>");
   inString += F("<meta name='viewport' content='width=device-width, initial-scale=1'>");
   inString += F("<link rel='stylesheet' href='http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css' type='text/css'>");
@@ -38,7 +38,7 @@ void ServeWebClients() {
 
   inString += F("<div data-role='page' id='page_opts'>");
   inString += F("<div data-role='header'><h3>");
-  inString += deviceName;
+  inString += core->getDeviceName();
   inString += F("</h3></div>");
   inString += F("<div data-role='content'>");
 
@@ -100,11 +100,11 @@ void ServeWebClients() {
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
 
   inString += F("<tr><td><b>Device Name:</b></td><td><label id='lbl_deviceName'>");
-  inString += deviceName;
+  inString += core->getDeviceName();
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td><b>LED Count:</b></td><td><label id='lbl_ledCount'>");
-  inString += ledCount;
+  inString += core->getLength();
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td><b>Max Brightness:</b></td><td><label id='lbl_maxBrightness'>");
@@ -139,7 +139,7 @@ void ServeWebClients() {
 
   inString += F("<tr><td><b>Topic:</b></td><td><label id='lbl_rssi'>");
   inString += MQTT_STATE_TOPIC_PREFIX;
-  inString += deviceName;
+  inString += core->getDeviceName();
   inString += F("</label></td></tr>");
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
 

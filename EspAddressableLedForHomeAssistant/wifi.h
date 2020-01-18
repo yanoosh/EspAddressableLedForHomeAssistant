@@ -10,7 +10,7 @@ void wifiSetup() {
 
   // We start by connecting to a WiFi network
   WiFi.mode(WIFI_STA);
-  WiFi.hostname(deviceName);
+  WiFi.hostname(core->getDeviceName());
 
   if (WiFi.status() != WL_CONNECTED) {  // FIX FOR USING 2.3.0 CORE (only .begin if not connected)
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
