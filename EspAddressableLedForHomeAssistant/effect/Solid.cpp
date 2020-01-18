@@ -11,16 +11,13 @@ class Solid : public EffectProcessor {
   }
 
   void loop() override {
-    this->strip->fill(this->color);
+    this->strip->fill(this->color.raw);
     this->strip->show();
   }
 
   bool isFinished() override {
     return true;
   }
-
- private:
-  uint32_t color;
 };
 
 #endif

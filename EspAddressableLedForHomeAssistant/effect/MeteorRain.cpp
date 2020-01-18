@@ -25,7 +25,7 @@ class MeteorRain : public EffectProcessor {
     // draw meteor
     for (i = 0; i < this->meteorSize; i++) {
       if ((this->step - i < count) && (this->step - i >= 0)) {
-        this->strip->setPixelColor(this->step - i, this->color);
+        this->strip->setPixelColor(this->step - i, this->color.raw);
       }
     }
 
@@ -41,7 +41,6 @@ class MeteorRain : public EffectProcessor {
   }
 
  private:
-  uint32_t color;
   uint8_t meteorSize;
   uint8_t meteorTrailDecay;
   bool meteorRandomDecay = true;

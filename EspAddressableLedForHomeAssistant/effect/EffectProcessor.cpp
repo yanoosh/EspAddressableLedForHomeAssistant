@@ -42,10 +42,10 @@ class EffectProcessor {
  protected:
   union Color {
     struct {
-      uint8_t w;
-      uint8_t r;
-      uint8_t g;
       uint8_t b;
+      uint8_t g;
+      uint8_t r;
+      uint8_t w;
     };
     uint32_t raw;
   };

@@ -11,7 +11,7 @@ class Strobe : public EffectProcessor {
 
   void loop() override {
     if (this->light == 1) {
-      this->strip->fill(this->color);
+      this->strip->fill(this->color.raw);
     } else {
       this->strip->clear();
     }
@@ -24,7 +24,6 @@ class Strobe : public EffectProcessor {
   }
 
   private:
-    uint32_t color;
     bool light = true;
 };
 
