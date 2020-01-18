@@ -163,9 +163,6 @@ void loop() {
         }
         delay(transitionTime);
       } else {
-        if (effect == "running lights") {
-          RunningLights(transitionTime);
-        }
         if (effect == "bouncing balls") {
           BouncingBalls(3);
         }

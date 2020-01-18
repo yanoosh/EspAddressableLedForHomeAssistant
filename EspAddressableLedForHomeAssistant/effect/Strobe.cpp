@@ -2,13 +2,11 @@
 #define _STROBE_CPP
 
 #include "EffectProcessor.cpp"
-#include "../rgbw.h"
 
 class Strobe : public EffectProcessor {
  public:
-  Strobe(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+  Strobe(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
     this->setName("strobe");
-    this->color = Adafruit_NeoPixel::Color(color.red, color.green, color.blue, color.white);
   }
 
   void loop() override {

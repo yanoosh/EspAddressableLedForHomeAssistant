@@ -9,10 +9,12 @@
 #include "effect/Fire.cpp"
 #include "effect/MeteorRain.cpp"
 #include "effect/RainbowCycle.cpp"
+#include "effect/Wave.cpp"
 #include "effect/Solid.cpp"
 #include "effect/Strobe.cpp"
 #include "effect/TheaterChase.cpp"
 #include "effect/Twinkle.cpp"
+#include "rgbw.h"
 
 int8_t effectLength = 19;
 const char *effects[] = {
@@ -54,25 +56,25 @@ void updateEffect(int8_t id, const char *name) {
         effectProcessor = new Clear(core->getStrip());
         break;
       case 1:
-        effectProcessor = new Solid(core->getStrip(), core->getColor());
+        effectProcessor = new Solid(core->getStrip());
         break;
       case 2:
-        effectProcessor = new Twinkle(core->getStrip(), core->getColor(), BLACK, core->getStrip()->numPixels() / 5, Twinkle::COLOR_SINGLE);
+        effectProcessor = new Twinkle(core->getStrip(), core->getStrip()->numPixels() / 5, Twinkle::COLOR_SINGLE);
         break;
       case 3:
-        effectProcessor = new CylonBounce(core->getStrip(), core->getColor());
+        effectProcessor = new CylonBounce(core->getStrip());
         break;
       case 4:
         effectProcessor = new Fire(core->getStrip());
         break;
       case 5:
-        effectProcessor = new Fade(core->getStrip(), core->getColor(), 1, -1, 20, false);
+        effectProcessor = new Fade(core->getStrip(), 1, -1, 20, false);
         break;
       case 6:
-        effectProcessor = new Strobe(core->getStrip(), core->getColor());
+        effectProcessor = new Strobe(core->getStrip());
         break;
       case 7:
-        effectProcessor = new TheaterChase(core->getStrip(), core->getColor());
+        effectProcessor = new TheaterChase(core->getStrip());
         break;
       case 8:
         effectProcessor = new RainbowCycle(core->getStrip());
@@ -80,23 +82,32 @@ void updateEffect(int8_t id, const char *name) {
       case 9:
         effectProcessor = new ColorWipeRainbow(core->getStrip());
         break;
+      case 10:
+        effectProcessor = new Wave(core->getStrip(), 0.5, 0.1);
+        effectProcessor->setName(effects[id]);
+        break;
       case 11:
-        effectProcessor = new Twinkle(core->getStrip(), {0, 0, 0, 1}, core->getColor(), 1, Twinkle::COLOR_SINGLE);
-        effectProcessor->setName(effects[11]);
+        effectProcessor = new Twinkle(core->getStrip(), 1, Twinkle::COLOR_SINGLE);
+        ((Twinkle *)effectProcessor)->setBackgroundColor(255, 255, 255, 255);
+        effectProcessor->setName(effects[id]);
         break;
       case 12:
-        effectProcessor = new Twinkle(core->getStrip(), core->getColor(), {0, 0, 0, 0}, 1, Twinkle::COLOR_SINGLE);
-        effectProcessor->setName(effects[12]);
+        effectProcessor = new Twinkle(core->getStrip(), 1, Twinkle::COLOR_SINGLE);
+        effectProcessor->setName(effects[id]);
         break;
       case 13:
-        effectProcessor = new Twinkle(core->getStrip(), {0, 0, 0, 0}, {0, 0, 0, 0}, core->getStrip()->numPixels(), Twinkle::COLOR_RANDOM_DIOD);
-        effectProcessor->setName(effects[13]);
+        effectProcessor = new Twinkle(core->getStrip(), core->getStrip()->numPixels(), Twinkle::COLOR_RANDOM_DIOD);
+        effectProcessor->setName(effects[id]);
         break;
       case 16:
-        effectProcessor = new MeteorRain(core->getStrip(), core->getColor());
+        effectProcessor = new MeteorRain(core->getStrip());
         break;
       default:
         effectProcessor = NULL;
+    }
+    if (effectProcessor != NULL) {
+      RGBW color = core->getColor();
+      effectProcessor->setColor(color.red, color.green, color.blue, color.white);
     }
     core->setEffect(name, effectProcessor);
     return;

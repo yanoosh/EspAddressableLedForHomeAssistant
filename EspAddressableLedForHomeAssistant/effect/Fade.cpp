@@ -2,7 +2,6 @@
 #define _FADE_CPP
 
 #include <Arduino.h>
-#include "../rgbw.h"
 #include "EffectProcessor.cpp"
 
 class Fade : public EffectProcessor {
@@ -14,7 +13,6 @@ class Fade : public EffectProcessor {
   // fade in->in->in->...: direction 1, loops -1, cut = true;
   Fade(
       Adafruit_NeoPixel *strip,
-      RGBW color,
       int8_t direction,
       int8_t loops,
       uint8_t smoothness,
@@ -35,10 +33,10 @@ class Fade : public EffectProcessor {
   void loop() override {
     if (this->loops != 0) {
       uint32_t color = Adafruit_NeoPixel::Color(
-        this->color.red * this->step / this->smoothness, 
-        this->color.green * this->step / this->smoothness, 
-        this->color.blue * this->step / this->smoothness, 
-        this->color.white * this->step / this->smoothness
+        this->color.r * this->step / this->smoothness, 
+        this->color.g * this->step / this->smoothness, 
+        this->color.b * this->step / this->smoothness, 
+        this->color.w * this->step / this->smoothness
       );
       this->strip->fill(color);
       this->strip->show();
@@ -71,7 +69,6 @@ class Fade : public EffectProcessor {
   }
 
  private:
-  RGBW color;
   int8_t step;
   int8_t direction;
   int8_t loops;

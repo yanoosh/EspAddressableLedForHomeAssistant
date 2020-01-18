@@ -2,14 +2,12 @@
 #define _CYLON_BOUNCE_CPP
 
 #include <Arduino.h>
-#include "../rgbw.h"
 #include "EffectProcessor.cpp"
 
 class CylonBounce : public EffectProcessor {
  public:
-  CylonBounce(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+  CylonBounce(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
     this->setName("cylon bounce");
-    this->color = color;
     this->effectSize = strip->numPixels() / 5;
     this->maxStep = strip->numPixels() - this->effectSize;
     this->multiplier = PI / (this->effectSize + 1);
@@ -26,10 +24,10 @@ class CylonBounce : public EffectProcessor {
       float sinMultiplier = sin(this->multiplier * (float)(i + 1.0));
       this->strip->setPixelColor(
         this->step + i,
-        this->color.red * sinMultiplier,
-        this->color.green * sinMultiplier,
-        this->color.blue * sinMultiplier,
-        this->color.white * sinMultiplier
+        this->color.r * sinMultiplier,
+        this->color.g * sinMultiplier,
+        this->color.b * sinMultiplier,
+        this->color.w * sinMultiplier
       );
     }
     this->strip->show();
@@ -51,7 +49,6 @@ class CylonBounce : public EffectProcessor {
   }
 
  private:
-  RGBW color;
   uint8_t effectSize;
   uint8_t sleepStep = 0;
   int16_t step = 0;

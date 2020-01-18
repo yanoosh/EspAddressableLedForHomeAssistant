@@ -1,7 +1,6 @@
 #ifndef _TWINKLE_CPP
 #define _TWINKLE_CPP
 
-#include "../rgbw.h"
 #include "Common.cpp"
 #include "EffectProcessor.cpp"
 
@@ -10,15 +9,11 @@ class Twinkle : public EffectProcessor {
 
   Twinkle(
       Adafruit_NeoPixel *strip,
-      RGBW color,
-      RGBW backgroudColor,
       uint16_t affectedPixels,
       uint8_t colorPattern) : EffectProcessor(strip) {
     this->setName("twinkle");
-    this->color = Adafruit_NeoPixel::Color(color.red, color.green, color.blue, color.white);
-    this->colorPattern = colorPattern;
-    this->backgroudColor = Adafruit_NeoPixel::Color(backgroudColor.red, backgroudColor.green, backgroudColor.blue, backgroudColor.white);
     this->affectedPixels = affectedPixels;
+    this->colorPattern = colorPattern;
     this->length = this->strip->numPixels();
     this->diodSequence = new uint16_t[this->length];
     this->prepereDiodSequence();
@@ -28,21 +23,28 @@ class Twinkle : public EffectProcessor {
     delete[] this->diodSequence;
   }
 
+  void setBackgroundColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
+    this->backgroudColor.w = white;
+    this->backgroudColor.r = red;
+    this->backgroudColor.g = green;
+    this->backgroudColor.b = blue;
+  }
+
   void loop() override {
     if (this->step == 0) {
-      this->strip->fill(this->backgroudColor);
+      this->strip->fill(this->backgroudColor.raw);
       this->strip->show();
     }
 
     // todo 100% random, find random number then iterate looking for black
-    this->strip->setPixelColor(*(this->diodSequence + this->diodPosition), color);
+    this->strip->setPixelColor(*(this->diodSequence + this->diodPosition), this->color.raw);
     this->strip->show();
 
     this->step++;
     if (this->step > affectedPixels) {
       this->step = 0;
       if (this->colorPattern == COLOR_RANDOM_STRIP) {
-        this->color = Common::colorWheel(random(255));
+        this->color.raw = Common::colorWheel(random(255));
       }
     }
 
@@ -52,7 +54,7 @@ class Twinkle : public EffectProcessor {
       this->diodPosition = 0;
     }
       if (this->colorPattern == COLOR_RANDOM_DIOD) {
-        this->color = Common::colorWheel(random(255));
+        this->color.raw = Common::colorWheel(random(255));
       }
   }
 
@@ -61,14 +63,13 @@ class Twinkle : public EffectProcessor {
   }
 
  private:
-  uint32_t color;
-  uint32_t backgroudColor;
+  Color backgroudColor;
   uint16_t affectedPixels;
+  uint8_t colorPattern = 0;
   uint16_t step = 0;
   uint16_t length;
   uint16_t *diodSequence;
   uint16_t diodPosition = 0;
-  uint8_t colorPattern = 0;
 
   void prepereDiodSequence() {
     uint16_t length = this->length;

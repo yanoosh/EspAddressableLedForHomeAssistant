@@ -1,14 +1,12 @@
 #ifndef _METEOR_RAIN_CPP
 #define _METEOR_RAIN_CPP
 
-#include "../rgbw.h"
 #include "EffectProcessor.cpp"
 
 class MeteorRain : public EffectProcessor {
  public:
-  MeteorRain(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
+  MeteorRain(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
     this->setName("meteor rain");
-    this->color = strip->Color(color.red, color.green, color.blue, color.white);
     this->meteorSize = strip->numPixels() / 5;
     this->meteorTrailDecay = strip->getBrightness() / 4;
     this->maxStep = 2 * strip->numPixels();

@@ -18,7 +18,7 @@ class ColorWipeRainbow : public EffectProcessor {
       return;
     }
 
-    this->strip->setPixelColor(this->step, this->color);
+    this->strip->setPixelColor(this->step, this->color.raw);
     this->strip->show();
 
     this->step++;
@@ -34,13 +34,12 @@ class ColorWipeRainbow : public EffectProcessor {
   }
 
  private:
-  uint32_t color;
   uint16_t length;
   uint16_t step = 0;
   uint8_t sleep = 0;
 
   void drawColor() {
-    this->color = Common::colorWheel(random(255));
+    this->color.raw = Common::colorWheel(random(255));
   }
 };
 

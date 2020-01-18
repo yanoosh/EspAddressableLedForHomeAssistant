@@ -58,33 +58,6 @@ void setAll(RGBW rgbw, bool refreshStrip = true) {
   setAll(rgbw.red, rgbw.green, rgbw.blue, rgbw.white, refreshStrip);
 }
 
-//  RunningLights(50);
-void RunningLights(int WaveDelay) {
-  int Position = 0;
-
-  for (int i = 0; i <= ledCount; i++) {
-    if (shouldAbortEffect()) {
-      return;
-    }
-    Position++;  // = 0; //Position + Rate;
-    float size = 2;
-    for (int i = 0; i <= ledCount; i++) {
-      // sine wave, 3 offset waves make a rainbow!
-      //float level = sin(i+Position) * 127 + 128;
-      //setPixel(i,level,0,0,false);
-      //float level = sin(i+Position) * 127 + 128;
-      setPixel(i, ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().red,
-               ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().green,
-               ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().blue,
-               ((sin((i/size) + Position) * 127 + 128) / 255) * core->getColor().white,
-               false);
-    }
-
-    showStrip();
-    delay(WaveDelay);
-  }
-}
-
 // BouncingBalls(3);
 void BouncingBalls(int BallCount) {
   float Gravity = -9.81;
