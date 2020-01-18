@@ -6,6 +6,7 @@
 
 class Solid : public EffectProcessor {
  public:
+ // todo add solid with rainbow effect
   Solid(Adafruit_NeoPixel *strip, RGBW color) : EffectProcessor(strip) {
     this->setName("solid");
     this->color = strip->Color(color.red, color.green, color.blue, color.white);

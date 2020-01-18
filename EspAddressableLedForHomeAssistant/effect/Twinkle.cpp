@@ -7,9 +7,6 @@
 
 class Twinkle : public EffectProcessor {
  public:
-  static const uint8_t COLOR_SINGLE = 0;
-  static const uint8_t COLOR_RANDOM_STRIP = 1;
-  static const uint8_t COLOR_RANDOM_DIOD = 2;
 
   Twinkle(
       Adafruit_NeoPixel *strip,

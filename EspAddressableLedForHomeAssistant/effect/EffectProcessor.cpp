@@ -6,6 +6,10 @@
 
 class EffectProcessor {
  public:
+  static const uint8_t COLOR_SINGLE = 0;
+  static const uint8_t COLOR_RANDOM_STRIP = 1;
+  static const uint8_t COLOR_RANDOM_DIOD = 2;
+  
   EffectProcessor(Adafruit_NeoPixel *strip) {
     this->strip = strip;
   }
