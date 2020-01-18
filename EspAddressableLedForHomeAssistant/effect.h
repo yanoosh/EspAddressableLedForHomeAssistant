@@ -113,11 +113,11 @@ void updateEffect(int8_t id, const char *name) {
       RGBW color = core->getColor();
       effectProcessor->setColor(color.red, color.green, color.blue, color.white);
     }
-    core->setEffect(name, effectProcessor);
+    core->setEffect(effectProcessor);
     return;
   }
 
-  core->setEffect(name, NULL);
+  core->setEffect(NULL);
 }
 
 void updateEffectByName(const char *effect) {

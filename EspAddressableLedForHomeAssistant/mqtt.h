@@ -33,7 +33,7 @@ void sendState() {
   root["brightness"] = core->getBrightness();
   root["transition"] = transitionTime;
   // todo change after move all effect to class
-  root["effect"] = effect.c_str();
+  root["effect"] = core->getEffectName();
 
 #ifdef _DEBUG
   root["id"] = ESP.getChipId();
@@ -90,20 +90,8 @@ bool processJson(char* message) {
     core->setBrightness(root["brightness"]);
   }
 
-  if (root.containsKey("pixel")) {
-    pixelLen = root["pixel"].size();
-    if (pixelLen > sizeof(pixelArray)) {
-      pixelLen = sizeof(pixelArray);
-    }
-    for (int i = 0; i < pixelLen; i++) {
-      pixelArray[i] = root["pixel"][i];
-    }
-  }
-
   if (root.containsKey("effect")) {
-    effectString = root["effect"];
-    effect = effectString;
-    updateEffectByName(effectString);
+    updateEffectByName(root["effect"]);
   }
 
   return true;
@@ -122,26 +110,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   message[length] = '\0';
   _DPLN(message);
 
-  previousEffect = effect;
-
   if (!processJson(message)) {
     return;
   }
-
-  previousRed = core->getColor().red;
-  previousGreen = core->getColor().green;
-  previousBlue = core->getColor().blue;
-  previousWhite = core->getColor().white;
-
-  //TODO when light is turn on then should only change on/off state not other values.
-  if (core->isTurnOn() || newStateOn) {
-    //    mapColor(&core->getColor(), core->sourceColor, core->getBrightness());
-  } else {
-    core->setColor(BLACK);
-  }
-
-  transitionAbort = true;  // Kill the current effect
-  transitionDone = false;  // Start a new transition
 
   if (core->isTurnOn() != newStateOn) {
     if (newStateOn) {

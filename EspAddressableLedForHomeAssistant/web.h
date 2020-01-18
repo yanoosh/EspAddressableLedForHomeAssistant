@@ -82,10 +82,10 @@ void ServeWebClients() {
   inString += transitionTime;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Effect:</b></td><td><label id='lbl_effect'>");
-  inString += effect.c_str();
+  inString += core->getEffectName();
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Transition:</b></td><td><label id='lbl_effect'>");
-  if (transitionDone) {
+  if (!core->isLoopEnabled()) {
     inString += F("Done");
   } else {
     inString += F("Running");

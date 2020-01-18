@@ -80,15 +80,17 @@ class Core {
     return this->speed;
   }
 
-  void setEffect(const char *name, EffectProcessor *effectProcessor) {
-    // todo remove name after refactor all effect to class
-    this->effectName = name;
+  void setEffect(EffectProcessor *effectProcessor) {
     this->effectProcessor = effectProcessor;
     this->syncLoopAndState();
   }
 
   const char *getEffectName() {
-    return this->effectName;
+    if (this->effectProcessor != NULL) {
+      return this->effectProcessor->getName();
+    } else {
+      return "";
+    }
   }
 
   EffectProcessor *getEffectProcessor() {

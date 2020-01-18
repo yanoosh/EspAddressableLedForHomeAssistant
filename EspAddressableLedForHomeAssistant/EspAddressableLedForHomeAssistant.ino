@@ -53,23 +53,10 @@ const char* lwtMessage = "offline";
 Core* core;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
-const char* effectString = "solid";
-String previousEffect = "solid";
-String effect = "solid";
 bool newStateOn = true;
-bool transitionDone = true;
-bool transitionAbort = false;
 int transitionTime = 150;  // 1-150
-int pixelLen = 1;
-int pixelArray[50];
 RGBW BLACK = {0, 0, 0, 0};
 RGBW WHITE = {255, 255, 255, 255};
-
-// Previous requested values
-byte previousRed = 0;
-byte previousGreen = 0;
-byte previousBlue = 0;
-byte previousWhite = 0;
 
 void setOn();
 void setOff();
@@ -79,7 +66,6 @@ void setOff();
 
 #include "effect.h"
 #include "mqtt.h"
-#include "neoPixelEffects.h"
 #include "ota.h"
 #include "web.h"
 
@@ -108,19 +94,14 @@ void setup() {
   _DPLN("Ready");
   // OK we are connected
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
-  updateEffectByName(effect.c_str());
+  updateEffectByName("solid");
 }
 
 /********************************** START LED POWER STATE *****************************************/
 void setOff() {
-  setAll(BLACK);
+  core->getStrip()->clear();
+  core->getStrip()->show();
   core->setTurnOn(false);
-  transitionDone = true;   // Ensure we dont run the loop
-  transitionAbort = true;  // Ensure we about any current effect
-  previousRed = 0;
-  previousGreen = 0;
-  previousBlue = 0;
-  previousWhite = 0;
 
   if (!digitalRead(DATA_PIN_RELAY)) {
     delay(200);                          // Wait for sequence to complete and stable
@@ -135,8 +116,6 @@ void setOff() {
 void setOn() {
   if (digitalRead(DATA_PIN_RELAY)) {
     digitalWrite(DATA_PIN_RELAY, LOW);
-    delay(50);
-    setAll(BLACK);
     delay(500);  // Wait for Leds to init and capasitor to charge??
     _DPLN("LED: ON");
   }
@@ -150,30 +129,16 @@ void loop() {
   wifiLoop();
   mqttLoop(now);
   otaLoop();
-  // webLoop();
+  webLoop();
 
-  transitionAbort = false;                         // Because we came from the loop and not 1/2 way though a transition
-  if (!transitionDone && core->isLoopEnabled()) {  // Once we have completed the transition, No point to keep going though the process
-    if (core->isTurnOn()) {                        // if the light is turned on
-      //EFFECTS
-      if (core->getEffectProcessor() != NULL) {
-        core->getEffectProcessor()->loop();
-        if (core->getEffectProcessor()->isFinished()) {
-          core->disableLoop();
-        }
-        delay(transitionTime);
-      } else {
-        if (effect == "bouncing balls") {
-          BouncingBalls(3);
-        }
-        if (effect == "lightning") {
-          Lightning(transitionTime);
-        }
+  if (core->isLoopEnabled()) {  // Once we have completed the transition, No point to keep going though the process
+    if (core->getEffectProcessor() != NULL) {
+      core->getEffectProcessor()->loop();
+      if (core->getEffectProcessor()->isFinished()) {
+        core->disableLoop();
       }
-    } else {
-      setAll(BLACK);
-      transitionDone = true;
     }
+    delay(transitionTime);
   } else {
     delay(100);  // Save some power? (from 0.9w to 0.4w when off with ESP8266)
   }
