@@ -140,7 +140,7 @@ void loop() {
     }
   }
 
-  if (now - lastServices > 100) { 
+  if (now - lastServices > 113) { 
     lastServices = now;
     wifiLoop();
     mqttLoop(now);

@@ -69,6 +69,9 @@ class Core {
   void setColor(RGBW color) {
     this->color = color;
     this->syncLoopAndState();
+    if (this->effectProcessor != NULL) {
+      this->effectProcessor->setColor(color.red, color.green, color.blue, color.white);
+    }
   }
 
   RGBW getColor() {
@@ -136,7 +139,6 @@ class Core {
   RGBW color = {255, 255, 255, 0};
   uint8_t brightness = 255;
   uint8_t maxBrightness = 255;
-  const char *effectName;
   EffectProcessor *effectProcessor;
   uint8_t speed;
   bool loopEnabled = true;
