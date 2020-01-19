@@ -125,22 +125,28 @@ void setOn() {
 }
 
 void loop() {
-  unsigned long now = millis();
+  uint32_t now = millis();
+  static uint32_t lastServices = 0;
+  static uint32_t lastStrip = 0;
 
-  wifiLoop();
-  mqttLoop(now);
-  otaLoop();
-  webLoop();
-
-  if (core->isLoopEnabled()) {  // Once we have completed the transition, No point to keep going though the process
+  
+  if (core->isLoopEnabled() && now - lastStrip > transitionTime) {  // Once we have completed the transition, No point to keep going though the process
+    lastStrip = now;
     if (core->getEffectProcessor() != NULL) {
       core->getEffectProcessor()->loop();
       if (core->getEffectProcessor()->isFinished()) {
         core->disableLoop();
       }
     }
-    delay(transitionTime);
-  } else {
-    delay(100);  // Save some power? (from 0.9w to 0.4w when off with ESP8266)
   }
+
+  if (now - lastServices > 100) { 
+    lastServices = now;
+    wifiLoop();
+    mqttLoop(now);
+    otaLoop();
+    webLoop();
+  }
+
+  delay(50);
 }
