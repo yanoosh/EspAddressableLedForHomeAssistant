@@ -24,7 +24,7 @@
 #define VERSION F("v3.4 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
 
 #include <Adafruit_NeoPixel.h>
-#include <ArduinoJson.h>  //Not beta version. Tested with v5.3.14
+#include <ArduinoJson.h>
 #include <ArduinoOTA.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
@@ -41,7 +41,7 @@
 #endif
 
 /****************************************FOR JSON***************************************/
-const int BUFFER_SIZE = JSON_OBJECT_SIZE(60);
+const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(20);
 
 char* birthMessage = "online";
 const char* lwtMessage = "offline";

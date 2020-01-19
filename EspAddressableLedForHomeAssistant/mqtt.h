@@ -1,6 +1,8 @@
 #ifndef _MQTT_INO
 #define _MQTT_INO
 
+#include <ArduinoJson.h>
+
 PubSubClient mqtt(espClient);
 
 /********************************** START SEND STATE*****************************************/
@@ -19,30 +21,29 @@ PubSubClient mqtt(espClient);
   }
 */
 void sendState() {
-  StaticJsonBuffer<BUFFER_SIZE> jsonBuffer;
+  StaticJsonDocument<JSON_BUFFER_SIZE> document;
 
-  JsonObject& root = jsonBuffer.createObject();
-
-  root["state"] = (core->isTurnOn()) ? on_cmd : off_cmd;
-  JsonObject& color = root.createNestedObject("color");
+  document["state"] = (core->isTurnOn()) ? on_cmd : off_cmd;
+  JsonObject color = document.createNestedObject("color");
   color["r"] = core->getColor().red;
   color["g"] = core->getColor().green;
   color["b"] = core->getColor().blue;
 
-  root["white_value"] = core->getColor().white;
-  root["brightness"] = core->getBrightness();
-  root["transition"] = transitionTime;
+  document["white_value"] = core->getColor().white;
+  document["brightness"] = core->getBrightness();
+  document["transition"] = transitionTime;
   // todo change after move all effect to class
-  root["effect"] = core->getEffectName();
+  document["effect"] = core->getEffectName();
 
 #ifdef _DEBUG
-  root["id"] = ESP.getChipId();
-  root["memory_heap"] = ESP.getFreeHeap();
-  root["work_time"] = millis();
+  document["id"] = ESP.getChipId();
+  document["memory_heap"] = ESP.getFreeHeap();
+  document["work_time"] = millis();
 #endif
 
-  char buffer[root.measureLength() + 1];
-  root.printTo(buffer, sizeof(buffer));
+  char buffer[measureJson(document) + 1];
+  // document.printTo(buffer, sizeof(buffer));
+  serializeJson(document, buffer, sizeof(buffer));
 
   char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName())];
   sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space
@@ -53,19 +54,19 @@ void sendState() {
 
 /********************************** START PROCESS JSON*****************************************/
 bool processJson(char* message) {
-  StaticJsonBuffer<BUFFER_SIZE> jsonBuffer;
+  StaticJsonDocument<JSON_BUFFER_SIZE> document;
 
-  JsonObject& root = jsonBuffer.parseObject(message);
+  DeserializationError err = deserializeJson(document, message);
 
-  if (!root.success()) {
+  if (err != DeserializationError::Ok) {
     _DPLN("parseObject() failed");
     return false;
   }
 
-  if (root.containsKey("state")) {
-    if (strcmp(root["state"], on_cmd) == 0) {
+  if (document.containsKey("state")) {
+    if (strcmp(document["state"], on_cmd) == 0) {
       newStateOn = true;
-    } else if (strcmp(root["state"], off_cmd) == 0) {
+    } else if (strcmp(document["state"], off_cmd) == 0) {
       newStateOn = false;
     } else {
       sendState();
@@ -73,25 +74,25 @@ bool processJson(char* message) {
     }
   }
 
-  if (root.containsKey("transition")) {
-    transitionTime = root["transition"];
+  if (document.containsKey("transition")) {
+    transitionTime = document["transition"];
   }
 
-  if (root.containsKey("color")) {
-    core->setColor({root["color"]["r"], root["color"]["g"], root["color"]["b"], 0});
+  if (document.containsKey("color")) {
+    core->setColor({document["color"]["r"], document["color"]["g"], document["color"]["b"], 0});
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
-  if (root.containsKey("white_value")) {
-    core->setColor({0, 0, 0, root["white_value"]});
+  if (document.containsKey("white_value")) {
+    core->setColor({0, 0, 0, document["white_value"]});
   }
 
-  if (root.containsKey("brightness")) {
-    core->setBrightness(root["brightness"]);
+  if (document.containsKey("brightness")) {
+    core->setBrightness(document["brightness"]);
   }
 
-  if (root.containsKey("effect")) {
-    updateEffectByName(root["effect"]);
+  if (document.containsKey("effect")) {
+    updateEffectByName(document["effect"]);
   }
 
   return true;
