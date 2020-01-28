@@ -37,8 +37,8 @@ void setup_config() {
     maxBrightness = 155;  // 60% - Brightness Percentage (This is used to limit the current from the power supply) - 2.4A with 128 leds on RGB White (60ma)
   }
 
-  _DP("Device Name: ");
-  _DPLN(deviceName);
+  _DP("Device Name: ")
+  _DPLN(deviceName)
 }
 
 #endif

@@ -35,11 +35,14 @@ void sendState() {
   // todo change after move all effect to class
   document["effect"] = core->getEffectName();
 
-#ifdef _DEBUG
-  document["id"] = ESP.getChipId();
-  document["memory_heap"] = ESP.getFreeHeap();
-  document["work_time"] = millis();
-#endif
+  if (core->isStatusExtended()) {
+    document["mac"] = WiFi.macAddress();
+    document["ip"] = WiFi.localIP().toString();
+    document["rssi"] = WiFi.RSSI();
+    document["id"] = ESP.getChipId();
+    document["memory_heap"] = ESP.getFreeHeap();
+    document["work_time"] = millis();
+  }
 
   char buffer[measureJson(document) + 1];
   // document.printTo(buffer, sizeof(buffer));
@@ -48,7 +51,7 @@ void sendState() {
   char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName())];
   sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space
   if (!mqtt.publish(combinedArray, buffer, true)) {
-    _DPLN("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE");
+    _DPLN("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE")
   }
 }
 
@@ -59,7 +62,7 @@ bool processJson(char* message) {
   DeserializationError err = deserializeJson(document, message);
 
   if (err != DeserializationError::Ok) {
-    _DPLN("parseObject() failed");
+    _DPLN("parseObject() failed")
     return false;
   }
 
@@ -99,17 +102,17 @@ bool processJson(char* message) {
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  _DPLN();
-  _DP("Message arrived [");
-  _DP(topic);
-  _DP("] ");
+  _DPLN()
+  _DP("Message arrived [")
+  _DP(topic)
+  _DP("] ")
 
   char message[length + 1];
   for (unsigned int i = 0; i < length; i++) {
     message[i] = (char)payload[i];
   }
   message[length] = '\0';
-  _DPLN(message);
+  _DPLN(message)
 
   if (!processJson(message)) {
     return;
@@ -132,7 +135,7 @@ void reconnect(unsigned long now) {
   static unsigned long lastTry = -6000;
   if (now - lastTry > 5000) {
     lastTry = now;
-    _DP("Attempting MQTT connection...");
+    _DP("Attempting MQTT connection...")
 
     char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName()) + sizeof(MQTT_AVAIL_TOPIC)];
     sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName(), MQTT_AVAIL_TOPIC);  // with word space
@@ -141,7 +144,7 @@ void reconnect(unsigned long now) {
     core->getDiode()->progress(Core::BLUE);
     if (mqtt.connect(core->getDeviceName(), MQTT_USER, MQTT_PASSWORD, mqttAvailTopic, 0, true, lwtMessage)) {
       core->getDiode()->done();
-      _DPLN("connected");
+      _DPLN("connected")
 
       // Publish the birth message on connect/reconnect
       mqtt.publish(mqttAvailTopic, birthMessage, true);
@@ -153,9 +156,9 @@ void reconnect(unsigned long now) {
       setOff();
       sendState();
     } else {
-      _DP("failed, rc=");
-      _DP(mqtt.state());
-      _DPLN(" try again in 5 seconds");
+      _DP("failed, rc=")
+      _DP(mqtt.state())
+      _DPLN(" try again in 5 seconds")
     }
   }
 }

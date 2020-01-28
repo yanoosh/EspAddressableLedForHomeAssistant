@@ -54,7 +54,7 @@ Core* core;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 bool newStateOn = true;
-int transitionTime = 150;  // 1-150
+uint32_t transitionTime = 150;  // 1-150
 RGBW BLACK = {0, 0, 0, 0};
 RGBW WHITE = {255, 255, 255, 255};
 
@@ -92,9 +92,10 @@ void setup() {
   webSetup();
   otaSetup();
 
-  _DPLN("Ready");
+  _DPLN("Ready")
   // OK we are connected
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
+  setupEffects();
   updateEffectByName("solid");
 }
 
@@ -107,7 +108,7 @@ void setOff() {
   if (!digitalRead(DATA_PIN_RELAY)) {
     delay(200);                          // Wait for sequence to complete and stable
     digitalWrite(DATA_PIN_RELAY, HIGH);  // Do NOT write to strip while it has no power. (https://forums.adafruit.com/viewtopic.php?f=47&t=100265)
-    _DPLN("LED: OFF");
+    _DPLN("LED: OFF")
   }
 
   // NOTE: Should really set the xxx pin to be an input to ensure that data is not sent and to stop potential current flow.
@@ -118,7 +119,7 @@ void setOn() {
   if (digitalRead(DATA_PIN_RELAY)) {
     digitalWrite(DATA_PIN_RELAY, LOW);
     delay(500);  // Wait for Leds to init and capasitor to charge??
-    _DPLN("LED: ON");
+    _DPLN("LED: ON")
   }
 
   core->setTurnOn(true);

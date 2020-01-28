@@ -130,6 +130,18 @@ class Core {
     return this->loopEnabled;
   }
 
+  void enableStatusExtended() {
+    this->statusExtended = true;
+  }
+
+  void disableStatusExtended() {
+    this->statusExtended = false;
+  }
+
+  bool isStatusExtended() {
+    return this->statusExtended;
+  }
+
  private:
   Adafruit_NeoPixel *strip;
   uint16_t length = 50;
@@ -143,6 +155,7 @@ class Core {
   uint8_t speed;
   bool loopEnabled = true;
   Diode *diode;
+  bool statusExtended = false;
 
   void syncLoopAndState() {
     this->loopEnabled = this->turnOn;

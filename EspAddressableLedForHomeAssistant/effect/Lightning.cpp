@@ -6,6 +6,7 @@
 class Lightning : public EffectProcessor {
  public:
   Lightning(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
+    this->setName("lightning");
     this->ledCount = this->strip->numPixels();
     this->strikes = random(1, 4);
     this->strip->clear();

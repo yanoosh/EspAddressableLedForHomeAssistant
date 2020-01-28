@@ -6,6 +6,7 @@
 class Wave : public EffectProcessor {
  public:
   Wave(Adafruit_NeoPixel *strip, float density, float smoothness) : EffectProcessor(strip) {
+    this->setName("wave");
     this->density = density;
     this->smoothness = smoothness;
     this->length = this->strip->numPixels();

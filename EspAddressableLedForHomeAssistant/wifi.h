@@ -5,8 +5,8 @@ WiFiClient espClient;
 void wifiSetup() {
   int retries = 0;
   delay(100);
-  _DP("Connecting to SSID: ");
-  _DPLN(WIFI_SSID);
+  _DP("Connecting to SSID: ")
+  _DPLN(WIFI_SSID)
 
   // We start by connecting to a WiFi network
   WiFi.mode(WIFI_STA);
@@ -19,16 +19,19 @@ void wifiSetup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     core->getDiode()->progress(Core::RED);
-    _DP(".");
+    _DP(".")
     if (retries++ > 20) {
       ESP.restart();
     }
   }
 
-  _DPLN();
-  _DPLN("WiFi connected");
-  _DP("IP address: ");
-  _DPLN(WiFi.localIP());
+  _DPLN()
+  _DPLN("WiFi connected")
+  _DP("IP address: ")
+  _DPLN(WiFi.localIP())
+#ifdef _DEBUG
+  WiFi.printDiag(Serial);
+#endif
 }
 
 void wifiLoop() {
