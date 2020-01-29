@@ -54,7 +54,6 @@ Core* core;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 bool newStateOn = true;
-uint32_t transitionTime = 150;  // 1-150
 RGBW BLACK = {0, 0, 0, 0};
 RGBW WHITE = {255, 255, 255, 255};
 
@@ -131,7 +130,7 @@ void loop() {
   static uint32_t lastStrip = 0;
 
   
-  if (core->isLoopEnabled() && now - lastStrip > transitionTime) {  // Once we have completed the transition, No point to keep going though the process
+  if (core->isLoopEnabled() && now - lastStrip > core->getTransitionInterval()) {  // Once we have completed the transition, No point to keep going though the process
     lastStrip = now;
     if (core->getEffectProcessor() != NULL) {
       core->getEffectProcessor()->loop();

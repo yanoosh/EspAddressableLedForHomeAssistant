@@ -31,7 +31,7 @@ void sendState() {
 
   document["white_value"] = core->getColor().white;
   document["brightness"] = core->getBrightness();
-  document["transition"] = transitionTime;
+  document["transition"] = core->getTransitionInterval();
   // todo change after move all effect to class
   document["effect"] = core->getEffectName();
 
@@ -79,7 +79,7 @@ bool processJson(char* message) {
   }
 
   if (document.containsKey("transition")) {
-    transitionTime = document["transition"];
+    core->setTransitionInterval(document["transition"]);
   }
 
   if (document.containsKey("color")) {
