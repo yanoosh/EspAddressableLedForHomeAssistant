@@ -11,6 +11,7 @@ void Core::setup() {
   this->strip->fill(DARK_YELLOW, 0);
   this->strip->setPixelColor(this->strip->numPixels() - 1, GREEN);
   this->strip->show();
+  this->mqtt->generateTopics(this->deviceName);
 }
 
 Adafruit_NeoPixel *Core::getStrip() {

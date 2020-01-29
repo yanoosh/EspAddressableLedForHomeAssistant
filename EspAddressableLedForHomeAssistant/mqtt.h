@@ -23,7 +23,7 @@ PubSubClient mqtt(espClient);
 void sendState() {
   StaticJsonDocument<JSON_BUFFER_SIZE> document;
 
-  document["state"] = (core->isTurnOn()) ? on_cmd : off_cmd;
+  document["state"] = (core->isTurnOn()) ? core->mqtt->getPowerOn() : core->mqtt->getPowerOff();
   JsonObject color = document.createNestedObject("color");
   color["r"] = core->getColor().red;
   color["g"] = core->getColor().green;
@@ -49,9 +49,7 @@ void sendState() {
   // document.printTo(buffer, sizeof(buffer));
   serializeJson(document, buffer, sizeof(buffer));
 
-  char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName())];
-  sprintf(combinedArray, "%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space
-  if (!mqtt.publish(combinedArray, buffer, true)) {
+  if (!mqtt.publish(core->mqtt->getTopicStatus(), buffer, true)) {
     _DPLN("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE")
   }
 }
@@ -68,9 +66,9 @@ bool processJson(char* message) {
   }
 
   if (document.containsKey("state")) {
-    if (strcmp(document["state"], on_cmd) == 0) {
+    if (strcmp(document["state"], core->mqtt->getPowerOn()) == 0) {
       newStateOn = true;
-    } else if (strcmp(document["state"], off_cmd) == 0) {
+    } else if (strcmp(document["state"], core->mqtt->getPowerOff()) == 0) {
       newStateOn = false;
     } else {
       sendState();
@@ -144,17 +142,14 @@ void reconnect(unsigned long now) {
     lastTry = now;
     _DP("Attempting MQTT connection...")
 
-    char mqttAvailTopic[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName()) + sizeof(MQTT_AVAIL_TOPIC)];
-    sprintf(mqttAvailTopic, "%s%s%s", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName(), MQTT_AVAIL_TOPIC);  // with word space
-
     // Attempt to connect
     core->getDiode()->progress(Core::BLUE);
-    if (mqtt.connect(core->getDeviceName(), MQTT_USER, MQTT_PASSWORD, mqttAvailTopic, 0, true, lwtMessage)) {
+    if (mqtt.connect(core->getDeviceName(), MQTT_USER, MQTT_PASSWORD, core->mqtt->getTopicAvailable(), 0, true, core->mqtt->getAvailableOffline())) {
       core->getDiode()->done();
       _DPLN("connected")
 
       // Publish the birth message on connect/reconnect
-      mqtt.publish(mqttAvailTopic, birthMessage, true);
+      mqtt.publish(core->mqtt->getTopicAvailable(), core->mqtt->getAvailableOnline(), true);
 
       char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName()) + 4];
       sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space

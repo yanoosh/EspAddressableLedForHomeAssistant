@@ -43,16 +43,11 @@
 /****************************************FOR JSON***************************************/
 const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(20);
 
-const char* birthMessage = "online";
-const char* lwtMessage = "offline";
-
 /*********************************** LED Defintions ********************************/
 // Real values as requested from the MQTT server
 
 /******************************** OTHER GLOBALS *******************************/
 Core* core;
-const char* on_cmd = "ON";
-const char* off_cmd = "OFF";
 bool newStateOn = true;
 
 void setOn();
