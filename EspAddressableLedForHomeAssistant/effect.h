@@ -70,7 +70,7 @@ void updateEffectByName(const char *effect) {
 }
 
 void updateEffectById(int8_t id) {
-  updateEffect(id);
+  updateEffect(id); 
 }
 
 #endif

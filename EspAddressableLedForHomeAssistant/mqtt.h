@@ -173,13 +173,11 @@ void mqttLoop(unsigned long now) {
   }
   mqtt.loop();  // Check MQTT
 
-#ifdef _DEBUG_STATE
   static unsigned long lastSendState = 0;
-  if (now - lastSendState > _DEBUG_STATE) {
+  if (now - lastSendState > core->getStateInterval()) {
     sendState();
     lastSendState = now;
   }
-#endif
 }
 
 #endif

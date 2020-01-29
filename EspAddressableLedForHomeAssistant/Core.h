@@ -142,6 +142,14 @@ class Core {
     return this->statusExtended;
   }
 
+  void setStateInterval(uint8_t stateInterval) {
+    this->stateInterval = stateInterval;
+  }
+
+  uint32_t getStateInterval() {
+    return this->stateInterval;
+  }
+
  private:
   Adafruit_NeoPixel *strip;
   uint16_t length = 50;
@@ -156,6 +164,7 @@ class Core {
   bool loopEnabled = true;
   Diode *diode;
   bool statusExtended = false;
+  uint32_t stateInterval = 3600000;
 
   void syncLoopAndState() {
     this->loopEnabled = this->turnOn;
