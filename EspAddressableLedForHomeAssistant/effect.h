@@ -66,18 +66,11 @@ void updateEffect(int8_t id) {
 }
 
 void updateEffectByName(const char *effect) {
-  int8_t id = getEffectId(effect);
-
-  if (id > -1) {
-    updateEffect(id);
-  }
+  updateEffect(getEffectId(effect));
 }
 
 void updateEffectById(int8_t id) {
-  if (id < EFFECT_LENGTH) {
-    updateEffect(id);
-  }
-  updateEffect(1);
+  updateEffect(id);
 }
 
 #endif
