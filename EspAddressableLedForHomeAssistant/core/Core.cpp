@@ -54,15 +54,15 @@ bool Core::isTurnOn() {
   return this->turnOn;
 }
 
-void Core::setColor(RGBW color) {
+void Core::setColor(Color color) {
   this->color = color;
   this->syncLoopAndState();
   if (this->effectProcessor != NULL) {
-    this->effectProcessor->setColor(color.red, color.green, color.blue, color.white);
+    this->effectProcessor->setColor(color);
   }
 }
 
-RGBW Core::getColor() {
+Color Core::getColor() {
   return color;
 }
 

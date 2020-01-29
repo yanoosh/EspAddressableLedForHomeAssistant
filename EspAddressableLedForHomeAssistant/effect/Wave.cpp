@@ -16,10 +16,10 @@ class Wave : public EffectProcessor {
     for(uint16_t i = 0; i < this->length; i++) {
       this->strip->setPixelColor(
         i,
-        this->pixelColor(this->color.r, i),
-        this->pixelColor(this->color.g, i),
-        this->pixelColor(this->color.b, i),
-        this->pixelColor(this->color.w, i)
+        this->pixelColor(this->color.red, i),
+        this->pixelColor(this->color.green, i),
+        this->pixelColor(this->color.blue, i),
+        this->pixelColor(this->color.white, i)
       );
     }
     this->strip->show();

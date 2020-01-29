@@ -3,6 +3,7 @@
 
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
+#include "../core/color.h"
 
 class EffectProcessor {
  public:
@@ -25,10 +26,14 @@ class EffectProcessor {
   }
 
   void setColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
-    this->color.w = white;
-    this->color.r = red;
-    this->color.g = green;
-    this->color.b = blue;
+    this->color.white = white;
+    this->color.red = red;
+    this->color.green = green;
+    this->color.blue = blue;
+  }
+
+  void setColor(Color color) {
+    this->color = color;
   }
 
   void setRawColor(uint32_t color) {
@@ -40,16 +45,6 @@ class EffectProcessor {
   virtual bool isFinished();
 
  protected:
-  union Color {
-    struct {
-      uint8_t b;
-      uint8_t g;
-      uint8_t r;
-      uint8_t w;
-    };
-    uint32_t raw;
-  };
-
   Adafruit_NeoPixel *strip;
   const char *name;
   Color color = {};

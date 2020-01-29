@@ -33,10 +33,10 @@ class Fade : public EffectProcessor {
   void loop() override {
     if (this->loops != 0) {
       uint32_t color = Adafruit_NeoPixel::Color(
-        this->color.r * this->step / this->smoothness, 
-        this->color.g * this->step / this->smoothness, 
-        this->color.b * this->step / this->smoothness, 
-        this->color.w * this->step / this->smoothness
+        this->color.raw * this->step / this->smoothness, 
+        this->color.green * this->step / this->smoothness, 
+        this->color.blue * this->step / this->smoothness, 
+        this->color.white * this->step / this->smoothness
       );
       this->strip->fill(color);
       this->strip->show();

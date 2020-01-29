@@ -24,10 +24,10 @@ class CylonBounce : public EffectProcessor {
       float sinMultiplier = sin(this->multiplier * (float)(i + 1.0));
       this->strip->setPixelColor(
         this->step + i,
-        this->color.r * sinMultiplier,
-        this->color.g * sinMultiplier,
-        this->color.b * sinMultiplier,
-        this->color.w * sinMultiplier
+        this->color.red * sinMultiplier,
+        this->color.green * sinMultiplier,
+        this->color.blue * sinMultiplier,
+        this->color.white * sinMultiplier
       );
     }
     this->strip->show();

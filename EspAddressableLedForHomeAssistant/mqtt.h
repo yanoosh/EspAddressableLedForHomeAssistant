@@ -83,12 +83,18 @@ bool processJson(char* message) {
   }
 
   if (document.containsKey("color")) {
-    core->setColor({document["color"]["r"], document["color"]["g"], document["color"]["b"], 0});
+    Color tmp = core->getColor();
+    tmp.red = document["color"]["r"];
+    tmp.green = document["color"]["g"];
+    tmp.blue = document["color"]["b"];
+    core->setColor(tmp);
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
   if (document.containsKey("white_value")) {
-    core->setColor({0, 0, 0, document["white_value"]});
+    Color tmp = core->getColor();
+    tmp.white = document["color"]["w"];
+    core->setColor(tmp);
   }
 
   if (document.containsKey("brightness")) {

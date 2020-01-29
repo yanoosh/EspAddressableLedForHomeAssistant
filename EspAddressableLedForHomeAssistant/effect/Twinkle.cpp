@@ -23,10 +23,10 @@ class Twinkle : public EffectProcessor {
   }
 
   void setBackgroundColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
-    this->backgroudColor.w = white;
-    this->backgroudColor.r = red;
-    this->backgroudColor.g = green;
-    this->backgroudColor.b = blue;
+    this->backgroudColor.white = white;
+    this->backgroudColor.red = red;
+    this->backgroudColor.green = green;
+    this->backgroudColor.blue = blue;
   }
 
   void loop() override {

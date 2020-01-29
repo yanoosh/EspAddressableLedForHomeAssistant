@@ -15,7 +15,6 @@
 #include "effect/Strobe.cpp"
 #include "effect/TheaterChase.cpp"
 #include "effect/Twinkle.cpp"
-#include "rgbw.h"
 
 #define EFFECT_LENGTH 16
   
@@ -58,7 +57,7 @@ void setupEffects() {
 void updateEffect(int8_t id) {
   if (id > -1 && id < EFFECT_LENGTH) {
     if (effectProcessors[id] != NULL) {
-      RGBW color = core->getColor();
+      Color color = core->getColor();
       effectProcessors[id]->setColor(color.red, color.green, color.blue, color.white);
       core->setEffect(effectProcessors[id]);
     }

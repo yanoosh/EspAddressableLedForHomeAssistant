@@ -2,10 +2,10 @@
 #define _CORE_HPP
 
 #include "../effect/EffectProcessor.cpp"
-#include "../rgbw.h"
 #include "Adafruit_NeoPixel.h"
 #include "Diode.hpp"
 #include "MqttProperties.hpp"
+#include "color.h"
 
 class Core {
  public:
@@ -37,9 +37,9 @@ class Core {
 
   bool isTurnOn();
 
-  void setColor(RGBW color);
+  void setColor(Color color);
 
-  RGBW getColor();
+  Color getColor();
 
   void setBrightness(uint8_t brightness);
 
@@ -74,7 +74,7 @@ class Core {
   uint8_t stripPin;
   const char *deviceName = "";
   bool turnOn;
-  RGBW color = {255, 255, 255, 0};
+  Color color = {.raw = 0x00FFFFFF};
   uint8_t brightness = 255;
   uint8_t maxBrightness = 255;
   EffectProcessor *effectProcessor;

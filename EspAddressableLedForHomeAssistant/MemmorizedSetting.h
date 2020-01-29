@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
-#include "rgbw.h"
 
 // class MemmorizedSetting {
 //  public:

@@ -54,8 +54,6 @@ Core* core;
 const char* on_cmd = "ON";
 const char* off_cmd = "OFF";
 bool newStateOn = true;
-RGBW BLACK = {0, 0, 0, 0};
-RGBW WHITE = {255, 255, 255, 255};
 
 void setOn();
 void setOff();
