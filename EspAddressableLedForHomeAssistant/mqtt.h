@@ -38,7 +38,7 @@ void sendState() {
   document["ip"] = WiFi.localIP().toString();
   document["rssi"] = WiFi.RSSI();
   
-  if (core->isStatusExtended()) {
+  if (core->mqtt->isStatusExtended()) {
     document["id"] = ESP.getChipId();
     document["mac"] = WiFi.macAddress();
     document["memory_heap"] = ESP.getFreeHeap();
@@ -175,7 +175,7 @@ void mqttLoop(unsigned long now) {
   mqtt.loop();  // Check MQTT
 
   static unsigned long lastSendState = 0;
-  if (now - lastSendState > core->getStateInterval()) {
+  if (now - lastSendState > core->mqtt->getStateInterval()) {
     sendState();
     lastSendState = now;
   }

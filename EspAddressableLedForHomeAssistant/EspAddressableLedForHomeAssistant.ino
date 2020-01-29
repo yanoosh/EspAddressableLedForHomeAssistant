@@ -32,7 +32,7 @@
 #include <ESP8266mDNS.h>
 #include <PubSubClient.h>
 #include <WiFiUdp.h>
-#include "Core.h"
+#include "core/Core.hpp"
 
 // The maximum mqtt message size, including header, is 128 bytes by default.
 // You must update your PubSubClient.h file manually.......

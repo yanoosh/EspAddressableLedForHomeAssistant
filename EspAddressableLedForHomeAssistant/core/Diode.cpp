@@ -1,4 +1,4 @@
-#include "diode.h"
+#include "Diode.hpp"
 #include <Adafruit_NeoPixel.h>
 
 Diode::Diode(Adafruit_NeoPixel *strip) {

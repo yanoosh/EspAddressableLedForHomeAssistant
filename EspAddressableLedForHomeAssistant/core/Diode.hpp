@@ -1,5 +1,5 @@
-#ifndef _DIODE_H
-#define _DIODE_H
+#ifndef _DIODE_HPP
+#define _DIODE_HPP
 
 #include <Adafruit_NeoPixel.h>
 
