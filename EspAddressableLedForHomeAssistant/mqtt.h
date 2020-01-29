@@ -35,11 +35,12 @@ void sendState() {
   // todo change after move all effect to class
   document["effect"] = core->getEffectName();
 
+  document["ip"] = WiFi.localIP().toString();
+  document["rssi"] = WiFi.RSSI();
+  
   if (core->isStatusExtended()) {
-    document["mac"] = WiFi.macAddress();
-    document["ip"] = WiFi.localIP().toString();
-    document["rssi"] = WiFi.RSSI();
     document["id"] = ESP.getChipId();
+    document["mac"] = WiFi.macAddress();
     document["memory_heap"] = ESP.getFreeHeap();
     document["work_time"] = millis();
   }
