@@ -49,11 +49,11 @@ class Core {
     return this->stripPin;
   }
 
-  void setDeviceName(char *deviceName) {
+  void setDeviceName(const char *deviceName) {
     this->deviceName = deviceName;
   }
 
-  char *getDeviceName() {
+  const char *getDeviceName() {
     return this->deviceName;
   }
 
@@ -142,7 +142,7 @@ class Core {
     return this->statusExtended;
   }
 
-  void setStateInterval(uint8_t stateInterval) {
+  void setStateInterval(uint32_t stateInterval) {
     this->stateInterval = stateInterval;
   }
 
@@ -154,7 +154,7 @@ class Core {
   Adafruit_NeoPixel *strip;
   uint16_t length = 50;
   uint8_t stripPin;
-  char *deviceName = "";
+  const char *deviceName = "";
   bool turnOn;
   RGBW color = {255, 255, 255, 0};
   uint8_t brightness = 255;
@@ -173,7 +173,7 @@ class Core {
   void generateNameWhenEmpty() {
     if (strlen(this->deviceName) == 0) {
       this->deviceName = new char[12 + 1];
-      sprintf(this->deviceName, "led-%d", ESP.getChipId());
+      sprintf((char *)this->deviceName, "led-%d", ESP.getChipId());
     }
     _DP("device name: ")
     _DPLN(this->deviceName)

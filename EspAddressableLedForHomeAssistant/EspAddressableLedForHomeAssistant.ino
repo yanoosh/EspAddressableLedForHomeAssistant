@@ -43,7 +43,7 @@
 /****************************************FOR JSON***************************************/
 const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(20);
 
-char* birthMessage = "online";
+const char* birthMessage = "online";
 const char* lwtMessage = "offline";
 
 /*********************************** LED Defintions ********************************/
