@@ -16,7 +16,7 @@
 #include "effect/TheaterChase.cpp"
 #include "effect/Twinkle.cpp"
 
-#define EFFECT_LENGTH 16
+#define EFFECT_LENGTH 16 // max more/less 25 - depend on mqtt message, json object size and lenght of effect name
   
 EffectProcessor *effectProcessors[EFFECT_LENGTH];
 

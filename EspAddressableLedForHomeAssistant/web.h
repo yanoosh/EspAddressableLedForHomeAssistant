@@ -138,7 +138,7 @@ void ServeWebClients() {
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td><b>Topic:</b></td><td><label id='lbl_rssi'>");
-  inString += MQTT_STATE_TOPIC_PREFIX;
+  inString += core->mqtt->getTopicPrefix();
   inString += core->getDeviceName();
   inString += F("</label></td></tr>");
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");

@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 
 PubSubClient mqtt(espClient);
+StaticJsonDocument<JSON_BUFFER_SIZE> document;
 
 /********************************** START SEND STATE*****************************************/
 /*
@@ -21,7 +22,7 @@ PubSubClient mqtt(espClient);
   }
 */
 void sendState() {
-  StaticJsonDocument<JSON_BUFFER_SIZE> document;
+  document.clear();
 
   document["state"] = (core->isTurnOn()) ? core->mqtt->getPowerOn() : core->mqtt->getPowerOff();
   JsonObject color = document.createNestedObject("color");
@@ -37,7 +38,7 @@ void sendState() {
 
   document["ip"] = WiFi.localIP().toString();
   document["rssi"] = WiFi.RSSI();
-  
+
   if (core->mqtt->isStatusExtended()) {
     document["id"] = ESP.getChipId();
     document["mac"] = WiFi.macAddress();
@@ -46,17 +47,45 @@ void sendState() {
   }
 
   char buffer[measureJson(document) + 1];
-  // document.printTo(buffer, sizeof(buffer));
   serializeJson(document, buffer, sizeof(buffer));
 
   if (!mqtt.publish(core->mqtt->getTopicStatus(), buffer, true)) {
-    _DPLN("Failed to publish to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE")
+    _DPLN("Failed to publish state to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE")
+  }
+}
+
+void sendHomeAssistantConfig() {
+  document.clear();
+
+  document["schema"] = "json";
+  document["name"] = core->getDeviceName();
+  document["state_topic"] = core->mqtt->getTopicStatus();
+  document["command_topic"] = core->mqtt->getTopicCommand();
+  document["availability_topic"] = core->mqtt->getTopicAvailable();
+  document["json_attributes_topic"] = core->mqtt->getTopicStatus();
+  document["effect"] = true;
+  JsonArray effectList = document.createNestedArray("effect_list");
+  for (byte i = 0; i < EFFECT_LENGTH; i++) {
+    if (effectProcessors[i] != NULL) {
+      effectList.add(effectProcessors[i]->getName());
+    }
+  }
+  document["brightness"] = true;
+  document["rgb"] = true;
+  document["optimistic"] = false;
+  document["qos"] = 0;
+
+  char buffer[measureJson(document) + 1];
+  serializeJson(document, buffer, sizeof(buffer));
+
+  if (!mqtt.publish(core->mqtt->getTopicHomeAssistantConfig(), buffer, true)) {
+    _DPLN("Failed to publish home assitant config to MQTT. Check you updated your MQTT_MAX_PACKET_SIZE")
   }
 }
 
 /********************************** START PROCESS JSON*****************************************/
 bool processJson(char* message) {
-  StaticJsonDocument<JSON_BUFFER_SIZE> document;
+  document.clear();
 
   DeserializationError err = deserializeJson(document, message);
 
@@ -151,10 +180,10 @@ void reconnect(unsigned long now) {
       // Publish the birth message on connect/reconnect
       mqtt.publish(core->mqtt->getTopicAvailable(), core->mqtt->getAvailableOnline(), true);
 
-      char combinedArray[sizeof(MQTT_STATE_TOPIC_PREFIX) + sizeof(core->getDeviceName()) + 4];
-      sprintf(combinedArray, "%s%s/set", MQTT_STATE_TOPIC_PREFIX, core->getDeviceName());  // with word space
-      mqtt.subscribe(combinedArray);
-
+      mqtt.subscribe(core->mqtt->getTopicCommand());
+      if (core->mqtt->isHomeAssitantDiscovery()) {
+        sendHomeAssistantConfig();
+      }
       setOff();
       sendState();
     } else {
@@ -164,6 +193,7 @@ void reconnect(unsigned long now) {
     }
   }
 }
+
 void mqttSetup() {
   mqtt.setServer(MQTT_SERVER, MQTT_PORT);
   mqtt.setCallback(callback);

@@ -1,57 +1,122 @@
-#include "MqttProperties.hpp"
+#ifndef _MQTT_PROPERTIES_CPP
+#define _MQTT_PROPERTIES_CPP
 
-void MqttProperties::enableStatusExtended() {
-  this->statusExtended = true;
-}
+#include <Arduino.h>
 
-void MqttProperties::disableStatusExtended() {
-  this->statusExtended = false;
-}
+class MqttProperties {
+ public:
+  void enableStatusExtended() {
+    this->statusExtended = true;
+  }
 
-bool MqttProperties::isStatusExtended() {
-  return this->statusExtended;
-}
+  void disableStatusExtended() {
+    this->statusExtended = false;
+  }
 
-void MqttProperties::setStateInterval(uint32_t stateInterval) {
-  this->stateInterval = stateInterval;
-}
+  bool isStatusExtended() {
+    return this->statusExtended;
+  }
 
-uint32_t MqttProperties::getStateInterval() {
-  return this->stateInterval;
-}
+  void enableHomeAssitantDiscovery() {
+    this->statusHomeAssitantDiscovery = true;
+  }
 
-void MqttProperties::generateTopics(const char *deviceName) {
-  delete[] this->topicAvailable;
-  uint8_t size = strlen(this->topicPrefix) + 1 + strlen(deviceName) + strlen(this->topicAvailableSuffix) + 1;
-  this->topicAvailable = new char[size];
-  sprintf((char *)this->topicAvailable, "%s/%s%s", this->topicPrefix, deviceName, this->topicAvailableSuffix);
+  void disableHomeAssitantDiscovery() {
+    this->statusHomeAssitantDiscovery = false;
+  }
 
-  delete[] this->topicStatus;
-  size = strlen(this->topicPrefix) + 1 + strlen(deviceName) + strlen(this->topicStatusSuffix) + 1;
-  this->topicStatus = new char[size];
-  sprintf((char *)this->topicStatus, "%s/%s%s", this->topicPrefix, deviceName, this->topicStatusSuffix);
-}
+  bool isHomeAssitantDiscovery() {
+    return this->statusHomeAssitantDiscovery;
+  }
 
-const char *MqttProperties::getPowerOn() {
-  return this->powerOn;
-}
+  void setStateInterval(uint32_t stateInterval) {
+    this->stateInterval = stateInterval;
+  }
 
-const char *MqttProperties::getPowerOff() {
-  return this->powerOff;
-}
+  uint32_t getStateInterval() {
+    return this->stateInterval;
+  }
 
-const char *MqttProperties::getAvailableOnline() {
-  return this->availableOnline;
-}
+  void generateTopics(const char *deviceName) {
+    delete[] this->topicAvailable;
+    uint8_t size = strlen(this->topicPrefix) + 1 + strlen(deviceName) + strlen(this->topicAvailableSuffix) + 1;
+    this->topicAvailable = new char[size];
+    sprintf((char *)this->topicAvailable, "%s/%s%s", this->topicPrefix, deviceName, this->topicAvailableSuffix);
 
-const char *MqttProperties::getAvailableOffline() {
-  return this->availableOffline;
-}
+    delete[] this->topicStatus;
+    size = strlen(this->topicPrefix) + 1 + strlen(deviceName) + strlen(this->topicStatusSuffix) + 1;
+    this->topicStatus = new char[size];
+    sprintf((char *)this->topicStatus, "%s/%s%s", this->topicPrefix, deviceName, this->topicStatusSuffix);
 
-const char *MqttProperties::getTopicStatus() {
-  return this->topicStatus;
-}
+    delete[] this->topicCommand;
+    size = strlen(this->topicPrefix) + 1 + strlen(deviceName) + strlen(this->topicCommandSuffix) + 1;
+    this->topicCommand = new char[size];
+    sprintf((char *)this->topicCommand, "%s/%s%s", this->topicPrefix, deviceName, this->topicCommandSuffix);
 
-const char *MqttProperties::getTopicAvailable() {
-  return this->topicAvailable;
-}
+    if (this->statusHomeAssitantDiscovery) {
+      delete[] this->topicHomeAssistantConfig;
+      size = strlen(this->topicHomeAssitant) + 7 + strlen(deviceName) + 7 + 1;
+      this->topicHomeAssistantConfig = new char[size];
+      sprintf((char *)this->topicHomeAssistantConfig, "%s/light/%s/config", this->topicHomeAssitant, deviceName);
+    }
+  }
+
+  const char *getPowerOn() {
+    return this->powerOn;
+  }
+
+  const char *getPowerOff() {
+    return this->powerOff;
+  }
+
+  const char *getAvailableOnline() {
+    return this->availableOnline;
+  }
+
+  const char *getAvailableOffline() {
+    return this->availableOffline;
+  }
+
+  const char *getTopicPrefix() {
+    return this->topicPrefix;
+  }
+
+  const char *getTopicStatus() {
+    return this->topicStatus;
+  }
+
+  const char *getTopicAvailable() {
+    return this->topicAvailable;
+  }
+
+  const char *getTopicCommand() {
+    return this->topicCommand;
+  }
+
+  const char *getTopicHomeAssistantConfig() {
+    return this->topicHomeAssistantConfig;
+  }
+
+ private:
+  bool statusExtended = false;
+  uint32_t stateInterval = 3600000;
+  const char *topicStatus = NULL;
+  const char *topicAvailable = NULL;
+  const char *topicCommand = NULL;
+  const char *topicPrefix = "led";
+  const char *topicAvailableSuffix = "/availability";
+  const char *topicStatusSuffix = "";
+  const char *topicCommandSuffix = "/set";
+
+  const char *availableOnline = "online";
+  const char *availableOffline = "offline";
+
+  const char *powerOn = "ON";
+  const char *powerOff = "OFF";
+
+  const char *topicHomeAssistantConfig = NULL;
+  bool statusHomeAssitantDiscovery = false;
+  const char *topicHomeAssitant = "homeassistant";
+};
+
+#endif

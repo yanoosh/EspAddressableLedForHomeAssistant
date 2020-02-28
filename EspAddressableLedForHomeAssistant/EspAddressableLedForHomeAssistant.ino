@@ -32,16 +32,16 @@
 #include <ESP8266mDNS.h>
 #include <PubSubClient.h>
 #include <WiFiUdp.h>
-#include "core/Core.hpp"
+#include "core/Core.cpp"
 
 // The maximum mqtt message size, including header, is 128 bytes by default.
 // You must update your PubSubClient.h file manually.......
-#if MQTT_MAX_PACKET_SIZE < 512  // If the max message size is too small, throw an error at compile time. See PubSubClient.cpp line 359
+#if MQTT_MAX_PACKET_SIZE < 1024  // If the max message size is too small, throw an error at compile time. See PubSubClient.cpp line 359
 #error "MQTT_MAX_PACKET_SIZE is too small in libraries/PubSubClient/src/PubSubClient.h at const MQTT_MAX_PACKET_SIZE, increase it from 128 to 512"
 #endif
 
 /****************************************FOR JSON***************************************/
-const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(20);
+const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(40);
 
 /*********************************** LED Defintions ********************************/
 // Real values as requested from the MQTT server

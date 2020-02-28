@@ -1,5 +1,5 @@
 /* Add your keys & rename this file to auth.h */
-#include "core/Core.hpp"
+#include "core/Core.h"
 
 #ifndef _AUTH_DETAILS
 #define _AUTH_DETAILS
@@ -11,8 +11,6 @@
 #define MQTT_USER ""
 #define MQTT_PASSWORD ""
 #define MQTT_PORT 1883
-const char* MQTT_STATE_TOPIC_PREFIX = "led/";  // e.g. led/<deviceName> and led/<deviceName>/set
-#define MQTT_AVAIL_TOPIC "/availability"
 
 #define OTApassword ""  //the password you will need to enter to upload remotely via the ArduinoIDE
 #define OTAport 8266
@@ -23,6 +21,7 @@ const char* MQTT_STATE_TOPIC_PREFIX = "led/";  // e.g. led/<deviceName> and led/
 void authSetup(Core *core) {
   core->setStripPin(13);
   core->mqtt->enableStatusExtended();
+  core->mqtt->enableHomeAssitantDiscovery();
   core->mqtt->setStateInterval(60000 * 60);
   if (ESP.getChipId() == 123123) {
     core->setDeviceName("kitchen");
