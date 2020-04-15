@@ -1,5 +1,5 @@
 /* Add your keys & rename this file to auth.h */
-#include "core/Core.h"
+#include "core/Core.cpp"
 
 #ifndef _AUTH_DETAILS
 #define _AUTH_DETAILS
