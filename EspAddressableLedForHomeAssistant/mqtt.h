@@ -33,7 +33,6 @@ void sendState() {
   document["white_value"] = core->getColor().white;
   document["brightness"] = core->getBrightness();
   document["transition"] = core->getTransitionInterval();
-  // todo change after move all effect to class
   document["effect"] = core->getEffectName();
 
   document["ip"] = WiFi.localIP().toString();
@@ -184,8 +183,8 @@ void reconnect(unsigned long now) {
       if (core->mqtt->isHomeAssitantDiscovery()) {
         sendHomeAssistantConfig();
       }
-      setOff();
       sendState();
+      core->getDiode()->done();
     } else {
       _DP("failed, rc=")
       _DP(mqtt.state())

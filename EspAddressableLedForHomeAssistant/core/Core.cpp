@@ -145,13 +145,13 @@ class Core {
   uint16_t length = 50;
   uint8_t stripPin;
   const char *deviceName = "";
-  bool turnOn;
+  bool turnOn = false;
   Color color = {.raw = 0x00FFFFFF};
   uint8_t brightness = 255;
   uint8_t maxBrightness = 255;
   EffectProcessor *effectProcessor;
   uint8_t speed;
-  bool loopEnabled = true;
+  bool loopEnabled = false;
   uint8_t transitionInterval = 150;
 
   void syncLoopAndState() {

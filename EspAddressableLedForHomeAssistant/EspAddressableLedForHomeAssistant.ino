@@ -88,7 +88,7 @@ void setup() {
   // OK we are connected
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
   setupEffects();
-  updateEffectByName("solid");
+  updateEffectById(1);
 }
 
 /********************************** START LED POWER STATE *****************************************/

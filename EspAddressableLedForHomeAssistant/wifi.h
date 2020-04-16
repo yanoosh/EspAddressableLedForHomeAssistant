@@ -25,6 +25,7 @@ void wifiSetup() {
     }
   }
 
+  core->getDiode()->done();
   _DPLN()
   _DPLN("WiFi connected")
   _DP("IP address: ")
