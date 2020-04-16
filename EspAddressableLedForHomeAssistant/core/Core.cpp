@@ -4,6 +4,7 @@
 #include "../effect/EffectProcessor.cpp"
 #include "Adafruit_NeoPixel.h"
 #include "Diode.cpp"
+#include "Effect.cpp"
 #include "MqttProperties.cpp"
 #include "color.h"
 
@@ -18,6 +19,7 @@ class Core {
   void setup() {
     this->generateNameWhenEmpty();
     this->strip = new Adafruit_NeoPixel(this->length, this->stripPin, NEO_RGB + NEO_KHZ400);
+    this->effect = new Effect(this->strip);
     this->diode = new Diode(this->strip);
     this->strip->begin();
     this->strip->show();
@@ -30,6 +32,10 @@ class Core {
 
   Adafruit_NeoPixel *getStrip() {
     return this->strip;
+  }
+
+  Effect *getEffect() {
+    return this->effect;
   }
 
   Diode *getDiode() {
@@ -62,29 +68,15 @@ class Core {
 
   void setTurnOn(bool turnOn) {
     this->turnOn = turnOn;
-    this->syncLoopAndState();
   }
 
   bool isTurnOn() {
     return this->turnOn;
   }
 
-  void setColor(Color color) {
-    this->color = color;
-    this->syncLoopAndState();
-    if (this->effectProcessor != NULL) {
-      this->effectProcessor->setColor(color);
-    }
-  }
-
-  Color getColor() {
-    return color;
-  }
-
   void setBrightness(uint8_t brightness) {
     this->brightness = max((uint8_t)0, min(brightness, this->maxBrightness));
     this->strip->setBrightness(this->brightness);
-    this->syncLoopAndState();
   }
 
   uint8_t getBrightness() {
@@ -107,21 +99,6 @@ class Core {
   byte getSpeed() {
     return this->speed;
   }
-  void setEffect(EffectProcessor *effectProcessor) {
-    this->effectProcessor = effectProcessor;
-    this->syncLoopAndState();
-  }
-  const char *getEffectName() {
-    if (this->effectProcessor != NULL) {
-      return this->effectProcessor->getName();
-    } else {
-      return "";
-    }
-  }
-
-  EffectProcessor *getEffectProcessor() {
-    return this->effectProcessor;
-  }
 
   void disableLoop() {
     this->loopEnabled = false;
@@ -139,24 +116,24 @@ class Core {
     return this->transitionInterval;
   }
 
+  void commit() {
+    this->loopEnabled = this->turnOn;
+  }
+
  private:
   Adafruit_NeoPixel *strip;
+  Effect *effect;
   Diode *diode;
   uint16_t length = 50;
   uint8_t stripPin;
   const char *deviceName = "";
   bool turnOn = false;
-  Color color = {.raw = 0x00FFFFFF};
   uint8_t brightness = 255;
   uint8_t maxBrightness = 255;
   EffectProcessor *effectProcessor;
   uint8_t speed;
   bool loopEnabled = false;
   uint8_t transitionInterval = 150;
-
-  void syncLoopAndState() {
-    this->loopEnabled = this->turnOn;
-  }
 
   void generateNameWhenEmpty() {
     if (strlen(this->deviceName) == 0) {

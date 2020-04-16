@@ -7,15 +7,15 @@ String GetStatusPic() {
   String imgString = F("<svg height='64' width='64'>");
   imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
 
-  if (core->getColor().white > 0) {
+  if (core->getEffect()->getColor().white > 0) {
     imgString += F("white");
   } else {
     imgString += F("rgb(");
-    imgString += core->getColor().red;
+    imgString += core->getEffect()->getColor().red;
     imgString += F(",");
-    imgString += core->getColor().green;
+    imgString += core->getEffect()->getColor().green;
     imgString += F(",");
-    imgString += core->getColor().blue;
+    imgString += core->getEffect()->getColor().blue;
     imgString += F(")");
   }
 
@@ -60,18 +60,18 @@ void ServeWebClients() {
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
   inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
-  inString += core->getColor().red;
+  inString += core->getEffect()->getColor().red;
   inString += F("</label></td><td rowspan='4'>");
   inString += GetStatusPic();
   inString += F("</td></tr>");
   inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
-  inString += core->getColor().green;
+  inString += core->getEffect()->getColor().green;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Blue:</b></td><td><label id='lbl_blue'>");
-  inString += core->getColor().blue;
+  inString += core->getEffect()->getColor().blue;
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>White:</b></td><td><label id='lbl_white'>");
-  inString += core->getColor().white;
+  inString += core->getEffect()->getColor().white;
   inString += F("</label></td></tr>");
 
   inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
@@ -82,7 +82,7 @@ void ServeWebClients() {
   inString += core->getTransitionInterval();
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Effect:</b></td><td><label id='lbl_effect'>");
-  inString += core->getEffectName();
+  inString += core->getEffect()->getActiveName();
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Transition:</b></td><td><label id='lbl_effect'>");
   if (!core->isLoopEnabled()) {

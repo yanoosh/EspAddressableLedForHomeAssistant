@@ -48,7 +48,6 @@ const int JSON_BUFFER_SIZE = JSON_OBJECT_SIZE(40);
 
 /******************************** OTHER GLOBALS *******************************/
 Core* core;
-bool newStateOn = true;
 
 void setOn();
 void setOff();
@@ -56,7 +55,6 @@ void setOff();
 #include "auth.h"
 #include "wifi.h"
 
-#include "effect.h"
 #include "mqtt.h"
 #include "ota.h"
 #include "web.h"
@@ -87,8 +85,8 @@ void setup() {
   _DPLN("Ready")
   // OK we are connected
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
-  setupEffects();
-  updateEffectById(1);
+  core->getEffect()->setActiveById(1);
+  // setupEffects();
 }
 
 /********************************** START LED POWER STATE *****************************************/
@@ -125,9 +123,9 @@ void loop() {
   
   if (core->isLoopEnabled() && now - lastStrip > core->getTransitionInterval()) {  // Once we have completed the transition, No point to keep going though the process
     lastStrip = now;
-    if (core->getEffectProcessor() != NULL) {
-      core->getEffectProcessor()->loop();
-      if (core->getEffectProcessor()->isFinished()) {
+    if (core->getEffect()->getActive() != NULL) {
+      core->getEffect()->getActive()->loop();
+      if (core->getEffect()->getActive()->isFinished()) {
         core->disableLoop();
       }
     }

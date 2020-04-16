@@ -26,14 +26,14 @@ void sendState() {
 
   document["state"] = (core->isTurnOn()) ? core->mqtt->getPowerOn() : core->mqtt->getPowerOff();
   JsonObject color = document.createNestedObject("color");
-  color["r"] = core->getColor().red;
-  color["g"] = core->getColor().green;
-  color["b"] = core->getColor().blue;
+  color["r"] = core->getEffect()->getColor().red;
+  color["g"] = core->getEffect()->getColor().green;
+  color["b"] = core->getEffect()->getColor().blue;
 
-  document["white_value"] = core->getColor().white;
+  document["white_value"] = core->getEffect()->getColor().white;
   document["brightness"] = core->getBrightness();
   document["transition"] = core->getTransitionInterval();
-  document["effect"] = core->getEffectName();
+  document["effect"] = core->getEffect()->getActiveName();
 
   document["ip"] = WiFi.localIP().toString();
   document["rssi"] = WiFi.RSSI();
@@ -64,7 +64,8 @@ void sendHomeAssistantConfig() {
   document["json_attributes_topic"] = core->mqtt->getTopicStatus();
   document["effect"] = true;
   JsonArray effectList = document.createNestedArray("effect_list");
-  for (byte i = 0; i < EFFECT_LENGTH; i++) {
+  EffectProcessor** effectProcessors = core->getEffect()->getProcessors();
+  for (byte i = 0; i < core->getEffect()->getLength(); i++) {
     if (effectProcessors[i] != NULL) {
       effectList.add(effectProcessors[i]->getName());
     }
@@ -83,24 +84,27 @@ void sendHomeAssistantConfig() {
 }
 
 /********************************** START PROCESS JSON*****************************************/
-bool processJson(char* message) {
+void applyJson(char* message) {
   document.clear();
 
   DeserializationError err = deserializeJson(document, message);
 
   if (err != DeserializationError::Ok) {
     _DPLN("parseObject() failed")
-    return false;
+    return;
   }
 
   if (document.containsKey("state")) {
     if (strcmp(document["state"], core->mqtt->getPowerOn()) == 0) {
-      newStateOn = true;
+      if (!core->isTurnOn()) {
+        setOn();
+      }
     } else if (strcmp(document["state"], core->mqtt->getPowerOff()) == 0) {
-      newStateOn = false;
+      if (core->isTurnOn()) {
+        setOff();
+      }
     } else {
-      sendState();
-      return false;
+      return;
     }
   }
 
@@ -109,18 +113,18 @@ bool processJson(char* message) {
   }
 
   if (document.containsKey("color")) {
-    Color tmp = core->getColor();
+    Color tmp = core->getEffect()->getColor();
     tmp.red = document["color"]["r"];
     tmp.green = document["color"]["g"];
     tmp.blue = document["color"]["b"];
-    core->setColor(tmp);
+    core->getEffect()->setColor(tmp);
   }
 
   // To prevent our power supply from having a cow. Only RGB OR White
   if (document.containsKey("white_value")) {
-    Color tmp = core->getColor();
+    Color tmp = core->getEffect()->getColor();
     tmp.white = document["color"]["w"];
-    core->setColor(tmp);
+    core->getEffect()->setColor(tmp);
   }
 
   if (document.containsKey("brightness")) {
@@ -128,10 +132,10 @@ bool processJson(char* message) {
   }
 
   if (document.containsKey("effect")) {
-    updateEffectByName(document["effect"]);
+    core->getEffect()->setActiveByName(document["effect"]);
   }
 
-  return true;
+  core->commit();
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -147,17 +151,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   message[length] = '\0';
   _DPLN(message)
 
-  if (!processJson(message)) {
-    return;
-  }
-
-  if (core->isTurnOn() != newStateOn) {
-    if (newStateOn) {
-      setOn();
-    } else {
-      setOff();  // NOTE: Will change transitionDone
-    }
-  }
+  applyJson(message);
 
   sendState();
 }
