@@ -7,6 +7,7 @@
 #include "Effect.cpp"
 #include "MqttProperties.cpp"
 #include "color.h"
+#include "EEPROM.h"
 
 class Core {
  public:
@@ -15,6 +16,9 @@ class Core {
   static const uint32_t BLUE = 0x00000033;
   static const uint32_t DARK_YELLOW = 0x00333300;
   MqttProperties *mqtt = new MqttProperties();
+  Core() {
+    EEPROM.begin(sizeof(Memorized));
+  }
 
   void setup() {
     this->generateNameWhenEmpty();
@@ -28,6 +32,8 @@ class Core {
     this->strip->setPixelColor(this->strip->numPixels() - 1, GREEN);
     this->strip->show();
     this->mqtt->generateTopics(this->deviceName);
+    this->loadSettings();
+    this->loopEnabled = this->turnOn;
   }
 
   Adafruit_NeoPixel *getStrip() {
@@ -118,6 +124,7 @@ class Core {
 
   void commit() {
     this->loopEnabled = this->turnOn;
+    this->saveSettings();
   }
 
  private:
@@ -134,6 +141,14 @@ class Core {
   uint8_t speed;
   bool loopEnabled = false;
   uint8_t transitionInterval = 150;
+  bool memorize = true;
+  struct Memorized {
+    boolean turnOn;
+    Color color = {.raw = 0};
+    int8_t brightness;
+    int8_t effect;
+    int8_t speed;
+  };
 
   void generateNameWhenEmpty() {
     if (strlen(this->deviceName) == 0) {
@@ -141,6 +156,30 @@ class Core {
       sprintf((char *)this->deviceName, "led-%d", ESP.getChipId());
     }
   }
-};
+  void loadSettings() {
+    if (this->memorize) {
+      Memorized memorized = {};
+      EEPROM.get(0, memorized);
+      setTurnOn(memorized.turnOn);
+      setBrightness(memorized.brightness);
+      getEffect()->setColor(memorized.color);
+      getEffect()->setActiveById(memorized.effect);
+      setSpeed(memorized.speed);
+    }
+  }
 
+  void saveSettings() {
+    if (this->memorize) {
+      Memorized memorized = {};
+      memorized.turnOn = isTurnOn();
+      memorized.color = getEffect()->getColor();
+      memorized.brightness = getBrightness();
+      memorized.effect = getEffect()->getActiveId();
+      memorized.speed = getSpeed();
+
+      EEPROM.put(0, memorized);
+      EEPROM.commit();
+    }
+  }
+};
 #endif
