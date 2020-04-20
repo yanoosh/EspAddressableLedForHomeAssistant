@@ -17,15 +17,15 @@
 #include "../effect/Twinkle.cpp"
 #include "../effect/Wave.cpp"
 
-#define EFFECT_LENGTH 16
+#define EFFECT_LENGTH 15
 
 class Effect {
  public:
   Effect(Adafruit_NeoPixel *strip) {
     this->length = EFFECT_LENGTH;
     this->strip = strip;
-    this->processors[0] = new Clear(strip);
-    this->processors[1] = new Solid(strip);
+    this->processors[0] = new Solid(strip);
+    this->processors[1] = new MeteorRain(strip);
     this->processors[2] = new Twinkle(strip, strip->numPixels() / 5, Twinkle::COLOR_SINGLE);
     this->processors[3] = new CylonBounce(strip);
     this->processors[4] = new Fire(strip);
@@ -44,7 +44,6 @@ class Effect {
     this->processors[13] = new Twinkle(strip, strip->numPixels(), Twinkle::COLOR_RANDOM_DIOD);
     this->processors[13]->setName("twinkle random");
     this->processors[14] = new Lightning(strip);
-    this->processors[15] = new MeteorRain(strip);
     setActiveById(0);
   }
 

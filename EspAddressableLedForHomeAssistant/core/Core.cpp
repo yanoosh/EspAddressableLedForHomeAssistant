@@ -4,10 +4,10 @@
 #include "../effect/EffectProcessor.cpp"
 #include "Adafruit_NeoPixel.h"
 #include "Diode.cpp"
+#include "EEPROM.h"
 #include "Effect.cpp"
 #include "MqttProperties.cpp"
 #include "color.h"
-#include "EEPROM.h"
 
 class Core {
  public:
@@ -16,9 +16,6 @@ class Core {
   static const uint32_t BLUE = 0x00000033;
   static const uint32_t DARK_YELLOW = 0x00333300;
   MqttProperties *mqtt = new MqttProperties();
-  Core() {
-    EEPROM.begin(sizeof(Memorized));
-  }
 
   void setup() {
     this->generateNameWhenEmpty();
@@ -145,9 +142,9 @@ class Core {
   struct Memorized {
     boolean turnOn;
     Color color = {.raw = 0};
-    int8_t brightness;
-    int8_t effect;
-    int8_t speed;
+    uint8_t brightness;
+    uint8_t effect;
+    uint8_t speed;
   };
 
   void generateNameWhenEmpty() {
@@ -158,6 +155,7 @@ class Core {
   }
   void loadSettings() {
     if (this->memorize) {
+      EEPROM.begin(sizeof(Memorized));
       Memorized memorized = {};
       EEPROM.get(0, memorized);
       setTurnOn(memorized.turnOn);

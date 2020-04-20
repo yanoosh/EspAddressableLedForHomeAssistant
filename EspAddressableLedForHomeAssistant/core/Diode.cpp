@@ -12,6 +12,10 @@ class Diode {
   void progress(uint32_t color) {
     this->strip->setPixelColor(this->step++, color);
     this->strip->show();
+    if (this->step > this->strip->numPixels()) {
+      this->strip->clear();
+      this->step = 0;
+    }
   }
 
   void done() {

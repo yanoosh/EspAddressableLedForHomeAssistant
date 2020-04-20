@@ -177,6 +177,7 @@ void reconnect(unsigned long now) {
       if (core->mqtt->isHomeAssitantDiscovery()) {
         sendHomeAssistantConfig();
       }
+      delay(1000);
       sendState();
       core->getDiode()->done();
     } else {

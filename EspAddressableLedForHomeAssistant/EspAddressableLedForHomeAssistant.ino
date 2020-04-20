@@ -85,8 +85,6 @@ void setup() {
   _DPLN("Ready")
   // OK we are connected
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
-  core->getEffect()->setActiveById(1);
-  // setupEffects();
 }
 
 /********************************** START LED POWER STATE *****************************************/
