@@ -85,6 +85,7 @@ void setup() {
   _DPLN("Ready")
   // OK we are connected
   digitalWrite(LED_BUILTIN, HIGH);  // Turn the status LED off
+  core->getStrip()->clear();
 }
 
 /********************************** START LED POWER STATE *****************************************/
@@ -121,11 +122,8 @@ void loop() {
   
   if (core->isLoopEnabled() && now - lastStrip > core->getTransitionInterval()) {  // Once we have completed the transition, No point to keep going though the process
     lastStrip = now;
-    if (core->getEffect()->getActive() != NULL) {
-      core->getEffect()->getActive()->loop();
-      if (core->getEffect()->getActive()->isFinished()) {
+    if (!core->getEffect()->loop()) {
         core->disableLoop();
-      }
     }
   }
 

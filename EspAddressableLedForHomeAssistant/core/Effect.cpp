@@ -2,6 +2,7 @@
 #define _EFFECT_CPP
 #include <Adafruit_NeoPixel.h>
 
+#include "ColorProcessor.cpp"
 #include "../effect/Clear.cpp"
 #include "../effect/ColorWipeRainbow.cpp"
 #include "../effect/CylonBounce.cpp"
@@ -24,6 +25,8 @@ class Effect {
   Effect(Adafruit_NeoPixel *strip) {
     this->length = EFFECT_LENGTH;
     this->strip = strip;
+    this->colorProcessor = new ColorProcessor();
+
     this->processors[0] = new Solid(strip);
     this->processors[1] = new MeteorRain(strip);
     this->processors[2] = new Twinkle(strip, strip->numPixels() / 5, Twinkle::COLOR_SINGLE);
@@ -48,14 +51,11 @@ class Effect {
   }
 
   void setColor(Color color) {
-    this->color = color;
-    if (this->active != NULL) {
-      this->active->setColor(color);
-    }
+    this->colorProcessor->setMainColor(color);
   }
 
   Color getColor() {
-    return color;
+    return colorProcessor->getMainColor();
   }
 
   uint8_t getLength() {
@@ -89,18 +89,27 @@ class Effect {
   void setActiveById(int8_t id) {
     if (id > -1 && id < length) {
       if (processors[id] != NULL) {
-        processors[id]->setColor(color.red, color.green, color.blue, color.white);
         activeId = id;
         active = processors[id];
       }
     }
   }
 
+  boolean loop() {
+    if (this->active != NULL) {
+      this->colorProcessor->loop(this->active);
+      this->active->loop();
+      return !this->active->isFinished();
+    } else {
+      return false;
+    }
+  }
+
  private:
-  Color color = {.raw = 0x00FFFFFF};
   uint8_t length;
   uint8_t activeId;
   Adafruit_NeoPixel *strip;
+  ColorProcessor *colorProcessor;
   EffectProcessor *processors[EFFECT_LENGTH];
   EffectProcessor *active = NULL;
 

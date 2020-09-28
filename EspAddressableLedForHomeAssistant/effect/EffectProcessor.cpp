@@ -25,19 +25,12 @@ class EffectProcessor {
     return this->name;
   }
 
-  void setColor(uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
-    this->color.white = white;
-    this->color.red = red;
-    this->color.green = green;
-    this->color.blue = blue;
-  }
-
   void setColor(Color color) {
     this->color = color;
   }
 
-  void setRawColor(uint32_t color) {
-    this->color.raw = color;
+  uint16_t getStep() {
+    return this->step;
   }
 
   virtual void loop();
@@ -48,6 +41,7 @@ class EffectProcessor {
   Adafruit_NeoPixel *strip;
   const char *name;
   Color color = {};
+  uint16_t step = 0;
 };
 
 #endif

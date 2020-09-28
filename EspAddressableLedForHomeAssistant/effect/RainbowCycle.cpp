@@ -36,18 +36,6 @@ class RainbowCycle : public EffectProcessor {
  private:
   unsigned int ledCount;
   unsigned int position = 0;
-
-  uint32_t wheel(byte wheelPos) {
-    if (wheelPos < 85) {
-      return Adafruit_NeoPixel::Color(wheelPos * 3, 255 - wheelPos * 3, 0);
-    } else if (wheelPos < 170) {
-      wheelPos -= 85;
-      return Adafruit_NeoPixel::Color(255 - wheelPos * 3, 0, wheelPos * 3);
-    } else {
-      wheelPos -= 170;
-      return Adafruit_NeoPixel::Color(0, wheelPos * 3, 255 - wheelPos * 3);
-    }
-  }
 };
 
 #endif

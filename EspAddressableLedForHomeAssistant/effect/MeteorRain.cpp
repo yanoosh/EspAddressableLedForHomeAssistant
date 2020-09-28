@@ -44,7 +44,6 @@ class MeteorRain : public EffectProcessor {
   uint8_t meteorSize;
   uint8_t meteorTrailDecay;
   bool meteorRandomDecay = true;
-  uint16_t step = 0;
   uint16_t maxStep;
 
   void meteorRainFadeToBlack(int ledNo, byte fadeValue) {
