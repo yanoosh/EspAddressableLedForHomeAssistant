@@ -22,10 +22,6 @@ class TheaterChase : public EffectProcessor {
     this->odd = !this->odd;
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
  private:
   bool odd = 1;
 };

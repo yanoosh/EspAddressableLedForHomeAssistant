@@ -36,10 +36,6 @@ class MeteorRain : public EffectProcessor {
     }
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
  private:
   uint8_t meteorSize;
   uint8_t meteorTrailDecay;

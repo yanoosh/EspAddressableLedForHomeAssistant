@@ -10,21 +10,14 @@ class Strobe : public EffectProcessor {
   }
 
   void loop() override {
-    if (this->light == 1) {
+    if (this->step == 1) {
       this->strip->fill(this->color.raw);
     } else {
       this->strip->clear();
     }
     this->strip->show();
-    this->light = !this->light;
+    this->step = !this->step;
   }
-
-  bool isFinished() override {
-    return false;
-  }
-
-  private:
-    bool light = true;
 };
 
 #endif

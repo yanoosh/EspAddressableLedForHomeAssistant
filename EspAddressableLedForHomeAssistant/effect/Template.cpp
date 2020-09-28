@@ -8,10 +8,6 @@ class Template : public EffectProcessor {
   Template(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {}
 
   void loop() override {}
-
-  bool isFinished() override {
-    return true;
-  }
 };
 
 #endif

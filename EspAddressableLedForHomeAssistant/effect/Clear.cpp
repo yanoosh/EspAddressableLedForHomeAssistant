@@ -13,10 +13,6 @@ class Clear : public EffectProcessor {
     this->strip->clear();
     this->strip->show();
   }
-  
-  bool isFinished() override {
-    return true;
-  }
 };
 
 #endif

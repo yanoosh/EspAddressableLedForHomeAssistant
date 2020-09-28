@@ -49,7 +49,7 @@ class ColorProcessor {
  private:
   Color color = {.raw = 0x00FFFFFF};
   Color tmpColor = {.raw = 0x00FFFFFF};
-  ColorMode colorMode = ColorMode::RANDOM_LOOP;
+  ColorMode colorMode = ColorMode::RAINBOW;
   byte rainbowStep = 0;
 
   void rainbowColor() {

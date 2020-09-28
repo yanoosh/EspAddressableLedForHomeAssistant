@@ -57,15 +57,10 @@ class Twinkle : public EffectProcessor {
     }
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
  private:
   Color backgroudColor = {.raw = 0};
   uint16_t affectedPixels;
   uint8_t colorPattern = 0;
-  uint16_t step = 0;
   uint16_t length;
   uint16_t *diodSequence;
   uint16_t diodPosition = 0;

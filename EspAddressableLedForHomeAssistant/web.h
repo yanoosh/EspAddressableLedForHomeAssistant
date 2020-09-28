@@ -85,7 +85,7 @@ void ServeWebClients() {
   inString += core->getEffect()->getActiveName();
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Transition:</b></td><td><label id='lbl_effect'>");
-  if (!core->isLoopEnabled()) {
+  if (!core->isTurnOn()) {
     inString += F("Done");
   } else {
     inString += F("Running");

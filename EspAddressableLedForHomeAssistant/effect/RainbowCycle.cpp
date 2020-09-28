@@ -13,10 +13,6 @@ class RainbowCycle : public EffectProcessor {
     this->ledCount = strip->numPixels();
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
   void loop() override {
     unsigned int i;
     if (this->position > 256 * 2) {

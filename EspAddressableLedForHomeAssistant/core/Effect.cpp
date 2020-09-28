@@ -4,7 +4,7 @@
 
 #include "ColorProcessor.cpp"
 #include "../effect/Clear.cpp"
-#include "../effect/ColorWipeRainbow.cpp"
+#include "../effect/ColorWipe.cpp"
 #include "../effect/CylonBounce.cpp"
 #include "../effect/EffectProcessor.cpp"
 #include "../effect/Fade.cpp"
@@ -36,7 +36,7 @@ class Effect {
     this->processors[6] = new Strobe(strip);
     this->processors[7] = new TheaterChase(strip);
     this->processors[8] = new RainbowCycle(strip);
-    this->processors[9] = new ColorWipeRainbow(strip);
+    this->processors[9] = new ColorWipe(strip);
     this->processors[10] = new Wave(strip, 0.5, 0.1);
     this->processors[10]->setName("running lights");
     this->processors[11] = new Twinkle(strip, 1, Twinkle::COLOR_SINGLE);
@@ -46,7 +46,7 @@ class Effect {
     this->processors[12]->setName("sparkle");
     this->processors[13] = new Twinkle(strip, strip->numPixels(), Twinkle::COLOR_RANDOM_DIOD);
     this->processors[13]->setName("twinkle random");
-    this->processors[14] = new Lightning(strip);
+    this->processors[EFFECT_LENGTH - 1] = new Lightning(strip);
     setActiveById(0);
   }
 
@@ -95,13 +95,10 @@ class Effect {
     }
   }
 
-  boolean loop() {
+  void loop() {
     if (this->active != NULL) {
       this->colorProcessor->loop(this->active);
       this->active->loop();
-      return !this->active->isFinished();
-    } else {
-      return false;
     }
   }
 

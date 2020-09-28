@@ -14,10 +14,6 @@ class Solid : public EffectProcessor {
     this->strip->fill(this->color.raw);
     this->strip->show();
   }
-
-  bool isFinished() override {
-    return true;
-  }
 };
 
 #endif

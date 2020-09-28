@@ -13,8 +13,8 @@ class Lightning : public EffectProcessor {
   }
 
   void loop() override {
-    while (sleep > 0) {
-      this->sleep--;
+    while (this->step > 0) {
+      this->step--;
       return;
     }
 
@@ -29,17 +29,12 @@ class Lightning : public EffectProcessor {
     }
 
     this->strip->show();
-    this->sleep = random(20, 100);
+    this->step = random(20, 100);
     this->strikes = random(1, 4);
-  }
-
-  bool isFinished() override {
-    return false;
   }
 
  private:
   uint16_t ledCount = 0;
-  uint8_t sleep = 0;
   uint8_t strikes = 0;
   bool explode = true;
 };

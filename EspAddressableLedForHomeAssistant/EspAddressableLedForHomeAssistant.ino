@@ -120,11 +120,9 @@ void loop() {
   static uint32_t lastStrip = 0;
 
   
-  if (core->isLoopEnabled() && now - lastStrip > core->getTransitionInterval()) {  // Once we have completed the transition, No point to keep going though the process
+  if (core->isTurnOn() && now - lastStrip > core->getTransitionInterval()) {  // Once we have completed the transition, No point to keep going though the process
     lastStrip = now;
-    if (!core->getEffect()->loop()) {
-        core->disableLoop();
-    }
+    core->getEffect()->loop();
   }
 
   if (now - lastServices > 113) { 

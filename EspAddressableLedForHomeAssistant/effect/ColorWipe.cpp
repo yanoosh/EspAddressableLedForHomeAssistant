@@ -4,9 +4,9 @@
 #include "EffectProcessor.cpp"
 #include "Common.cpp"
 
-class ColorWipeRainbow : public EffectProcessor {
+class ColorWipe : public EffectProcessor {
  public:
-  ColorWipeRainbow(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
+  ColorWipe(Adafruit_NeoPixel *strip) : EffectProcessor(strip) {
     this->setName("color wipe");
     this->drawColor();
     this->length = this->strip->numPixels();
@@ -29,13 +29,8 @@ class ColorWipeRainbow : public EffectProcessor {
     }
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
  private:
   uint16_t length;
-  uint16_t step = 0;
   uint8_t sleep = 0;
 
   void drawColor() {

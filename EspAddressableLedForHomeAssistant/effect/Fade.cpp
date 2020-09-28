@@ -33,7 +33,7 @@ class Fade : public EffectProcessor {
   void loop() override {
     if (this->loops != 0) {
       uint32_t color = Adafruit_NeoPixel::Color(
-        this->color.raw * this->step / this->smoothness, 
+        this->color.red * this->step / this->smoothness, 
         this->color.green * this->step / this->smoothness, 
         this->color.blue * this->step / this->smoothness, 
         this->color.white * this->step / this->smoothness
@@ -64,12 +64,7 @@ class Fade : public EffectProcessor {
     }
   }
 
-  bool isFinished() override {
-    return this->loops == 0;
-  }
-
  private:
-  int8_t step;
   int8_t direction;
   int8_t loops;
   uint8_t smoothness;

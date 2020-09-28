@@ -103,14 +103,6 @@ class Core {
     return this->speed;
   }
 
-  void disableLoop() {
-    this->loopEnabled = false;
-  }
-
-  bool isLoopEnabled() {
-    return this->loopEnabled;
-  }
-
   void setTransitionInterval(uint8_t transitionInterval) {
     this->transitionInterval = transitionInterval;
   }
@@ -120,7 +112,6 @@ class Core {
   }
 
   void commit() {
-    this->loopEnabled = this->turnOn;
     this->saveSettings();
   }
 

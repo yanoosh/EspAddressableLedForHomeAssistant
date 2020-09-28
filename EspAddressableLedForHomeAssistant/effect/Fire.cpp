@@ -50,9 +50,6 @@ class Fire : public EffectProcessor {
 
     this->strip->show();
   }
-  bool isFinished() override {
-    return false;
-  }
 
  private:
   uint8_t *heat;

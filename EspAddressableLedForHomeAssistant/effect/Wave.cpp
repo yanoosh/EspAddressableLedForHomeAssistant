@@ -30,10 +30,6 @@ class Wave : public EffectProcessor {
     }
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
  private:
   float density;
   float smoothness;

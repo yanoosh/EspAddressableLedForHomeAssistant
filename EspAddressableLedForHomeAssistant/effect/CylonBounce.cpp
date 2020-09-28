@@ -44,14 +44,9 @@ class CylonBounce : public EffectProcessor {
     }
   }
 
-  bool isFinished() override {
-    return false;
-  }
-
  private:
   uint8_t effectSize;
   uint8_t sleepStep = 0;
-  int16_t step = 0;
   int16_t maxStep;
   int16_t direction = 1;
   float multiplier;

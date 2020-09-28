@@ -35,13 +35,11 @@ class EffectProcessor {
 
   virtual void loop();
 
-  virtual bool isFinished();
-
  protected:
   Adafruit_NeoPixel *strip;
   const char *name;
   Color color = {};
-  uint16_t step = 0;
+  int16_t step = 0;
 };
 
 #endif
