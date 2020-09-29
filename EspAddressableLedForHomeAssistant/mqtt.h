@@ -34,6 +34,7 @@ void sendState() {
   document["brightness"] = core->getBrightness();
   document["transition"] = core->getTransitionInterval();
   document["effect"] = core->getEffect()->getActiveName();
+  document["color_mode"] = core->getEffect()->getColorMode();
 
   document["ip"] = WiFi.localIP().toString();
   document["rssi"] = WiFi.RSSI();
@@ -133,6 +134,10 @@ void applyJson(char* message) {
 
   if (document.containsKey("effect")) {
     core->getEffect()->setActiveByName(document["effect"]);
+  }
+
+  if (document.containsKey("color_mode")) {
+    core->getEffect()->setColorMode(document["color_mode"]);
   }
 
   core->commit();

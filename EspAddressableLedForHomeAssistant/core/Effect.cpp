@@ -2,7 +2,6 @@
 #define _EFFECT_CPP
 #include <Adafruit_NeoPixel.h>
 
-#include "ColorProcessor.cpp"
 #include "../effect/Clear.cpp"
 #include "../effect/ColorWipe.cpp"
 #include "../effect/CylonBounce.cpp"
@@ -17,6 +16,7 @@
 #include "../effect/TheaterChase.cpp"
 #include "../effect/Twinkle.cpp"
 #include "../effect/Wave.cpp"
+#include "ColorProcessor.cpp"
 
 #define EFFECT_LENGTH 15
 
@@ -56,6 +56,30 @@ class Effect {
 
   Color getColor() {
     return colorProcessor->getMainColor();
+  }
+
+  void setColorMode(int mode) {
+    switch (mode) {
+      case 1:
+        colorProcessor->setMode(RANDOM_LOOP);
+        break;
+      case 2:
+        colorProcessor->setMode(RANDOM);
+        break;
+      case 3:
+        colorProcessor->setMode(RAINBOW_LOOP);
+        break;
+      case 4:
+        colorProcessor->setMode(RAINBOW);
+        break;
+      default:
+        colorProcessor->setMode(SOLID);
+        break;
+    }
+  }
+
+  byte getColorMode() {
+    return colorProcessor->getMode();
   }
 
   uint8_t getLength() {
