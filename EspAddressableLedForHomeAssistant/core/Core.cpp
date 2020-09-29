@@ -95,16 +95,13 @@ class Core {
     return this->brightness;
   }
 
-  void setSpeed(byte speed) {
-    this->speed = speed;
+  void setSpeed(uint8_t newSpeed) {
+    this->speed = max((uint8_t)1, min(transitionInterval, (uint8_t)100));
+    this->transitionInterval = 250 - (this->speed * 2);
   }
 
-  byte getSpeed() {
+  uint8_t getSpeed() {
     return this->speed;
-  }
-
-  void setTransitionInterval(uint8_t transitionInterval) {
-    this->transitionInterval = transitionInterval;
   }
 
   uint8_t getTransitionInterval() {
@@ -136,6 +133,7 @@ class Core {
     uint8_t brightness;
     uint8_t effect;
     uint8_t speed;
+    uint8_t colorMode;
   };
 
   void generateNameWhenEmpty() {
@@ -152,6 +150,7 @@ class Core {
       setTurnOn(memorized.turnOn);
       setBrightness(memorized.brightness);
       getEffect()->setColor(memorized.color);
+      getEffect()->setColorMode(memorized.colorMode);
       getEffect()->setActiveById(memorized.effect);
       setSpeed(memorized.speed);
     }
@@ -162,6 +161,7 @@ class Core {
       Memorized memorized = {};
       memorized.turnOn = isTurnOn();
       memorized.color = getEffect()->getColor();
+      memorized.colorMode = getEffect()->getColorMode();
       memorized.brightness = getBrightness();
       memorized.effect = getEffect()->getActiveId();
       memorized.speed = getSpeed();

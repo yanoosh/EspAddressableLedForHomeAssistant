@@ -78,8 +78,8 @@ void ServeWebClients() {
   inString += F("<tr><td><b>Brightness:</b></td><td><label id='lbl_britness'>");
   inString += core->getBrightness();
   inString += F("</label></td></tr>");
-  inString += F("<tr><td><b>TransitionInterval:</b></td><td><label id='lbl_tt'>");
-  inString += core->getTransitionInterval();
+  inString += F("<tr><td><b>Speed:</b></td><td><label id='lbl_tt'>");
+  inString += core->getSpeed();
   inString += F("</label></td></tr>");
   inString += F("<tr><td><b>Effect:</b></td><td><label id='lbl_effect'>");
   inString += core->getEffect()->getActiveName();

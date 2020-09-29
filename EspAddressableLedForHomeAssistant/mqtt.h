@@ -32,7 +32,7 @@ void sendState() {
 
   document["white_value"] = core->getEffect()->getColor().white;
   document["brightness"] = core->getBrightness();
-  document["transition"] = core->getTransitionInterval();
+  document["speed"] = core->getSpeed();
   document["effect"] = core->getEffect()->getActiveName();
   document["color_mode"] = core->getEffect()->getColorMode();
 
@@ -109,8 +109,8 @@ void applyJson(char* message) {
     }
   }
 
-  if (document.containsKey("transition")) {
-    core->setTransitionInterval(document["transition"]);
+  if (document.containsKey("speed")) {
+    core->setSpeed(document["speed"]);
   }
 
   if (document.containsKey("color")) {
