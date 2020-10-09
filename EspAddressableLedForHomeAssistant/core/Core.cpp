@@ -96,7 +96,7 @@ class Core {
   }
 
   void setSpeed(uint8_t newSpeed) {
-    this->speed = max((uint8_t)1, min(transitionInterval, (uint8_t)100));
+    this->speed = max((uint8_t)1, min(newSpeed, (uint8_t)100));
     this->transitionInterval = 250 - (this->speed * 2);
   }
 
