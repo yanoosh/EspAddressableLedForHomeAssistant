@@ -3,166 +3,41 @@
 
 ESP8266WebServer server(80);
 
-String GetStatusPic() {
-  String imgString = F("<svg height='64' width='64'>");
-  imgString += F("  <circle cx='32' cy='32' r='30' stroke='black' stroke-width='3' style='fill:");
-
-  if (core->getEffect()->getColor().white > 0) {
-    imgString += F("white");
-  } else {
-    imgString += F("rgb(");
-    imgString += core->getEffect()->getColor().red;
-    imgString += F(",");
-    imgString += core->getEffect()->getColor().green;
-    imgString += F(",");
-    imgString += core->getEffect()->getColor().blue;
-    imgString += F(")");
-  }
-
-  imgString += F("' />");
-  imgString += F("  Sorry, your browser does not support inline SVG.");
-  imgString += F("</svg>");
-  return imgString;
+String row(String title, String value) {
+  return String("<dl class='row'><dt class='col-sm-5'>" + title + "<dd class='col-sm-7'>" + value + "</dl>");
 }
-
 void ServeWebClients() {
-  String inString = F("<head><title>");
-  inString += core->getDeviceName();
-  inString += F("</title>");
-  inString += F("<meta name='viewport' content='width=device-width, initial-scale=1'>");
-  inString += F("<link rel='stylesheet' href='http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css' type='text/css'>");
-  inString += F("<script src='http://code.jquery.com/jquery-1.9.1.min.js' type='text/javascript'></script>");
-  inString += F("<script src='http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js' type='text/javascript'></script>");
-  inString += F("</head>");
-  inString += F("<body>");
+  uint32_t heap = ESP.getFreeHeap();
+  String response = F("<!doctype html><html class='h-100'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'><link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'><title>");
+  response += core->getDeviceName();
+  response += F("</title><body class='h-100'><div class='row row-cols-1 row-cols-sm-2' style='max-width: 720px; margin:40px auto'><div class='col mb-4'><div class='card'><div class='card-header bg-primary text-white'>");
+  response += core->getDeviceName();
+  response += F("</div><div class='card-body'>");
+  response += row("State", core->isTurnOn() ? "On" : "Off");
+  response += row("Red", String(core->getEffect()->getColor().red));
+  response += row("Green", String(core->getEffect()->getColor().green));
+  response += row("Blue", String(core->getEffect()->getColor().blue));
+  response += row("White", String(core->getEffect()->getColor().white));
 
-  inString += F("<div data-role='page' id='page_opts'>");
-  inString += F("<div data-role='header'><h3>");
-  inString += core->getDeviceName();
-  inString += F("</h3></div>");
-  inString += F("<div data-role='content'>");
+  response += row("Brightness", String(core->getBrightness()));
+  response += row("Speed", String(core->getSpeed()));
+  response += row("Effect", core->getEffect()->getActiveName());
+  response += "</div></div></div><div class='col mb-4'><div class='card'><div class='card-header'>MQTT</div><div class='card-body'>";
+  response += row("server", MQTT_SERVER);
+  response += row("topic", core->mqtt->getTopicStatus());
+  response += row("available", core->mqtt->getTopicAvailable());
+  response += row("command", core->mqtt->getTopicCommand());
+  response += row("HA config", core->mqtt->getTopicHomeAssistantConfig());
+  response += "</div></div></div><div class='col mb-4'><div class='card'><div class='card-body'>";
+  response += row("Led count", String(core->getLength()));
+  response += row("Wifi ssid", WIFI_SSID);
+  response += row("Wifi signal (dbBm)", String(WiFi.RSSI()));
+  response += row("Id", String(ESP.getChipId()));
+  response += row("Mac", String(WiFi.macAddress()));
+  response += row("Memory heap (kB)", String(heap));
+  response += row("Work time (ms)", String(millis()));
 
-  inString += F("<fieldset data-role='controlgroup' data-type='horizontal'>");
-  inString += F("<input type='radio' name='opt_group' id='basic' onclick='toggle_opt()' checked><label for='basic'>Info</label>");
-  inString += F("<input type='radio' name='opt_group' id='other' onclick='toggle_opt()'><label for='other'>Settings</label>");
-  inString += F("</fieldset>");
-
-  inString += F("<div id='div_basic'>");
-
-  inString += F("<h3 class='ui-bar ui-bar-a ui-corner-all'>LED Status</h3>");
-  inString += F("<table><tr><td><b>State:<br></td><td><label id='lbl_status' ");
-  if (core->isTurnOn()) {
-    inString += F("style='color:green;font-size:larger;font-weight:600;'>ON");
-  } else {
-    inString += F("style='color:red;font-size:larger;font-weight:600;'>OFF");
-  }
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-  inString += F("<tr><td><b>Red:</b></td><td><label id='lbl_red'>");
-  inString += core->getEffect()->getColor().red;
-  inString += F("</label></td><td rowspan='4'>");
-  inString += GetStatusPic();
-  inString += F("</td></tr>");
-  inString += F("<tr><td><b>Green:</b></td><td><label id='lbl_green'>");
-  inString += core->getEffect()->getColor().green;
-  inString += F("</label></td></tr>");
-  inString += F("<tr><td><b>Blue:</b></td><td><label id='lbl_blue'>");
-  inString += core->getEffect()->getColor().blue;
-  inString += F("</label></td></tr>");
-  inString += F("<tr><td><b>White:</b></td><td><label id='lbl_white'>");
-  inString += core->getEffect()->getColor().white;
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-  inString += F("<tr><td><b>Brightness:</b></td><td><label id='lbl_britness'>");
-  inString += core->getBrightness();
-  inString += F("</label></td></tr>");
-  inString += F("<tr><td><b>Speed:</b></td><td><label id='lbl_tt'>");
-  inString += core->getSpeed();
-  inString += F("</label></td></tr>");
-  inString += F("<tr><td><b>Effect:</b></td><td><label id='lbl_effect'>");
-  inString += core->getEffect()->getActiveName();
-  inString += F("</label></td></tr>");
-  inString += F("<tr><td><b>Transition:</b></td><td><label id='lbl_effect'>");
-  if (!core->isTurnOn()) {
-    inString += F("Done");
-  } else {
-    inString += F("Running");
-  }
-  inString += F("</label></td></tr>");
-
-  inString += F("</table><br />");
-  inString += F("</div>");
-
-  inString += F("<div id='div_other' style='display:none;'>");
-  inString += F("<table cellpadding='2'>");
-  inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-
-  inString += F("<tr><td><b>Device Name:</b></td><td><label id='lbl_deviceName'>");
-  inString += core->getDeviceName();
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td><b>LED Count:</b></td><td><label id='lbl_ledCount'>");
-  inString += core->getLength();
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td><b>Max Brightness:</b></td><td><label id='lbl_maxBrightness'>");
-  inString += core->getMaxBrightness();
-  inString += F(" (255 Max)</label></td></tr>");
-
-  inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-
-  inString += F("<tr><td><b>WIFI SSID:</b></td><td><label id='lbl_rssi'>");
-  inString += WIFI_SSID;
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td><b>WiFi&nbsp;Signal:</b></td><td><label id='lbl_rssi'>");
-  long rssi = WiFi.RSSI();
-  if (rssi > -71) {
-    inString += F("Good");
-  } else if (rssi > -81) {
-    inString += F("Weak");
-  } else {
-    inString += F("Poor");
-  }
-  inString += F(" (");
-  inString += rssi;
-  inString += F(" dbBm)");
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-
-  inString += F("<tr><td><b>MQTT Server:</b></td><td><label id='lbl_rssi'>");
-  inString += MQTT_SERVER;
-  inString += F("</label></td></tr>");
-
-  inString += F("<tr><td><b>Topic:</b></td><td><label id='lbl_rssi'>");
-  inString += core->mqtt->getTopicPrefix();
-  inString += core->getDeviceName();
-  inString += F("</label></td></tr>");
-  inString += F("<tr><td colspan='2'>&nbsp;</td></tr>");
-
-  inString += F("</table>");
-  inString += F("</div>");
-
-  inString += F("<div data-role='footer' data-theme='c'><h5>");
-  inString += VERSION;
-  inString += F("</h5></div>");
-  inString += F("</div>");
-
-  inString += F("<script>");
-  inString += F("function eval_cb(n)  {return $(n).is(':checked')?1:0;}");
-  inString += F("function toggle_opt() {");
-  inString += F("$('#div_basic').hide();");
-  inString += F("$('#div_other').hide();");
-  inString += F("if(eval_cb('#basic')) $('#div_basic').show();");
-  inString += F("if(eval_cb('#other')) $('#div_other').show();");
-  inString += F("};");
-  inString += F("</script>");
-  inString += F("</body>");
-
-  server.send(200, "text/html", inString);
+  server.send(200, "text/html", response);
 }
 
 void webSetup() {

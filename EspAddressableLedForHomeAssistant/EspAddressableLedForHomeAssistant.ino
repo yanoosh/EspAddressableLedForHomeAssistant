@@ -21,8 +21,6 @@
 #define _DPLN(message)
 #endif
 
-#define VERSION F("v3.4 - LedController - https://github.com/DotNetDann - http://dotnetdan.info")
-
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoJson.h>
 #include <ArduinoOTA.h>
