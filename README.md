@@ -39,7 +39,7 @@ Make the full string blue
 
     mosquitto_pub -h 172.17.0.1 -t led/kitchen/set -m "{'state': 'ON', 'color': {'r':0, 'g':0, 'b':255}, 'effect': 'solid', 'transition': 0, 'brightness': 255}"
 
-## troubleshut
+## troubleshoot
 ### no status led
 
 During booting device set last brightness so when the last persisted value is very low led display status but very dark. Disable load setting from EEPROM or change brightness.
