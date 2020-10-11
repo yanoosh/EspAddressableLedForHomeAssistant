@@ -32,7 +32,7 @@ class Effect {
     this->processors[2] = new Twinkle(strip, strip->numPixels() / 5, Twinkle::COLOR_SINGLE);
     this->processors[3] = new CylonBounce(strip);
     this->processors[4] = new Fire(strip);
-    this->processors[5] = new Fade(strip, 1, -1, 20, false);
+    this->processors[5] = new Fade(strip, 1, -1, 64, false);
     this->processors[6] = new Strobe(strip);
     this->processors[7] = new TheaterChase(strip);
     this->processors[8] = new RainbowCycle(strip);
